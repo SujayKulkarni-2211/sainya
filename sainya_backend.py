@@ -191,9 +191,14 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, player_id: str)
     except WebSocketDisconnect:
         connections[room_id].remove(websocket)
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 @app.get("/")
 async def serve_frontend():
-    return FileResponse(os.path.join(os.path.dirname(__file__), "sainya.html"))
+    base = os.path.dirname(os.path.abspath(__file__))
+    return FileResponse(os.path.join(base, "sainya.html"))
 
 if __name__ == "__main__":
     import uvicorn
