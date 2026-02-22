@@ -76,35 +76,47 @@ def train_model(decisions: WarDecisions) -> dict:
     }
 
 def get_dl_explanation(decisions: WarDecisions, result: dict) -> dict:
+    lr_val = {"slow": 0.001, "medium": 0.01, "fast": 0.1}[decisions.advance_speed]
+    batch_val = [32, 64, 128][decisions.attack_formation - 1]
+    formation_desc = "tight formation (32)" if decisions.attack_formation == 1 else "standard formation (64)" if decisions.attack_formation == 2 else "spread formation (128)"
+    batch_desc = "Small batches = noisy gradient updates, better exploration, escape local minima." if decisions.attack_formation == 1 else "Medium batches = balanced stability and exploration." if decisions.attack_formation == 2 else "Large batches = stable but may converge to sharp minima."
+    speed_desc = "slow, precise speed" if decisions.advance_speed == "slow" else "standard marching speed" if decisions.advance_speed == "medium" else "aggressive full speed"
+    lr_desc = "Too slow = takes forever, too fast = overshoots optimal weights." if decisions.advance_speed == "fast" else "Good choice for stable convergence." if decisions.advance_speed == "medium" else "Precise but slow convergence."
+    layers_desc = "Shallow = simple patterns only." if decisions.command_layers == 1 else "Deep = complex feature extraction, risk of vanishing gradients." if decisions.command_layers == 3 else "Balanced depth."
+    discipline_label = "Strict" if decisions.supply_discipline == "strict" else "Moderate" if decisions.supply_discipline == "moderate" else "Loose"
+    discipline_desc = "Strong regularization = simpler model, less overfitting." if decisions.supply_discipline == "strict" else "Balanced regularization." if decisions.supply_discipline == "moderate" else "Weak regularization = risk of overfitting."
+    drills_desc = "Undertrained = underfitting." if decisions.war_drills == 50 else "Well trained." if decisions.war_drills == 150 else "Risk of overfitting if early stopping not used."
+    retreat_war = "Retreat strategy ACTIVE — army pulled back when weakening" if decisions.retreat_strategy else "No retreat — army fought until the end"
+    retreat_dl = "Monitors validation loss. Stops training when model stops improving. Prevents overfitting." if decisions.retreat_strategy else "Trained for full epochs. Risk of overfitting on training data."
     explanations = {
         "attack_formation": {
-            "war": f"You deployed warriors in {'tight formation (32)' if decisions.attack_formation==1 else 'standard formation (64)' if decisions.attack_formation==2 else 'spread formation (128)'}",
-            "dl": f"Batch Size = {[32,64,128][decisions.attack_formation-1]}. {'Small batches = noisy gradient updates, better exploration, escape local minima.' if decisions.attack_formation==1 else 'Medium batches = balanced stability and exploration.' if decisions.attack_formation==2 else 'Large batches = stable but may converge to sharp minima.'}",
+            "war": f"You deployed warriors in {formation_desc}",
+            "dl": f"Batch Size = {batch_val}. {batch_desc}",
             "math": "w = w - η · ∇L(w; x_batch)"
         },
         "advance_speed": {
-            "war": f"Your army advanced at {'slow, precise speed' if decisions.advance_speed=='slow' else 'standard marching speed' if decisions.advance_speed=='medium' else 'aggressive full speed'}",
-            "dl": f"Learning Rate η = {{'slow':0.001,'medium':0.01,'fast':0.1}[decisions.advance_speed]}. {'Too slow = takes forever, too fast = overshoots optimal weights.' if decisions.advance_speed=='fast' else 'Good choice for stable convergence.' if decisions.advance_speed=='medium' else 'Precise but slow convergence.'}",
+            "war": f"Your army advanced at {speed_desc}",
+            "dl": f"Learning Rate η = {lr_val}. {lr_desc}",
             "math": "η controls step size: θ_{t+1} = θ_t - η · ∇J(θ)"
         },
         "command_layers": {
-            "war": f"Your army had {decisions.command_layers} {'layer' if decisions.command_layers==1 else 'layers'} of command hierarchy",
-            "dl": f"Hidden Layers = {decisions.command_layers}. Architecture: {result['params']['hidden_layer_sizes']}. {'Shallow = simple patterns only.' if decisions.command_layers==1 else 'Deep = complex feature extraction, risk of vanishing gradients.' if decisions.command_layers==3 else 'Balanced depth.'}",
+            "war": f"Your army had {decisions.command_layers} {'layer' if decisions.command_layers == 1 else 'layers'} of command hierarchy",
+            "dl": f"Hidden Layers = {decisions.command_layers}. Architecture: {result['params']['hidden_layer_sizes']}. {layers_desc}",
             "math": "h^(l) = σ(W^(l) · h^(l-1) + b^(l))"
         },
         "supply_discipline": {
-            "war": f"{'Strict' if decisions.supply_discipline=='strict' else 'Moderate' if decisions.supply_discipline=='moderate' else 'Loose'} resource discipline across your kingdom",
-            "dl": f"L2 Regularization α = {result['params']['alpha']}. Adds penalty α||w||² to loss. {'Strong regularization = simpler model, less overfitting.' if decisions.supply_discipline=='strict' else 'Balanced regularization.' if decisions.supply_discipline=='moderate' else 'Weak regularization = risk of overfitting.'}",
+            "war": f"{discipline_label} resource discipline across your kingdom",
+            "dl": f"L2 Regularization α = {result['params']['alpha']}. Adds penalty α||w||² to loss. {discipline_desc}",
             "math": "L_total = L_CE + α·||w||²"
         },
         "war_drills": {
             "war": f"Your army trained for {decisions.war_drills} drills before battle",
-            "dl": f"Max Epochs = {decisions.war_drills}. Model actually trained for {result['iterations']} iterations. {'Undertrained = underfitting.' if decisions.war_drills==50 else 'Well trained.' if decisions.war_drills==150 else 'Risk of overfitting if early stopping not used.'}",
+            "dl": f"Max Epochs = {decisions.war_drills}. Model actually trained for {result['iterations']} iterations. {drills_desc}",
             "math": "One epoch = full pass through training data"
         },
         "retreat_strategy": {
-            "war": f"{'Retreat strategy ACTIVE — army pulled back when weakening' if decisions.retreat_strategy else 'No retreat — army fought until the end'}",
-            "dl": f"Early Stopping = {'ON' if decisions.retreat_strategy else 'OFF'}. {'Monitors validation loss. Stops training when model stops improving. Prevents overfitting.' if decisions.retreat_strategy else 'Trained for full epochs. Risk of overfitting on training data.'}",
+            "war": retreat_war,
+            "dl": f"Early Stopping = {'ON' if decisions.retreat_strategy else 'OFF'}. {retreat_dl}",
             "math": "Stop if val_loss doesn't improve for n_iter_no_change steps"
         }
     }
