@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SAINYA — युद्ध का मैदान</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080706;
+    --deep: #110e0a;
+    --charcoal: #1a1512;
+    --gold: #c9a84c;
+    --gold-bright: #f0c040;
+    --gold-dim: #7a6030;
+    --saffron: #d4621a;
+    --saffron-dim: #7a3610;
+    --blood: #8b1a1a;
+    --cream: #f5e6c8;
+    --cream-dim: #b8a880;
+    --white: #fef9f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'EB Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(212,98,26,0.04) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .screen { 
+    display: none; 
+    min-height: 100vh; 
+    position: relative; 
+    z-index: 1;
+    animation: fadeIn 0.6s ease;
+  }
+  .screen.active { display: flex; flex-direction: column; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes flicker { 0%,100%{opacity:1} 50%{opacity:0.85} 75%{opacity:0.95} }
+  @keyframes pulse-gold { 0%,100%{box-shadow: 0 0 20px rgba(201,168,76,0.3)} 50%{box-shadow: 0 0 40px rgba(201,168,76,0.6)} }
+  @keyframes rise { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  @keyframes march { 0%{transform:translateX(-100%)} 100%{transform:translateX(100vw)} }
+  @keyframes boom { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.2);opacity:1} 100%{transform:scale(1);opacity:1} }
+  @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+
+  /* =================== LANDING SCREEN =================== */
+  #screen-landing {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 24px;
+    gap: 0;
+  }
+
+  .conch-symbol {
+    font-size: 64px;
+    margin-bottom: 16px;
+    animation: flicker 3s infinite;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
+  }
+
+  .title-main {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(42px, 12vw, 80px);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-shadow: 
+      0 0 40px rgba(201,168,76,0.4),
+      0 0 80px rgba(201,168,76,0.2),
+      2px 2px 0 rgba(0,0,0,0.8);
+    line-height: 1;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #f0c040, #c9a84c, #f0c040);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 4s linear infinite;
+  }
+
+  .title-sub {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(12px, 3vw, 18px);
+    letter-spacing: 0.4em;
+    color: var(--saffron);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .title-tagline {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: clamp(14px, 3.5vw, 18px);
+    color: var(--cream-dim);
+    margin-bottom: 48px;
+    letter-spacing: 0.05em;
+  }
+
+  .divider {
+    width: 100%;
+    max-width: 300px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+    margin: 0 auto 40px;
+  }
+
+  .landing-form {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: left;
+  }
+
+  .form-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+
+  .form-input {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 14px 18px;
+    font-family: 'EB Garamond', serif;
+    font-size: 18px;
+    color: var(--cream);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    letter-spacing: 0.05em;
+  }
+
+  .form-input::placeholder { color: var(--gold-dim); opacity: 0.5; }
+  .form-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
+
+  .mode-toggle {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .mode-btn {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--gold-dim);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .mode-btn.active {
+    background: rgba(201,168,76,0.15);
+    color: var(--gold);
+  }
+
+  .room-section {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 4px;
+    background: rgba(201,168,76,0.03);
+  }
+
+  .room-section.show { display: flex; }
+
+  .room-code-display {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 32px;
+    color: var(--gold);
+    letter-spacing: 0.3em;
+    text-align: center;
+    padding: 12px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    background: rgba(201,168,76,0.08);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--saffron-dim), var(--saffron));
+    border: 1px solid var(--saffron);
+    border-radius: 4px;
+    padding: 16px 32px;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: var(--white);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    width: 100%;
+    animation: pulse-gold 3s infinite;
+  }
+
+  .btn-primary:hover { background: linear-gradient(135deg, var(--saffron), #e07030); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    padding: 12px 24px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    width: 100%;
+  }
+
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* =================== COUNCIL SCREEN =================== */
+  #screen-council {
+    padding: 0;
+    flex-direction: column;
+  }
+
+  .council-header {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    background: rgba(17,14,10,0.9);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .council-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--saffron);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .council-subtitle {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 22px;
+    color: var(--gold);
+  }
+
+  .progress-bar {
+    margin-top: 12px;
+    height: 2px;
+    background: rgba(201,168,76,0.15);
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--saffron), var(--gold));
+    border-radius: 1px;
+    transition: width 0.4s ease;
+  }
+
+  .council-body {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+    padding-bottom: 100px;
+  }
+
+  .decision-card {
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(17,14,10,0.6);
+    transition: border-color 0.3s;
+  }
+
+  .decision-card.selected { border-color: var(--gold); }
+
+  .decision-header {
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+
+  .decision-icon { font-size: 28px; flex-shrink: 0; }
+
+  .decision-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold);
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+
+  .decision-desc {
+    font-size: 13px;
+    color: var(--cream-dim);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .decision-options {
+    display: flex;
+    gap: 0;
+  }
+
+  .option-btn {
+    flex: 1;
+    padding: 12px 8px;
+    background: transparent;
+    border: none;
+    border-right: 1px solid rgba(201,168,76,0.15);
+    font-family: 'EB Garamond', serif;
+    font-size: 13px;
+    color: var(--cream-dim);
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .option-btn:last-child { border-right: none; }
+
+  .option-btn.selected {
+    background: rgba(201,168,76,0.12);
+    color: var(--gold);
+  }
+
+  .option-btn .opt-icon { font-size: 20px; }
+  .option-btn .opt-label { font-size: 12px; font-family: 'Cinzel', serif; letter-spacing: 0.05em; }
+  .option-btn .opt-sub { font-size: 11px; color: var(--gold-dim); font-style: italic; }
+
+  .option-btn.selected .opt-sub { color: var(--gold-dim); }
+
+  .toggle-btn {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: none;
+    font-family: 'EB Garamond', serif;
+    font-size: 15px;
+    color: var(--cream-dim);
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .toggle-btn.selected { background: rgba(201,168,76,0.12); color: var(--gold); }
+  .toggle-indicator { width: 40px; height: 22px; border-radius: 11px; background: rgba(201,168,76,0.15); border: 1px solid var(--gold-dim); position: relative; transition: all 0.3s; flex-shrink: 0; }
+  .toggle-indicator::after { content:''; position:absolute; width:16px;height:16px;border-radius:50%;background:var(--gold-dim);top:2px;left:2px;transition:all 0.3s; }
+  .toggle-btn.selected .toggle-indicator { background: rgba(201,168,76,0.3); border-color: var(--gold); }
+  .toggle-btn.selected .toggle-indicator::after { left:20px; background:var(--gold); }
+
+  .council-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px;
+    background: linear-gradient(to top, var(--black) 80%, transparent);
+    z-index: 10;
+  }
+
+  /* =================== BATTLE SCREEN =================== */
+  #screen-battle {
+    justify-content: center;
+    align-items: center;
+    padding: 40px 24px;
+    text-align: center;
+    gap: 32px;
+  }
+
+  .battle-symbol {
+    font-size: 80px;
+    animation: flicker 1.5s infinite;
+    filter: drop-shadow(0 0 30px rgba(212,98,26,0.6));
+  }
+
+  .battle-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 28px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  .battle-status {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--cream-dim);
+    max-width: 300px;
+    line-height: 1.6;
+  }
+
+  .battle-progress {
+    width: 240px;
+    height: 3px;
+    background: rgba(201,168,76,0.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .battle-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--saffron), var(--gold));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  .battle-accuracy {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    animation: boom 0.6s ease;
+  }
+
+  .battle-accuracy.show { display: flex; }
+
+  .accuracy-number {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 72px;
+    color: var(--gold);
+    text-shadow: 0 0 40px rgba(201,168,76,0.5);
+    line-height: 1;
+  }
+
+  .accuracy-label {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--saffron);
+    text-transform: uppercase;
+  }
+
+  .accuracy-rank {
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    color: var(--cream-dim);
+    font-style: italic;
+    max-width: 280px;
+    line-height: 1.6;
+  }
+
+  /* =================== RESULTS SCREEN =================== */
+  #screen-results {
+    padding: 32px 20px;
+    gap: 24px;
+  }
+
+  .results-header {
+    text-align: center;
+  }
+
+  .results-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--saffron);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .results-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 28px;
+    color: var(--gold);
+  }
+
+  .leaderboard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .rank-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(201,168,76,0.15);
+    background: rgba(17,14,10,0.6);
+    animation: rise 0.5s ease both;
+    transition: all 0.3s;
+  }
+
+  .rank-card.rank-1 { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+  .rank-card.rank-2 { border-color: rgba(192,192,192,0.3); }
+  .rank-card.rank-3 { border-color: rgba(180,100,30,0.3); }
+  .rank-card.is-me { border-color: var(--saffron); }
+
+  .rank-number {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 20px;
+    width: 32px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .rank-1 .rank-number { color: var(--gold); }
+  .rank-2 .rank-number { color: #c0c0c0; }
+  .rank-3 .rank-number { color: #b4641e; }
+
+  .rank-name {
+    flex: 1;
+    font-family: 'Cinzel', serif;
+    font-size: 15px;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+  }
+
+  .rank-score {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 22px;
+    color: var(--gold);
+  }
+
+  .rank-score span {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--gold-dim);
+  }
+
+  /* =================== REVEAL SCREEN =================== */
+  #screen-reveal {
+    padding: 32px 20px;
+    gap: 24px;
+    padding-bottom: 60px;
+  }
+
+  .reveal-header {
+    text-align: center;
+  }
+
+  .reveal-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--saffron);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .reveal-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 24px;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .reveal-intro {
+    font-style: italic;
+    color: var(--cream-dim);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .reveal-card {
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px;
+    overflow: hidden;
+    animation: rise 0.5s ease both;
+  }
+
+  .reveal-card-header {
+    padding: 14px 16px;
+    background: rgba(201,168,76,0.06);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .reveal-icon { font-size: 24px; }
+
+  .reveal-war {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--cream-dim);
+    line-height: 1.5;
+  }
+
+  .reveal-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .reveal-dl {
+    font-size: 15px;
+    color: var(--cream);
+    line-height: 1.6;
+  }
+
+  .reveal-dl strong {
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+  }
+
+  .reveal-math {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: var(--saffron);
+    padding: 10px 14px;
+    background: rgba(212,98,26,0.08);
+    border-left: 2px solid var(--saffron-dim);
+    border-radius: 0 4px 4px 0;
+    letter-spacing: 0.05em;
+  }
+
+  .reveal-winner {
+    text-align: center;
+    padding: 24px;
+    border: 1px solid var(--gold);
+    border-radius: 6px;
+    background: rgba(201,168,76,0.06);
+    animation: boom 0.8s ease;
+  }
+
+  .winner-crown { font-size: 48px; margin-bottom: 8px; }
+  .winner-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.3em; color: var(--saffron); text-transform: uppercase; margin-bottom: 8px; }
+  .winner-name { font-family: 'Cinzel Decorative', serif; font-size: 28px; color: var(--gold); margin-bottom: 4px; }
+  .winner-score { font-family: 'EB Garamond', serif; font-size: 16px; color: var(--cream-dim); font-style: italic; }
+
+  .waiting-players {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .waiting-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.1);
+  }
+
+  .waiting-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--gold-dim);
+    flex-shrink: 0;
+  }
+
+  .waiting-dot.done { background: var(--gold); box-shadow: 0 0 6px rgba(201,168,76,0.5); }
+
+  .waiting-name { font-family: 'Cinzel', serif; font-size: 13px; color: var(--cream-dim); }
+  .waiting-score { margin-left: auto; font-family: 'Cinzel Decorative', serif; font-size: 14px; color: var(--gold); }
+
+  .room-code-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    background: rgba(201,168,76,0.05);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 16px;
+    color: var(--gold);
+    letter-spacing: 0.2em;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    background: rgba(17,14,10,0.95);
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    z-index: 100;
+    display: none;
+    animation: rise 0.3s ease;
+  }
+
+  .loader {
+    width: 32px; height: 32px;
+    border: 2px solid rgba(201,168,76,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .troop-march {
+    font-size: 24px;
+    animation: march 3s linear infinite;
+    white-space: nowrap;
+  }
+
+  /* Multiplayer waiting */
+  .waiting-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+    max-width: 380px;
+    padding: 24px 20px;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px;
+    background: rgba(17,14,10,0.6);
+  }
+
+  .waiting-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  @media(min-width:600px) {
+    #screen-landing { padding: 60px 40px; }
+    .council-body { max-width: 600px; margin: 0 auto; width: 100%; }
+    .council-footer { display: flex; justify-content: center; }
+    .council-footer .btn-primary { max-width: 400px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+  <div class="conch-symbol">🐚</div>
+  <div class="title-main">SAINYA</div>
+  <div class="title-sub">सैन्य</div>
+  <div class="title-tagline">Where warriors are made of weights and biases</div>
+  <div class="divider"></div>
+  <div class="landing-form">
+    <div class="form-group">
+      <div class="form-label">Your War Name</div>
+      <input type="text" class="form-input" id="player-name" placeholder="Enter your name..." maxlength="20">
+    </div>
+    <div class="form-group">
+      <div class="form-label">Mode of War</div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" onclick="setMode('solo')">⚔️ Solo Battle</button>
+        <button class="mode-btn" onclick="setMode('create')">🏰 Create Room</button>
+        <button class="mode-btn" onclick="setMode('join')">🚪 Join Room</button>
+      </div>
+    </div>
+    <div id="room-section" class="room-section">
+      <div id="room-input-section" style="display:none;">
+        <div class="form-label" style="margin-bottom:8px;">Room Code</div>
+        <input type="text" class="form-input" id="room-code-input" placeholder="Enter 6-letter code..." maxlength="6" style="text-transform:uppercase;letter-spacing:0.3em;">
+      </div>
+      <div id="room-display-section" style="display:none;text-align:center;">
+        <div class="form-label" style="margin-bottom:8px;">Share this code with your warriors</div>
+        <div class="room-code-display" id="room-code-display">——</div>
+        <div style="font-size:13px;color:var(--cream-dim);margin-top:8px;font-style:italic;">Waiting for others to join...</div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="startGame()">⚔️ ENTER THE BATTLEFIELD</button>
+  </div>
+</div>
+
+<!-- WAR COUNCIL -->
+<div id="screen-council" class="screen">
+  <div class="council-header">
+    <div class="council-title">The War Council</div>
+    <div class="council-subtitle">Choose your strategy, Commander</div>
+    <div class="progress-bar"><div class="progress-fill" id="council-progress"></div></div>
+  </div>
+  <div class="council-body" id="decisions-container"></div>
+  <div class="council-footer">
+    <button class="btn-primary" id="deploy-btn" onclick="deployArmy()" style="display:none;">
+      🐘 DEPLOY ARMY — MARCH TO WAR
+    </button>
+  </div>
+</div>
+
+<!-- BATTLE -->
+<div id="screen-battle" class="screen">
+  <div class="battle-symbol" id="battle-symbol">⚔️</div>
+  <div class="battle-title" id="battle-title">Your Army Marches...</div>
+  <div class="battle-status" id="battle-status">The generals are briefed. The war drums pound. Your warriors take formation...</div>
+  <div class="battle-progress"><div class="battle-progress-fill" id="battle-progress-fill"></div></div>
+  <div class="battle-accuracy" id="battle-accuracy">
+    <div class="accuracy-number" id="accuracy-number">—</div>
+    <div class="accuracy-label">Battle Victory Rate</div>
+    <div class="accuracy-rank" id="accuracy-rank"></div>
+    <button class="btn-primary" style="margin-top:16px;max-width:280px;" id="see-results-btn" onclick="showResults()">See All Warriors</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="screen-results" class="screen">
+  <div class="results-header">
+    <div class="results-eyebrow">⚔️ Battle Complete ⚔️</div>
+    <div class="results-title">The Field of Kurukshetra</div>
+  </div>
+  <div class="leaderboard" id="leaderboard"></div>
+  <div class="waiting-section" id="waiting-section" style="display:none;">
+    <div class="waiting-title">Warriors Still Fighting...</div>
+    <div class="loader"></div>
+    <div id="waiting-players-list" class="waiting-players"></div>
+  </div>
+  <button class="btn-primary" id="reveal-btn" onclick="showReveal()" style="display:none;">
+    🔮 Reveal the Secrets of this War
+  </button>
+</div>
+
+<!-- REVEAL -->
+<div id="screen-reveal" class="screen">
+  <div class="reveal-header">
+    <div class="reveal-eyebrow">🔮 The Ancient Secrets</div>
+    <div class="reveal-title">You Were Training a Neural Network</div>
+    <div class="reveal-intro">Every decision you made as a commander was configuring a deep learning model. This is what was happening beneath the battlefield...</div>
+  </div>
+  <div id="reveal-winner-card"></div>
+  <div id="reveal-explanations"></div>
+  <button class="btn-primary" onclick="playAgain()">⚔️ Fight Again</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let gameState = {
+  mode: 'solo',
+  playerName: '',
+  playerId: 'p_' + Math.random().toString(36).substr(2,6),
+  roomId: '',
+  decisions: {},
+  myResult: null,
+  allResults: [],
+  ws: null
+};
+
+// Decision definitions
+const decisions = [
+  {
+    id: 'attack_formation',
+    icon: '🐘',
+    title: 'Attack Formation',
+    desc: 'How do you deploy your warriors into battle?',
+    type: 'options',
+    options: [
+      { value: 1, icon: '🔴', label: 'Tight', sub: '32 warriors per wave' },
+      { value: 2, icon: '🟡', label: 'Standard', sub: '64 warriors per wave' },
+      { value: 3, icon: '🟢', label: 'Spread', sub: '128 warriors per wave' }
+    ]
+  },
+  {
+    id: 'advance_speed',
+    icon: '🏇',
+    title: "Army's Advance Speed",
+    desc: 'How aggressively does your army push forward?',
+    type: 'options',
+    options: [
+      { value: 'slow', icon: '🐢', label: 'Cautious', sub: 'Slow but precise' },
+      { value: 'medium', icon: '🐎', label: 'Balanced', sub: 'Standard march' },
+      { value: 'fast', icon: '⚡', label: 'Aggressive', sub: 'Full charge' }
+    ]
+  },
+  {
+    id: 'commander',
+    icon: '👑',
+    title: 'Your Commander',
+    desc: 'Which great strategist leads your army?',
+    type: 'options',
+    options: [
+      { value: 'arjuna', icon: '🏹', label: 'Arjuna', sub: 'Disciplined & direct' },
+      { value: 'chanakya', icon: '📜', label: 'Chanakya', sub: 'Adaptive & wise' },
+      { value: 'bhima', icon: '💪', label: 'Bhima', sub: 'Pure momentum' }
+    ]
+  },
+  {
+    id: 'command_layers',
+    icon: '🏯',
+    title: 'Command Hierarchy',
+    desc: 'How many layers of generals command your troops?',
+    type: 'options',
+    options: [
+      { value: 1, icon: '⚡', label: 'Flat', sub: '1 command layer' },
+      { value: 2, icon: '🏛️', label: 'Standard', sub: '2 command layers' },
+      { value: 3, icon: '🗼', label: 'Deep', sub: '3 command layers' }
+    ]
+  },
+  {
+    id: 'supply_discipline',
+    icon: '⚖️',
+    title: 'Resource Discipline',
+    desc: 'How strictly do you ration resources across your kingdom?',
+    type: 'options',
+    options: [
+      { value: 'strict', icon: '🔒', label: 'Strict', sub: 'No soldier hoards' },
+      { value: 'moderate', icon: '⚖️', label: 'Moderate', sub: 'Balanced rationing' },
+      { value: 'loose', icon: '🌊', label: 'Loose', sub: 'Free allocation' }
+    ]
+  },
+  {
+    id: 'war_drills',
+    icon: '🏋️',
+    title: 'War Drills Duration',
+    desc: 'How long does your army train before the main battle?',
+    type: 'options',
+    options: [
+      { value: 50, icon: '⚡', label: 'Quick', sub: '50 drills' },
+      { value: 150, icon: '🏛️', label: 'Standard', sub: '150 drills' },
+      { value: 300, icon: '🔱', label: 'Intensive', sub: '300 drills' }
+    ]
+  },
+  {
+    id: 'retreat_strategy',
+    icon: '🛡️',
+    title: 'Retreat Strategy',
+    desc: 'If your army weakens on the training field, do you pull back?',
+    type: 'toggle',
+    trueLabel: '🛡️ Yes — Retreat and regroup when weakening',
+    falseLabel: '⚔️ No — Fight until the very end'
+  }
+];
+
+// Reveal data (DL explanations)
+const revealData = {
+  attack_formation: {
+    icon: '🐘',
+    warTitle: 'Attack Formation',
+    dlName: 'Batch Size',
+    explanation: {
+      1: { war: 'Tight formation — 32 warriors per wave, moving with precision through enemy lines.', dl: 'Batch Size = 32. Small batches create noisy gradient updates. This noise actually helps — it lets your model escape poor solutions and explore more of the loss landscape.', math: 'w ← w - η · ∇L(w; x_batch=32)' },
+      2: { war: 'Standard formation — 64 warriors advancing with balance of speed and cohesion.', dl: 'Batch Size = 64. The classic sweet spot. Balanced noise and stability. Most models train well here.', math: 'w ← w - η · ∇L(w; x_batch=64)' },
+      3: { war: 'Spread formation — 128 warriors across a wide front, maximizing coverage.', dl: 'Batch Size = 128. Large batches are stable but can converge to sharp minima that generalise poorly. Fast per-epoch, but risks rigidity.', math: 'w ← w - η · ∇L(w; x_batch=128)' }
+    }
+  },
+  advance_speed: {
+    icon: '🏇',
+    warTitle: 'Advance Speed',
+    dlName: 'Learning Rate (η)',
+    explanation: {
+      slow: { war: 'Cautious advance — precise steps, never overextending, reading every terrain change.', dl: 'Learning Rate η = 0.001. Slow but precise. Each weight update is tiny. Guaranteed not to overshoot, but may take very long to converge.', math: 'θ_{t+1} = θ_t - 0.001 · ∇J(θ)' },
+      medium: { war: 'Balanced march — steady advance, adapting pace to the battlefield conditions.', dl: 'Learning Rate η = 0.01. The standard choice. Fast enough to converge, small enough to not oscillate wildly around the minimum.', math: 'θ_{t+1} = θ_t - 0.01 · ∇J(θ)' },
+      fast: { war: 'Full charge — aggressive push, overwhelming enemy before they can react.', dl: 'Learning Rate η = 0.1. Fast but dangerous. May overshoot the optimal weights entirely and oscillate. High risk, high reward.', math: 'θ_{t+1} = θ_t - 0.1 · ∇J(θ)' }
+    }
+  },
+  commander: {
+    icon: '👑',
+    warTitle: 'Commander',
+    dlName: 'Optimizer',
+    explanation: {
+      arjuna: { war: 'Arjuna — the disciplined archer. Straight path, no memory of past mistakes, pure focus on the present battle.', dl: 'Optimizer = SGD. Stochastic Gradient Descent. No momentum, no memory. Pure gradient direction each step. Simple but effective when tuned well.', math: 'w ← w - η · ∇L(w)' },
+      chanakya: { war: 'Chanakya — the adaptive strategist. Learns from every past battle, adjusts tactics per soldier based on their history.', dl: 'Optimizer = Adam (Adaptive Moment Estimation). Tracks momentum and squared gradients per parameter. Adapts learning rate individually. Most powerful general.', math: 'θ_{t+1} = θ_t - η · m̂_t / (√v̂_t + ε)' },
+      bhima: { war: 'Bhima — unstoppable force. Once moving, pure momentum carries him through enemy lines.', dl: 'Optimizer = RMSprop. Divides learning rate by moving average of squared gradients. Great for RNNs and non-stationary objectives.', math: 'w ← w - η · g_t / √(E[g²]_t + ε)' }
+    }
+  },
+  command_layers: {
+    icon: '🏯',
+    warTitle: 'Command Hierarchy',
+    dlName: 'Network Depth (Hidden Layers)',
+    explanation: {
+      1: { war: 'Flat command — soldiers take orders directly from you. Fast decisions, simple strategy.', dl: 'Hidden Layers = 1, size (64,). Shallow network. Can only learn linearly separable or simple patterns. Fast to train, low risk of vanishing gradients.', math: 'output = σ(W² · σ(W¹x + b¹) + b²)' },
+      2: { war: 'Standard hierarchy — two layers of generals coordinate complex manoeuvres.', dl: 'Hidden Layers = 2, sizes (128, 64). Can learn moderately complex patterns. Good balance of expressiveness and trainability.', math: 'h¹=σ(W¹x), h²=σ(W²h¹), ŷ=σ(W³h²)' },
+      3: { war: 'Deep hierarchy — three command layers, complex strategy, risk of confusion down the chain.', dl: 'Hidden Layers = 3, sizes (256, 128, 64). Can learn very complex features but risk vanishing gradients. Deep networks need careful training.', math: '∂L/∂W¹ = ∂L/∂h³ · ∂h³/∂h² · ∂h²/∂h¹ · ∂h¹/∂W¹' }
+    }
+  },
+  supply_discipline: {
+    icon: '⚖️',
+    warTitle: 'Resource Discipline',
+    dlName: 'L2 Regularization (Weight Decay)',
+    explanation: {
+      strict: { war: 'Strict rationing — no soldier hoards resources, every warrior contributes equally.', dl: 'L2 Regularization α = 0.01. Strong penalty on large weights. Forces the model to distribute learning across all neurons. Prevents any single weight from dominating. Reduces overfitting significantly.', math: 'L_total = L_CE + α·||w||² = L_CE + 0.01·Σwᵢ²' },
+      moderate: { war: 'Moderate rationing — some flexibility, but no excessive hoarding tolerated.', dl: 'L2 Regularization α = 0.001. Balanced constraint. Allows model to express complex patterns while keeping weights from exploding.', math: 'L_total = L_CE + 0.001·Σwᵢ²' },
+      loose: { war: 'Loose rationing — warriors accumulate power freely, some become dangerously strong.', dl: 'L2 Regularization α = 0.0001. Minimal constraint. Model free to use any weight distribution. Risk: certain neurons dominate (overfit to training patterns).', math: 'L_total = L_CE + 0.0001·Σwᵢ²' }
+    }
+  },
+  war_drills: {
+    icon: '🏋️',
+    warTitle: 'War Drills Duration',
+    dlName: 'Training Epochs',
+    explanation: {
+      50: { war: 'Quick drills — 50 sessions, army enters battle fresh but possibly underprepared.', dl: 'Max Epochs = 50. Fewer passes through the data. May underfit — model hasn\'t seen enough to learn all patterns. Safe from overfitting but potentially weak.', math: 'One epoch = full pass over all N training samples' },
+      150: { war: 'Standard training — 150 sessions, army well prepared for the battlefield ahead.', dl: 'Max Epochs = 150. Sweet spot for most problems. Enough to converge without overfitting, especially with early stopping active.', math: 'Loss should decrease each epoch: L(t) < L(t-1)' },
+      300: { war: 'Intensive drilling — 300 sessions, army drilled to perfection or exhaustion.', dl: 'Max Epochs = 300. Risk of overfitting without early stopping. Model may memorise training data and fail on new enemies (test set).', math: 'Overfit: train_loss → 0 but val_loss ↑' }
+    }
+  },
+  retreat_strategy: {
+    icon: '🛡️',
+    warTitle: 'Retreat Strategy',
+    dlName: 'Early Stopping',
+    explanation: {
+      true: { war: 'Retreat activated — when your army started weakening on the practice field, you pulled back and saved strength for real battle.', dl: 'Early Stopping = ON. Monitors validation loss. If it doesn\'t improve for 10 consecutive epochs, training stops. Prevents overfitting. Your model trained until the right moment, not until exhaustion.', math: 'Stop if val_loss[t] ≥ min(val_loss) for n_iter_no_change=10 steps' },
+      false: { war: 'No retreat — your army fought through every drill regardless of condition, arriving at battle possibly exhausted or perfectly hardened.', dl: 'Early Stopping = OFF. Model trains for all specified epochs. May overfit if drills were too many. Works if regularization is strong enough to compensate.', math: 'Train for all max_iter epochs regardless of val_loss' }
+    }
+  }
+};
+
+function setMode(mode) {
+  gameState.mode = mode;
+  document.querySelectorAll('.mode-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['solo','create','join'][i] === mode);
+  });
+  const rs = document.getElementById('room-section');
+  const ri = document.getElementById('room-input-section');
+  const rd = document.getElementById('room-display-section');
+  rs.classList.toggle('show', mode !== 'solo');
+  if (mode === 'join') { ri.style.display='block'; rd.style.display='none'; }
+  else if (mode === 'create') { ri.style.display='none'; rd.style.display='none'; }
+  else { ri.style.display='none'; rd.style.display='none'; }
+}
+
+async function startGame() {
+  const name = document.getElementById('player-name').value.trim();
+  if (!name) { showToast('Enter your war name, Commander'); return; }
+  gameState.playerName = name;
+
+  if (gameState.mode === 'create') {
+    // Create room
+    try {
+      const res = await fetch(API + '/create_room', { method: 'POST' });
+      const data = await res.json();
+      gameState.roomId = data.room_id;
+    } catch(e) {
+      // Demo mode - generate local room
+      gameState.roomId = Math.random().toString(36).substr(2,6).toUpperCase();
+    }
+    document.getElementById('room-display-section').style.display = 'block';
+    document.getElementById('room-input-section').style.display = 'none';
+    document.getElementById('room-code-display').textContent = gameState.roomId;
+    connectWebSocket();
+    setTimeout(() => goToCouncil(), 1500);
+  } else if (gameState.mode === 'join') {
+    const code = document.getElementById('room-code-input').value.trim().toUpperCase();
+    if (!code || code.length < 4) { showToast('Enter a valid room code'); return; }
+    gameState.roomId = code;
+    connectWebSocket();
+    goToCouncil();
+  } else {
+    gameState.roomId = 'SOLO_' + gameState.playerId;
+    goToCouncil();
+  }
+}
+
+function connectWebSocket() {
+  try {
+    const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProto}//${window.location.host}/ws/${gameState.roomId}/${gameState.playerId}`;
+    gameState.ws = new WebSocket(wsUrl);
+    gameState.ws.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'player_result') {
+        updateWaitingPlayer(msg.player, msg.accuracy);
+      }
+    };
+  } catch(e) {}
+}
+
+function goToCouncil() {
+  showScreen('council');
+  buildDecisionCards();
+}
+
+function buildDecisionCards() {
+  const container = document.getElementById('decisions-container');
+  container.innerHTML = '';
+  
+  decisions.forEach((d, idx) => {
+    const card = document.createElement('div');
+    card.className = 'decision-card';
+    card.id = 'card-' + d.id;
+    card.style.animationDelay = (idx * 0.08) + 's';
+    card.style.animation = 'rise 0.5s ease both';
+    
+    if (d.type === 'options') {
+      const optionsHTML = d.options.map(o => `
+        <button class="option-btn" onclick="selectOption('${d.id}', ${JSON.stringify(o.value)}, this)" data-value="${o.value}">
+          <span class="opt-icon">${o.icon}</span>
+          <span class="opt-label">${o.label}</span>
+          <span class="opt-sub">${o.sub}</span>
+        </button>
+      `).join('');
+      
+      card.innerHTML = `
+        <div class="decision-header">
+          <span class="decision-icon">${d.icon}</span>
+          <div>
+            <div class="decision-title">${d.title}</div>
+            <div class="decision-desc">${d.desc}</div>
+          </div>
+        </div>
+        <div class="decision-options">${optionsHTML}</div>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="decision-header">
+          <span class="decision-icon">${d.icon}</span>
+          <div>
+            <div class="decision-title">${d.title}</div>
+            <div class="decision-desc">${d.desc}</div>
+          </div>
+        </div>
+        <button class="toggle-btn" id="toggle-${d.id}" onclick="toggleDecision('${d.id}', this)">
+          <div class="toggle-indicator"></div>
+          <span id="toggle-label-${d.id}">${d.falseLabel}</span>
+        </button>
+      `;
+      gameState.decisions[d.id] = false;
+    }
+    
+    container.appendChild(card);
+  });
+  
+  updateProgress();
+}
+
+function selectOption(decisionId, value, btn) {
+  gameState.decisions[decisionId] = value;
+  const card = document.getElementById('card-' + decisionId);
+  card.classList.add('selected');
+  card.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  updateProgress();
+}
+
+function toggleDecision(decisionId, btn) {
+  gameState.decisions[decisionId] = !gameState.decisions[decisionId];
+  btn.classList.toggle('selected', gameState.decisions[decisionId]);
+  const d = decisions.find(x => x.id === decisionId);
+  document.getElementById('toggle-label-' + decisionId).textContent = 
+    gameState.decisions[decisionId] ? d.trueLabel : d.falseLabel;
+  document.getElementById('card-' + decisionId).classList.toggle('selected', gameState.decisions[decisionId] !== false);
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = decisions.length;
+  const filled = decisions.filter(d => gameState.decisions[d.id] !== undefined && 
+    !(d.type === 'options' && gameState.decisions[d.id] === undefined)).length;
+  
+  const optionsFilled = decisions.filter(d => d.type === 'options').filter(d => gameState.decisions[d.id] !== undefined).length;
+  const togglesFilled = decisions.filter(d => d.type === 'toggle').length;
+  const pct = ((optionsFilled + togglesFilled) / total) * 100;
+  
+  document.getElementById('council-progress').style.width = pct + '%';
+  
+  const allOptionsFilled = decisions.filter(d => d.type === 'options').every(d => gameState.decisions[d.id] !== undefined);
+  document.getElementById('deploy-btn').style.display = allOptionsFilled ? 'block' : 'none';
+}
+
+async function deployArmy() {
+  showScreen('battle');
+  animateBattle();
+  
+  const payload = {
+    room_id: gameState.roomId,
+    player_id: gameState.playerId,
+    player_name: gameState.playerName,
+    attack_formation: gameState.decisions.attack_formation || 2,
+    advance_speed: gameState.decisions.advance_speed || 'medium',
+    commander: gameState.decisions.commander || 'chanakya',
+    command_layers: gameState.decisions.command_layers || 2,
+    troop_rotation: 0.2,
+    supply_discipline: gameState.decisions.supply_discipline || 'moderate',
+    war_drills: gameState.decisions.war_drills || 150,
+    retreat_strategy: gameState.decisions.retreat_strategy || false
+  };
+
+  try {
+    const res = await fetch(API + '/battle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    showBattleResult(data.accuracy, data.explanation, data.room_results);
+    gameState.myResult = data;
+    gameState.allResults = data.room_results || [{ name: gameState.playerName, accuracy: data.accuracy }];
+  } catch(e) {
+    // Demo mode — simulate result
+    const acc = simulateAccuracy();
+    const fakeResult = { accuracy: acc, explanation: buildLocalExplanation(), room_results: [{ name: gameState.playerName, accuracy: acc }] };
+    showBattleResult(acc, fakeResult.explanation, fakeResult.room_results);
+    gameState.myResult = fakeResult;
+    gameState.allResults = [{ name: gameState.playerName, accuracy: acc }];
+  }
+}
+
+function simulateAccuracy() {
+  // Actually compute a plausible accuracy based on choices
+  let base = 88;
+  const lr = gameState.decisions.advance_speed;
+  const layers = gameState.decisions.command_layers;
+  const epochs = gameState.decisions.war_drills;
+  const es = gameState.decisions.retreat_strategy;
+  const reg = gameState.decisions.supply_discipline;
+  
+  if (lr === 'fast' && epochs > 100) base -= 4;
+  if (lr === 'slow' && !es) base -= 2;
+  if (layers === 3 && !es) base -= 3;
+  if (layers === 1) base -= 5;
+  if (reg === 'loose' && epochs >= 300) base -= 3;
+  if (reg === 'strict') base += 2;
+  if (es) base += 2;
+  if (epochs === 150) base += 1;
+  
+  base += (Math.random() * 8 - 4);
+  return Math.min(98, Math.max(72, Math.round(base * 10) / 10));
+}
+
+function buildLocalExplanation() {
+  const exp = {};
+  Object.keys(revealData).forEach(key => {
+    const rd = revealData[key];
+    const val = gameState.decisions[key];
+    const e = rd.explanation[val] || rd.explanation[Object.keys(rd.explanation)[0]];
+    exp[key] = { war: e.war, dl: e.dl, math: e.math };
+  });
+  return exp;
+}
+
+const battleMessages = [
+  'The generals are briefed. War drums thunder across the plains...',
+  'Your warriors take their positions. Shields raised, spears ready...',
+  'The first wave advances. Battle mathematics unfold in real time...',
+  'Casualties computed. Gradient of war calculated...',
+  'Reinforcements deployed. The model learns from every fallen warrior...',
+  'Final computation. The battlefield reveals its truth...'
+];
+
+let battleInterval;
+function animateBattle() {
+  let step = 0;
+  let progress = 0;
+  document.getElementById('battle-accuracy').classList.remove('show');
+  document.getElementById('battle-symbol').textContent = '⚔️';
+  
+  const symbols = ['⚔️','🏹','🐘','🔱','⚡','👑'];
+  
+  battleInterval = setInterval(() => {
+    if (step < battleMessages.length) {
+      document.getElementById('battle-status').textContent = battleMessages[step];
+      document.getElementById('battle-symbol').textContent = symbols[step % symbols.length];
+      step++;
+    }
+    progress = Math.min(95, progress + Math.random() * 15 + 5);
+    document.getElementById('battle-progress-fill').style.width = progress + '%';
+  }, 800);
+}
+
+function showBattleResult(accuracy, explanation, roomResults) {
+  clearInterval(battleInterval);
+  document.getElementById('battle-progress-fill').style.width = '100%';
+  document.getElementById('battle-title').textContent = 'Battle Concluded!';
+  document.getElementById('battle-symbol').textContent = accuracy >= 90 ? '👑' : accuracy >= 85 ? '🏆' : accuracy >= 80 ? '⚔️' : '🛡️';
+  
+  setTimeout(() => {
+    const el = document.getElementById('battle-accuracy');
+    el.classList.add('show');
+    document.getElementById('accuracy-number').textContent = accuracy + '%';
+    
+    let rank = '';
+    if (accuracy >= 95) rank = 'Your army was virtually unstoppable. The gods of mathematics smiled upon you.';
+    else if (accuracy >= 90) rank = 'A dominant victory. Your strategic choices were remarkably sound.';
+    else if (accuracy >= 85) rank = 'A solid win. Your army held the field with discipline.';
+    else if (accuracy >= 80) rank = 'Hard fought. Some strategic choices could be refined.';
+    else rank = 'The battlefield was brutal. Much to learn for the next war.';
+    
+    document.getElementById('accuracy-rank').textContent = rank;
+    
+    if (gameState.mode === 'solo') {
+      document.getElementById('see-results-btn').style.display = 'block';
+    } else {
+      document.getElementById('see-results-btn').textContent = 'See Leaderboard';
+      document.getElementById('see-results-btn').style.display = 'block';
+    }
+  }, 500);
+}
+
+function showResults() {
+  showScreen('results');
+  
+  const results = gameState.allResults.sort((a,b) => b.accuracy - a.accuracy);
+  const lb = document.getElementById('leaderboard');
+  lb.innerHTML = '';
+  
+  results.forEach((r, i) => {
+    const card = document.createElement('div');
+    card.className = `rank-card rank-${i+1}${r.name === gameState.playerName ? ' is-me' : ''}`;
+    card.style.animationDelay = (i * 0.12) + 's';
+    
+    const medals = ['🥇','🥈','🥉'];
+    const rankLabel = i < 3 ? medals[i] : (i+1);
+    
+    card.innerHTML = `
+      <div class="rank-number">${rankLabel}</div>
+      <div class="rank-name">${r.name}${r.name === gameState.playerName ? ' (You)' : ''}</div>
+      <div class="rank-score">${r.accuracy || r.accuracy}<span>%</span></div>
+    `;
+    lb.appendChild(card);
+  });
+  
+  document.getElementById('reveal-btn').style.display = 'block';
+  document.getElementById('waiting-section').style.display = 'none';
+}
+
+function showReveal() {
+  showScreen('reveal');
+  
+  // Winner card
+  const winner = gameState.allResults.sort((a,b) => b.accuracy - a.accuracy)[0];
+  document.getElementById('reveal-winner-card').innerHTML = `
+    <div class="reveal-winner">
+      <div class="winner-crown">👑</div>
+      <div class="winner-label">Supreme Commander</div>
+      <div class="winner-name">${winner?.name || gameState.playerName}</div>
+      <div class="winner-score">${winner?.accuracy || gameState.myResult?.accuracy}% battle accuracy — Their army was the most intelligent.</div>
+    </div>
+  `;
+  
+  // Explanation cards
+  const container = document.getElementById('reveal-explanations');
+  container.innerHTML = '';
+  
+  const myDecisions = gameState.decisions;
+  
+  Object.keys(revealData).forEach((key, idx) => {
+    const rd = revealData[key];
+    const val = myDecisions[key];
+    const e = rd.explanation[val] || rd.explanation[Object.keys(rd.explanation)[1]];
+    
+    const card = document.createElement('div');
+    card.className = 'reveal-card';
+    card.style.animationDelay = (idx * 0.1) + 's';
+    
+    card.innerHTML = `
+      <div class="reveal-card-header">
+        <span class="reveal-icon">${rd.icon}</span>
+        <div>
+          <div class="decision-title">${rd.warTitle} → <span style="color:var(--saffron)">${rd.dlName}</span></div>
+          <div class="reveal-war">"${e.war}"</div>
+        </div>
+      </div>
+      <div class="reveal-card-body">
+        <div class="reveal-dl"><strong>${rd.dlName}:</strong> ${e.dl}</div>
+        <div class="reveal-math">${e.math}</div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function updateWaitingPlayer(name, accuracy) {
+  const list = document.getElementById('waiting-players-list');
+  let existing = list.querySelector(`[data-name="${name}"]`);
+  if (!existing) {
+    existing = document.createElement('div');
+    existing.className = 'waiting-player';
+    existing.dataset.name = name;
+    existing.innerHTML = `<div class="waiting-dot"></div><div class="waiting-name">${name}</div><div class="waiting-score"></div>`;
+    list.appendChild(existing);
+  }
+  if (accuracy) {
+    existing.querySelector('.waiting-dot').classList.add('done');
+    existing.querySelector('.waiting-score').textContent = accuracy + '%';
+    
+    // Add to results
+    const exists = gameState.allResults.find(r => r.name === name);
+    if (!exists) gameState.allResults.push({ name, accuracy });
+  }
+}
+
+function playAgain() {
+  gameState.decisions = {};
+  gameState.myResult = null;
+  gameState.allResults = [];
+  showScreen('landing');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+
+// Init
+setMode('solo');
+</script>
+</body>
+</html>
