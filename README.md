@@ -1,3 +1,13 @@
+---
+title: SAINYA
+emoji: ⚔️
+colorFrom: yellow
+colorTo: red
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # SAINYA — सैन्य
 ### Where warriors are made of weights and biases
 

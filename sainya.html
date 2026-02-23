@@ -3,1447 +3,1787 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>SAINYA — युद्ध का मैदान</title>
+<title>SANKHYA — सांख्य</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --black: #080706;
-    --deep: #110e0a;
-    --charcoal: #1a1512;
-    --gold: #c9a84c;
-    --gold-bright: #f0c040;
-    --gold-dim: #7a6030;
-    --saffron: #d4621a;
-    --saffron-dim: #7a3610;
-    --blood: #8b1a1a;
-    --cream: #f5e6c8;
-    --cream-dim: #b8a880;
-    --white: #fef9f0;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  body {
-    background: var(--black);
-    color: var(--cream);
-    font-family: 'EB Garamond', serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 80%, rgba(212,98,26,0.04) 0%, transparent 50%),
-      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .screen { 
-    display: none; 
-    min-height: 100vh; 
-    position: relative; 
-    z-index: 1;
-    animation: fadeIn 0.6s ease;
-  }
-  .screen.active { display: flex; flex-direction: column; }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes flicker { 0%,100%{opacity:1} 50%{opacity:0.85} 75%{opacity:0.95} }
-  @keyframes pulse-gold { 0%,100%{box-shadow: 0 0 20px rgba(201,168,76,0.3)} 50%{box-shadow: 0 0 40px rgba(201,168,76,0.6)} }
-  @keyframes rise { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes spin { to{transform:rotate(360deg)} }
-  @keyframes march { 0%{transform:translateX(-100%)} 100%{transform:translateX(100vw)} }
-  @keyframes boom { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.2);opacity:1} 100%{transform:scale(1);opacity:1} }
-  @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
-
-  /* =================== LANDING SCREEN =================== */
-  #screen-landing {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 40px 24px;
-    gap: 0;
-  }
-
-  .conch-symbol {
-    font-size: 64px;
-    margin-bottom: 16px;
-    animation: flicker 3s infinite;
-    filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
-  }
-
-  .title-main {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: clamp(42px, 12vw, 80px);
-    font-weight: 900;
-    letter-spacing: 0.15em;
-    color: var(--gold);
-    text-shadow: 
-      0 0 40px rgba(201,168,76,0.4),
-      0 0 80px rgba(201,168,76,0.2),
-      2px 2px 0 rgba(0,0,0,0.8);
-    line-height: 1;
-    margin-bottom: 8px;
-    background: linear-gradient(135deg, #f0c040, #c9a84c, #f0c040);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: shimmer 4s linear infinite;
-  }
-
-  .title-sub {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(12px, 3vw, 18px);
-    letter-spacing: 0.4em;
-    color: var(--saffron);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .title-tagline {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: clamp(14px, 3.5vw, 18px);
-    color: var(--cream-dim);
-    margin-bottom: 48px;
-    letter-spacing: 0.05em;
-  }
-
-  .divider {
-    width: 100%;
-    max-width: 300px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
-    margin: 0 auto 40px;
-  }
-
-  .landing-form {
-    width: 100%;
-    max-width: 380px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    text-align: left;
-  }
-
-  .form-label {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    color: var(--gold-dim);
-    text-transform: uppercase;
-  }
-
-  .form-input {
-    background: rgba(201,168,76,0.06);
-    border: 1px solid var(--gold-dim);
-    border-radius: 4px;
-    padding: 14px 18px;
-    font-family: 'EB Garamond', serif;
-    font-size: 18px;
-    color: var(--cream);
-    width: 100%;
-    outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    letter-spacing: 0.05em;
-  }
-
-  .form-input::placeholder { color: var(--gold-dim); opacity: 0.5; }
-  .form-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(201,168,76,0.15); }
-
-  .mode-toggle {
-    display: flex;
-    gap: 0;
-    border: 1px solid var(--gold-dim);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .mode-btn {
-    flex: 1;
-    padding: 12px;
-    background: transparent;
-    border: none;
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    color: var(--gold-dim);
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .mode-btn.active {
-    background: rgba(201,168,76,0.15);
-    color: var(--gold);
-  }
-
-  .room-section {
-    display: none;
-    flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 4px;
-    background: rgba(201,168,76,0.03);
-  }
-
-  .room-section.show { display: flex; }
-
-  .room-code-display {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 32px;
-    color: var(--gold);
-    letter-spacing: 0.3em;
-    text-align: center;
-    padding: 12px;
-    border: 1px solid var(--gold-dim);
-    border-radius: 4px;
-    background: rgba(201,168,76,0.08);
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, var(--saffron-dim), var(--saffron));
-    border: 1px solid var(--saffron);
-    border-radius: 4px;
-    padding: 16px 32px;
-    font-family: 'Cinzel', serif;
-    font-size: 14px;
-    letter-spacing: 0.2em;
-    color: var(--white);
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    width: 100%;
-    animation: pulse-gold 3s infinite;
-  }
-
-  .btn-primary:hover { background: linear-gradient(135deg, var(--saffron), #e07030); transform: translateY(-1px); }
-  .btn-primary:active { transform: translateY(0); }
-
-  .btn-secondary {
-    background: transparent;
-    border: 1px solid var(--gold-dim);
-    border-radius: 4px;
-    padding: 12px 24px;
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    letter-spacing: 0.15em;
-    color: var(--gold-dim);
-    cursor: pointer;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    width: 100%;
-  }
-
-  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
-
-  /* =================== COUNCIL SCREEN =================== */
-  #screen-council {
-    padding: 0;
-    flex-direction: column;
-  }
-
-  .council-header {
-    padding: 24px 20px 20px;
-    border-bottom: 1px solid rgba(201,168,76,0.2);
-    background: rgba(17,14,10,0.9);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  .council-title {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 0.3em;
-    color: var(--saffron);
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
-
-  .council-subtitle {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 22px;
-    color: var(--gold);
-  }
-
-  .progress-bar {
-    margin-top: 12px;
-    height: 2px;
-    background: rgba(201,168,76,0.15);
-    border-radius: 1px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--saffron), var(--gold));
-    border-radius: 1px;
-    transition: width 0.4s ease;
-  }
-
-  .council-body {
-    flex: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    overflow-y: auto;
-    padding-bottom: 100px;
-  }
-
-  .decision-card {
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 6px;
-    overflow: hidden;
-    background: rgba(17,14,10,0.6);
-    transition: border-color 0.3s;
-  }
-
-  .decision-card.selected { border-color: var(--gold); }
-
-  .decision-header {
-    padding: 14px 16px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    border-bottom: 1px solid rgba(201,168,76,0.1);
-  }
-
-  .decision-icon { font-size: 28px; flex-shrink: 0; }
-
-  .decision-title {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    color: var(--gold);
-    margin-bottom: 4px;
-    letter-spacing: 0.05em;
-  }
-
-  .decision-desc {
-    font-size: 13px;
-    color: var(--cream-dim);
-    line-height: 1.5;
-    font-style: italic;
-  }
-
-  .decision-options {
-    display: flex;
-    gap: 0;
-  }
-
-  .option-btn {
-    flex: 1;
-    padding: 12px 8px;
-    background: transparent;
-    border: none;
-    border-right: 1px solid rgba(201,168,76,0.15);
-    font-family: 'EB Garamond', serif;
-    font-size: 13px;
-    color: var(--cream-dim);
-    cursor: pointer;
-    transition: all 0.25s;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .option-btn:last-child { border-right: none; }
-
-  .option-btn.selected {
-    background: rgba(201,168,76,0.12);
-    color: var(--gold);
-  }
-
-  .option-btn .opt-icon { font-size: 20px; }
-  .option-btn .opt-label { font-size: 12px; font-family: 'Cinzel', serif; letter-spacing: 0.05em; }
-  .option-btn .opt-sub { font-size: 11px; color: var(--gold-dim); font-style: italic; }
-
-  .option-btn.selected .opt-sub { color: var(--gold-dim); }
-
-  .toggle-btn {
-    width: 100%;
-    padding: 14px;
-    background: transparent;
-    border: none;
-    font-family: 'EB Garamond', serif;
-    font-size: 15px;
-    color: var(--cream-dim);
-    cursor: pointer;
-    transition: all 0.25s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-  }
-
-  .toggle-btn.selected { background: rgba(201,168,76,0.12); color: var(--gold); }
-  .toggle-indicator { width: 40px; height: 22px; border-radius: 11px; background: rgba(201,168,76,0.15); border: 1px solid var(--gold-dim); position: relative; transition: all 0.3s; flex-shrink: 0; }
-  .toggle-indicator::after { content:''; position:absolute; width:16px;height:16px;border-radius:50%;background:var(--gold-dim);top:2px;left:2px;transition:all 0.3s; }
-  .toggle-btn.selected .toggle-indicator { background: rgba(201,168,76,0.3); border-color: var(--gold); }
-  .toggle-btn.selected .toggle-indicator::after { left:20px; background:var(--gold); }
-
-  .council-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 16px 20px;
-    background: linear-gradient(to top, var(--black) 80%, transparent);
-    z-index: 10;
-  }
-
-  /* =================== BATTLE SCREEN =================== */
-  #screen-battle {
-    justify-content: center;
-    align-items: center;
-    padding: 40px 24px;
-    text-align: center;
-    gap: 32px;
-  }
-
-  .battle-symbol {
-    font-size: 80px;
-    animation: flicker 1.5s infinite;
-    filter: drop-shadow(0 0 30px rgba(212,98,26,0.6));
-  }
-
-  .battle-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 28px;
-    color: var(--gold);
-    letter-spacing: 0.1em;
-  }
-
-  .battle-status {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 18px;
-    color: var(--cream-dim);
-    max-width: 300px;
-    line-height: 1.6;
-  }
-
-  .battle-progress {
-    width: 240px;
-    height: 3px;
-    background: rgba(201,168,76,0.15);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .battle-progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--saffron), var(--gold));
-    border-radius: 2px;
-    width: 0%;
-    transition: width 0.3s ease;
-  }
-
-  .battle-accuracy {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    animation: boom 0.6s ease;
-  }
-
-  .battle-accuracy.show { display: flex; }
-
-  .accuracy-number {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 72px;
-    color: var(--gold);
-    text-shadow: 0 0 40px rgba(201,168,76,0.5);
-    line-height: 1;
-  }
-
-  .accuracy-label {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 0.3em;
-    color: var(--saffron);
-    text-transform: uppercase;
-  }
-
-  .accuracy-rank {
-    font-family: 'EB Garamond', serif;
-    font-size: 16px;
-    color: var(--cream-dim);
-    font-style: italic;
-    max-width: 280px;
-    line-height: 1.6;
-  }
-
-  /* =================== RESULTS SCREEN =================== */
-  #screen-results {
-    padding: 32px 20px;
-    gap: 24px;
-  }
-
-  .results-header {
-    text-align: center;
-  }
-
-  .results-eyebrow {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 0.4em;
-    color: var(--saffron);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .results-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 28px;
-    color: var(--gold);
-  }
-
-  .leaderboard {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .rank-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 14px 16px;
-    border-radius: 6px;
-    border: 1px solid rgba(201,168,76,0.15);
-    background: rgba(17,14,10,0.6);
-    animation: rise 0.5s ease both;
-    transition: all 0.3s;
-  }
-
-  .rank-card.rank-1 { border-color: var(--gold); background: rgba(201,168,76,0.08); }
-  .rank-card.rank-2 { border-color: rgba(192,192,192,0.3); }
-  .rank-card.rank-3 { border-color: rgba(180,100,30,0.3); }
-  .rank-card.is-me { border-color: var(--saffron); }
-
-  .rank-number {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 20px;
-    width: 32px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  .rank-1 .rank-number { color: var(--gold); }
-  .rank-2 .rank-number { color: #c0c0c0; }
-  .rank-3 .rank-number { color: #b4641e; }
-
-  .rank-name {
-    flex: 1;
-    font-family: 'Cinzel', serif;
-    font-size: 15px;
-    color: var(--cream);
-    letter-spacing: 0.05em;
-  }
-
-  .rank-score {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 22px;
-    color: var(--gold);
-  }
-
-  .rank-score span {
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    color: var(--gold-dim);
-  }
-
-  /* =================== REVEAL SCREEN =================== */
-  #screen-reveal {
-    padding: 32px 20px;
-    gap: 24px;
-    padding-bottom: 60px;
-  }
-
-  .reveal-header {
-    text-align: center;
-  }
-
-  .reveal-eyebrow {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 0.4em;
-    color: var(--saffron);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .reveal-title {
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 24px;
-    color: var(--gold);
-    margin-bottom: 12px;
-  }
-
-  .reveal-intro {
-    font-style: italic;
-    color: var(--cream-dim);
-    line-height: 1.7;
-    font-size: 15px;
-  }
-
-  .reveal-card {
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 6px;
-    overflow: hidden;
-    animation: rise 0.5s ease both;
-  }
-
-  .reveal-card-header {
-    padding: 14px 16px;
-    background: rgba(201,168,76,0.06);
-    border-bottom: 1px solid rgba(201,168,76,0.15);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .reveal-icon { font-size: 24px; }
-
-  .reveal-war {
-    font-family: 'EB Garamond', serif;
-    font-style: italic;
-    font-size: 14px;
-    color: var(--cream-dim);
-    line-height: 1.5;
-  }
-
-  .reveal-card-body {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .reveal-dl {
-    font-size: 15px;
-    color: var(--cream);
-    line-height: 1.6;
-  }
-
-  .reveal-dl strong {
-    color: var(--gold);
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 0.05em;
-  }
-
-  .reveal-math {
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    color: var(--saffron);
-    padding: 10px 14px;
-    background: rgba(212,98,26,0.08);
-    border-left: 2px solid var(--saffron-dim);
-    border-radius: 0 4px 4px 0;
-    letter-spacing: 0.05em;
-  }
-
-  .reveal-winner {
-    text-align: center;
-    padding: 24px;
-    border: 1px solid var(--gold);
-    border-radius: 6px;
-    background: rgba(201,168,76,0.06);
-    animation: boom 0.8s ease;
-  }
-
-  .winner-crown { font-size: 48px; margin-bottom: 8px; }
-  .winner-label { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.3em; color: var(--saffron); text-transform: uppercase; margin-bottom: 8px; }
-  .winner-name { font-family: 'Cinzel Decorative', serif; font-size: 28px; color: var(--gold); margin-bottom: 4px; }
-  .winner-score { font-family: 'EB Garamond', serif; font-size: 16px; color: var(--cream-dim); font-style: italic; }
-
-  .waiting-players {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-
-  .waiting-player {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    border-radius: 4px;
-    background: rgba(201,168,76,0.05);
-    border: 1px solid rgba(201,168,76,0.1);
-  }
-
-  .waiting-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--gold-dim);
-    flex-shrink: 0;
-  }
-
-  .waiting-dot.done { background: var(--gold); box-shadow: 0 0 6px rgba(201,168,76,0.5); }
-
-  .waiting-name { font-family: 'Cinzel', serif; font-size: 13px; color: var(--cream-dim); }
-  .waiting-score { margin-left: auto; font-family: 'Cinzel Decorative', serif; font-size: 14px; color: var(--gold); }
-
-  .room-code-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border: 1px solid var(--gold-dim);
-    border-radius: 4px;
-    background: rgba(201,168,76,0.05);
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 16px;
-    color: var(--gold);
-    letter-spacing: 0.2em;
-  }
-
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    background: rgba(17,14,10,0.95);
-    border: 1px solid var(--gold-dim);
-    border-radius: 4px;
-    font-family: 'Cinzel', serif;
-    font-size: 12px;
-    color: var(--gold);
-    letter-spacing: 0.1em;
-    z-index: 100;
-    display: none;
-    animation: rise 0.3s ease;
-  }
-
-  .loader {
-    width: 32px; height: 32px;
-    border: 2px solid rgba(201,168,76,0.2);
-    border-top-color: var(--gold);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  .troop-march {
-    font-size: 24px;
-    animation: march 3s linear infinite;
-    white-space: nowrap;
-  }
-
-  /* Multiplayer waiting */
-  .waiting-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    align-items: center;
-    width: 100%;
-    max-width: 380px;
-    padding: 24px 20px;
-    border: 1px solid rgba(201,168,76,0.2);
-    border-radius: 6px;
-    background: rgba(17,14,10,0.6);
-  }
-
-  .waiting-title {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-
-  @media(min-width:600px) {
-    #screen-landing { padding: 60px 40px; }
-    .council-body { max-width: 600px; margin: 0 auto; width: 100%; }
-    .council-footer { display: flex; justify-content: center; }
-    .council-footer .btn-primary { max-width: 400px; }
-  }
+:root {
+  --black:#080706;--deep:#110e0a;--charcoal:#1a1512;
+  --gold:#c9a84c;--gold-bright:#f0c040;--gold-dim:#7a6030;
+  --saffron:#d4621a;--cream:#f5e6c8;--cream-dim:#b8a880;
+  --white:#fef9f0;--blood:#8b1a1a;--victory:#2d8a4e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'EB Garamond',serif;background:var(--black);color:var(--cream);font-size:22px;line-height:1.7;}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--black);}
+.screen.active{display:flex;}
+.screen-inner{max-width:820px;width:100%;margin:0 auto;padding:24px 20px 48px;min-height:100%;display:flex;flex-direction:column;}
+
+/* Keyframes */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes boom{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(201,168,76,.2)}50%{box-shadow:0 0 40px rgba(201,168,76,.5)}}
+@keyframes swordsClash{0%,100%{transform:rotate(0)}50%{transform:rotate(15deg) scale(1.1)}}
+@keyframes cnnScan{0%{transform:translateX(0) translateY(0);opacity:.9}25%{transform:translateX(30px) translateY(0);opacity:.9}50%{transform:translateX(30px) translateY(30px);opacity:.9}75%{transform:translateX(0) translateY(30px);opacity:.9}100%{transform:translateX(0) translateY(0);opacity:.9}}
+@keyframes rnnFlow{0%,100%{opacity:.3;transform:scaleX(1)}50%{opacity:1;transform:scaleX(1.4)}}
+@keyframes attentionPulse{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.anim-fadeUp{animation:fadeUp 0.6s ease both;}
+.anim-boom{animation:boom 0.5s ease both;}
+
+/* HUD */
+.hud{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:linear-gradient(180deg,var(--black) 70%,transparent);font-family:'Cinzel',serif;font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-dim);}
+.hud-gold{display:flex;align-items:center;gap:8px;color:var(--gold);font-size:22px;font-weight:700;}
+.hud-gold .coin{font-size:26px;}
+.hud-phase{font-size:14px;}
+
+/* Landing */
+.landing-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;z-index:1;gap:28px;padding:40px 20px;}
+.title-symbol{font-size:90px;animation:float 3s ease-in-out infinite;}
+.title-main{font-family:'Cinzel Decorative',cursive;font-size:clamp(52px,16vw,96px);font-weight:900;background:linear-gradient(135deg,var(--gold-dim),var(--gold-bright),var(--gold),var(--gold-bright),var(--gold-dim));background-size:300% 300%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s linear infinite;line-height:1;}
+.title-sanskrit{font-family:'Cinzel',serif;font-size:clamp(20px,5vw,28px);letter-spacing:14px;color:var(--cream-dim);margin-top:-4px;}
+.title-tagline{font-size:clamp(20px,5vw,26px);color:var(--cream-dim);font-style:italic;max-width:550px;}
+.landing-form{display:flex;flex-direction:column;gap:16px;width:100%;max-width:380px;}
+.input-label{font-family:'Cinzel',serif;font-size:16px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dim);}
+.input-field{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:8px;padding:14px 18px;font-family:'EB Garamond',serif;font-size:24px;color:var(--cream);outline:none;width:100%;transition:all 0.3s ease;}
+.input-field:focus{border-color:var(--gold);box-shadow:0 0 20px rgba(201,168,76,.15);}
+.mode-btns{display:flex;gap:8px;}
+.mode-btn{flex:1;padding:14px 10px;font-family:'Cinzel',serif;font-size:16px;letter-spacing:1px;text-transform:uppercase;background:transparent;border:1px solid rgba(201,168,76,.25);border-radius:8px;color:var(--cream-dim);cursor:pointer;transition:all 0.3s ease;}
+.mode-btn.active{background:rgba(201,168,76,.15);border-color:var(--gold);color:var(--gold);}
+.room-section{display:none;}
+.room-section.visible{display:flex;flex-direction:column;gap:8px;}
+.btn-primary{padding:18px 36px;font-family:'Cinzel',serif;font-size:22px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;border-radius:10px;color:var(--black);cursor:pointer;transition:all 0.3s ease;margin-top:8px;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(201,168,76,.3);}
+.btn-secondary{padding:18px 36px;font-family:'Cinzel',serif;font-size:22px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(201,168,76,.1);border:1px solid var(--gold-dim);border-radius:10px;color:var(--gold);cursor:pointer;transition:all 0.3s ease;}
+.btn-secondary:hover{background:rgba(201,168,76,.2);}
+.btn-continue{padding:16px 40px;font-family:'Cinzel',serif;font-size:20px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:transparent;border:2px solid var(--gold-dim);border-radius:10px;color:var(--gold);cursor:pointer;transition:all 0.3s ease;margin-top:24px;display:none;}
+.btn-continue.visible{display:inline-block;animation:fadeUp 0.5s ease both;}
+.btn-continue:hover{border-color:var(--gold);background:rgba(201,168,76,.1);}
+
+/* Prologue / Story */
+.center-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;gap:20px;}
+.narrative-text{font-size:clamp(24px,5.5vw,32px);color:var(--cream);max-width:680px;line-height:1.85;min-height:80px;}
+.narrative-text .hl{color:var(--gold);font-weight:500;}
+.past-life-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;width:100%;max-width:640px;}
+@media(max-width:480px){.past-life-grid{grid-template-columns:1fr;}}
+.life-card{background:rgba(201,168,76,.05);border:2px solid rgba(201,168,76,.15);border-radius:14px;padding:24px 18px;cursor:pointer;transition:all 0.3s ease;text-align:center;}
+.life-card:hover{border-color:var(--gold);background:rgba(201,168,76,.12);transform:translateY(-4px);box-shadow:0 8px 30px rgba(201,168,76,.15);}
+.life-card.selected{border-color:var(--gold);background:rgba(201,168,76,.18);box-shadow:0 0 30px rgba(201,168,76,.2);pointer-events:none;}
+.life-card .icon{font-size:60px;margin-bottom:14px;}
+.life-card .name{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--gold);margin-bottom:8px;}
+.life-card .desc{font-size:19px;color:var(--cream-dim);}
+
+/* Karma */
+.karma-row{display:flex;gap:16px;perspective:800px;justify-content:center;}
+.karma-card{width:120px;height:160px;background:linear-gradient(135deg,var(--charcoal),var(--deep));border:2px solid var(--gold-dim);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.4s ease;position:relative;font-size:40px;}
+.karma-card:hover{transform:translateY(-10px);border-color:var(--gold);}
+.karma-card.flipped{background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(212,98,26,.15));border-color:var(--gold-bright);box-shadow:0 0 30px rgba(201,168,76,.3);}
+.karma-card .back{display:none;font-size:52px;}
+.karma-card.flipped .face{display:none;}
+.karma-card.flipped .back{display:block;}
+
+/* Gold Intro */
+.gold-intro-box{background:rgba(201,168,76,.06);border:2px solid rgba(201,168,76,.2);border-radius:16px;padding:32px;max-width:600px;width:100%;text-align:left;}
+.gold-intro-title{font-family:'Cinzel Decorative',cursive;font-size:clamp(26px,6vw,38px);color:var(--gold);margin-bottom:20px;text-align:center;}
+.gold-intro-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(201,168,76,.1);}
+.gold-intro-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.gold-intro-icon{font-size:32px;flex-shrink:0;}
+.gold-intro-text{font-size:20px;color:var(--cream-dim);line-height:1.6;}
+.gold-intro-text strong{color:var(--cream);}
+
+/* Phase screens */
+.phase-header{text-align:center;padding:12px 0 20px;}
+.phase-number{font-family:'Cinzel',serif;font-size:18px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);}
+.phase-title{font-family:'Cinzel Decorative',cursive;font-size:clamp(30px,7vw,44px);font-weight:700;color:var(--gold);margin:8px 0;}
+.phase-desc{font-size:21px;color:var(--cream-dim);font-style:italic;max-width:600px;margin:0 auto;}
+.choice-grid{display:flex;flex-direction:column;gap:12px;padding:12px 0;}
+.choice-card{background:rgba(201,168,76,.04);border:2px solid rgba(201,168,76,.12);border-radius:14px;padding:20px 22px;cursor:pointer;transition:all 0.3s ease;display:flex;align-items:flex-start;gap:18px;min-height:90px;position:relative;}
+.choice-card:hover{border-color:var(--gold);background:rgba(201,168,76,.08);transform:translateX(4px);}
+.choice-card.selected{border-color:var(--gold);background:rgba(201,168,76,.14);box-shadow:0 0 20px rgba(201,168,76,.12);}
+.choice-card.selected::after{content:'✓';position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:26px;color:var(--gold);font-weight:700;}
+.choice-icon{font-size:50px;flex-shrink:0;margin-top:2px;}
+.choice-info{flex:1;min-width:0;}
+.choice-name{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--cream);margin-bottom:6px;}
+.choice-sub{font-size:19px;color:var(--cream-dim);line-height:1.5;}
+.choice-dl{font-size:17px;color:var(--gold-dim);font-style:italic;margin-top:6px;line-height:1.4;}
+.choice-cost{font-family:'Cinzel',serif;font-size:19px;color:var(--gold);flex-shrink:0;white-space:nowrap;margin-top:4px;}
+.btn-next{padding:18px 44px;font-family:'Cinzel',serif;font-size:22px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;border-radius:10px;color:var(--black);cursor:pointer;transition:all 0.3s ease;align-self:center;margin-top:16px;display:none;}
+.btn-next.visible{display:block;animation:fadeUp 0.4s ease;}
+.btn-next:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(201,168,76,.3);}
+
+/* Architecture Animations */
+.arch-anim{background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.1);border-radius:12px;padding:16px;margin:10px 0;min-height:80px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.arch-anim.hidden{display:none;}
+/* CNN grid */
+.cnn-grid{display:grid;grid-template-columns:repeat(5,22px);gap:3px;position:relative;}
+.cnn-cell{width:22px;height:22px;border-radius:3px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.2);}
+.cnn-cell.bright{background:rgba(201,168,76,.5);}
+.cnn-scanner{position:absolute;top:0;left:0;width:44px;height:44px;border:2px solid var(--gold);border-radius:4px;animation:cnnScan 2s ease-in-out infinite;box-shadow:0 0 12px rgba(201,168,76,.4);background:rgba(201,168,76,.08);}
+/* RNN chain */
+.rnn-chain{display:flex;align-items:center;gap:6px;}
+.rnn-node{width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.15);border:2px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:11px;font-family:'Cinzel',serif;color:var(--gold-dim);}
+.rnn-arrow{color:var(--gold);font-size:18px;animation:rnnFlow 1.2s ease infinite;}
+.rnn-arrow:nth-child(2){animation-delay:.3s;}
+.rnn-arrow:nth-child(4){animation-delay:.6s;}
+.rnn-arrow:nth-child(6){animation-delay:.9s;}
+/* LSTM */
+.lstm-gate{display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:center;}
+.gate-box{background:rgba(201,168,76,.12);border:1px solid var(--gold-dim);border-radius:6px;padding:4px 8px;font-size:13px;font-family:'Cinzel',serif;color:var(--gold-dim);}
+/* Transformer */
+.attn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+.attn-cell{height:20px;border-radius:3px;}
+
+/* Builder sections */
+.builder-section{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:12px;padding:18px;margin-bottom:14px;}
+.builder-label{font-family:'Cinzel',serif;font-size:19px;letter-spacing:1px;color:var(--gold);margin-bottom:4px;text-transform:uppercase;}
+.builder-sublabel{font-size:17px;color:var(--cream-dim);font-style:italic;margin-bottom:12px;}
+.builder-options{display:flex;gap:10px;flex-wrap:wrap;}
+.builder-opt{padding:14px 18px;background:rgba(201,168,76,.06);border:2px solid rgba(201,168,76,.15);border-radius:8px;font-family:'Cinzel',serif;font-size:18px;color:var(--cream-dim);cursor:pointer;transition:all 0.3s ease;min-width:70px;text-align:center;}
+.builder-opt:hover{border-color:var(--gold);color:var(--cream);}
+.builder-opt.selected{border-color:var(--gold);background:rgba(201,168,76,.15);color:var(--gold);}
+.builder-opt .cost{display:block;font-size:14px;color:var(--gold-dim);margin-top:3px;}
+.builder-opt .sub-text{display:block;font-size:13px;color:var(--cream-dim);margin-top:3px;font-family:'EB Garamond',serif;font-style:italic;}
+
+/* Network viz */
+.network-viz{background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.1);border-radius:12px;padding:20px;margin:14px 0;min-height:100px;display:flex;align-items:center;justify-content:center;gap:20px;overflow-x:auto;}
+.layer-col{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.neuron{width:18px;height:18px;border-radius:50%;background:var(--gold);opacity:.7;}
+.neuron.input{background:var(--saffron);}
+.neuron.output{background:var(--victory);}
+.layer-label{font-family:'Cinzel',serif;font-size:13px;color:var(--gold-dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+
+/* Siege */
+.siege-title{font-family:'Cinzel Decorative',cursive;font-size:clamp(34px,8vw,48px);color:var(--gold);animation:glowPulse 2s infinite;}
+.siege-battlefield{width:100%;max-width:600px;background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,.15);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;}
+.siege-row{display:flex;align-items:center;gap:12px;font-family:'Cinzel',serif;font-size:19px;}
+.siege-row .label{flex-shrink:0;width:110px;text-align:right;}
+.bar-track{flex:1;height:28px;background:rgba(201,168,76,.08);border-radius:14px;overflow:hidden;position:relative;}
+.bar-fill{height:100%;border-radius:14px;transition:width 0.6s ease;position:relative;}
+.bar-fill.ally{background:linear-gradient(90deg,var(--gold-dim),var(--gold));}
+.bar-fill.enemy{background:linear-gradient(90deg,var(--blood),#c0392b);}
+.bar-pct{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:16px;font-weight:700;color:var(--black);}
+.siege-status{font-size:22px;color:var(--cream-dim);font-style:italic;min-height:28px;text-align:center;}
+.siege-epoch{font-family:'Cinzel',serif;font-size:18px;color:var(--gold-dim);text-align:center;}
+.siege-clash{font-size:52px;animation:swordsClash 0.5s ease infinite;}
+
+/* Result */
+.result-verdict{font-family:'Cinzel Decorative',cursive;font-size:clamp(38px,10vw,60px);font-weight:900;}
+.result-verdict.victory{color:var(--gold);}
+.result-verdict.defeat{color:var(--blood);}
+.result-score{font-family:'Cinzel',serif;font-size:88px;font-weight:700;color:var(--gold-bright);text-shadow:0 0 40px rgba(201,168,76,.4);}
+.result-label{font-family:'Cinzel',serif;font-size:18px;letter-spacing:3px;text-transform:uppercase;color:var(--cream-dim);}
+.result-message{font-size:24px;color:var(--cream-dim);max-width:500px;font-style:italic;}
+.result-buttons{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+/* Oracle */
+.oracle-icon{font-size:80px;}
+.oracle-title{font-family:'Cinzel Decorative',cursive;font-size:clamp(30px,7vw,42px);color:var(--saffron);}
+.oracle-text{font-size:22px;color:var(--cream);max-width:580px;line-height:1.8;}
+.oracle-hint{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:22px;max-width:560px;font-size:20px;color:var(--cream-dim);line-height:1.7;}
+
+/* Leaderboard */
+.leaderboard{width:100%;max-width:500px;display:flex;flex-direction:column;gap:10px;}
+.lb-entry{display:flex;align-items:center;gap:14px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1);border-radius:10px;padding:14px 18px;animation:fadeUp 0.5s ease both;}
+.lb-entry.gold{border-color:var(--gold);background:rgba(201,168,76,.12);}
+.lb-entry.silver{border-color:#aaa;background:rgba(170,170,170,.08);}
+.lb-entry.bronze{border-color:#cd7f32;background:rgba(205,127,50,.08);}
+.lb-rank{font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--gold);width:40px;}
+.lb-name{flex:1;font-size:22px;color:var(--cream);}
+.lb-score{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--gold-bright);}
+
+/* Reveal */
+.reveal-content{padding:40px 20px 60px;max-width:760px;margin:0 auto;}
+.reveal-header{text-align:center;margin-bottom:36px;}
+.reveal-pre{font-family:'Cinzel',serif;font-size:20px;letter-spacing:3px;text-transform:uppercase;color:var(--saffron);margin-bottom:8px;}
+.reveal-title{font-family:'Cinzel Decorative',cursive;font-size:clamp(30px,7vw,46px);color:var(--gold);margin-bottom:12px;}
+.reveal-intro{font-size:24px;color:var(--cream-dim);font-style:italic;}
+.reveal-card{background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:16px;padding:26px;margin-bottom:16px;animation:fadeUp 0.5s ease both;}
+.reveal-card .section-label{font-family:'Cinzel',serif;font-size:14px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:10px;}
+.reveal-card .game-side{font-size:22px;color:var(--cream);margin-bottom:10px;padding-bottom:12px;border-bottom:1px solid rgba(201,168,76,.12);}
+.reveal-card .arrow-down{font-size:26px;color:var(--saffron);text-align:center;margin:8px 0;}
+.reveal-card .ml-side{font-size:22px;color:var(--gold);margin-bottom:8px;line-height:1.5;}
+.reveal-card .ml-detail{font-size:19px;color:var(--cream-dim);margin-bottom:8px;line-height:1.6;}
+.reveal-card .math-eq{font-family:'Courier New',monospace;font-size:17px;color:var(--cream-dim);background:rgba(0,0,0,.35);padding:12px 16px;border-radius:8px;margin-top:10px;overflow-x:auto;white-space:pre-wrap;line-height:1.6;border-left:3px solid var(--gold-dim);}
+.reveal-pipeline{background:rgba(201,168,76,.06);border:2px solid rgba(201,168,76,.2);border-radius:16px;padding:28px;margin-top:28px;text-align:center;}
+.reveal-pipeline .pipe-title{font-family:'Cinzel',serif;font-size:22px;color:var(--gold);margin-bottom:16px;text-transform:uppercase;letter-spacing:2px;}
+.pipeline-flow{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;font-family:'Cinzel',serif;font-size:17px;}
+.pipeline-step{background:rgba(201,168,76,.12);border:1px solid var(--gold-dim);border-radius:8px;padding:12px 14px;color:var(--cream);}
+.pipeline-step small{font-family:'EB Garamond',serif;font-size:16px;color:var(--cream-dim);}
+.pipeline-arrow{color:var(--gold);font-size:22px;}
+.reveal-insight{background:rgba(45,138,78,.08);border:1px solid rgba(45,138,78,.3);border-radius:12px;padding:22px;margin-top:16px;font-size:20px;color:var(--cream);line-height:1.7;}
+.reveal-insight .insight-title{font-family:'Cinzel',serif;font-size:16px;letter-spacing:2px;text-transform:uppercase;color:#2d8a4e;margin-bottom:8px;}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--charcoal);border:1px solid var(--gold-dim);border-radius:10px;padding:12px 24px;font-size:18px;color:var(--cream);z-index:1000;display:none;animation:fadeUp 0.3s ease;}
+.toast.show{display:block;}
 </style>
 </head>
 <body>
 
 <!-- LANDING -->
-<div id="screen-landing" class="screen active">
-  <div class="conch-symbol">🐚</div>
-  <div class="title-main">SAINYA</div>
-  <div class="title-sub">सैन्य</div>
-  <div class="title-tagline">Where warriors are made of weights and biases</div>
-  <div class="divider"></div>
-  <div class="landing-form">
-    <div class="form-group">
-      <div class="form-label">Your War Name</div>
-      <input type="text" class="form-input" id="player-name" placeholder="Enter your name..." maxlength="20">
-    </div>
-    <div class="form-group">
-      <div class="form-label">Mode of War</div>
-      <div class="mode-toggle">
-        <button class="mode-btn active" onclick="setMode('solo')">⚔️ Solo Battle</button>
-        <button class="mode-btn" onclick="setMode('create')">🏰 Create Room</button>
-        <button class="mode-btn" onclick="setMode('join')">🚪 Join Room</button>
+<div class="screen active" id="screen-landing">
+  <div class="landing-content">
+    <div class="title-symbol">🏛️</div>
+    <div class="title-main">SANKHYA</div>
+    <div class="title-sanskrit">सांख्य</div>
+    <div class="title-tagline">Where kingdoms are built on weights and biases</div>
+    <div class="landing-form">
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div class="input-label">Your Name, Commander</div>
+        <input class="input-field" id="playerName" placeholder="Enter your name" maxlength="20" autocomplete="off">
       </div>
-    </div>
-    <div id="room-section" class="room-section">
-      <div id="room-input-section" style="display:none;">
-        <div class="form-label" style="margin-bottom:8px;">Room Code</div>
-        <input type="text" class="form-input" id="room-code-input" placeholder="Enter 6-letter code..." maxlength="6" style="text-transform:uppercase;letter-spacing:0.3em;">
+      <div class="mode-btns">
+        <button class="mode-btn active" onclick="setMode('solo',this)">Solo</button>
+        <button class="mode-btn" onclick="setMode('create',this)">Create Room</button>
+        <button class="mode-btn" onclick="setMode('join',this)">Join Room</button>
       </div>
-      <div id="room-display-section" style="display:none;text-align:center;">
-        <div class="form-label" style="margin-bottom:8px;">Share this code with your warriors</div>
-        <div class="room-code-display" id="room-code-display">——</div>
-        <div style="font-size:13px;color:var(--cream-dim);margin-top:8px;font-style:italic;">Waiting for others to join...</div>
+      <div class="room-section" id="roomSection">
+        <input class="input-field" id="roomInput" placeholder="Room code" maxlength="6" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px;">
       </div>
+      <button class="btn-primary" onclick="startGame()">Begin Your Destiny</button>
     </div>
-    <button class="btn-primary" onclick="startGame()">⚔️ ENTER THE BATTLEFIELD</button>
   </div>
 </div>
 
-<!-- WAR COUNCIL -->
-<div id="screen-council" class="screen">
-  <div class="council-header">
-    <div class="council-title">The War Council</div>
-    <div class="council-subtitle">Choose your strategy, Commander</div>
-    <div class="progress-bar"><div class="progress-fill" id="council-progress"></div></div>
-  </div>
-  <div class="council-body" id="decisions-container"></div>
-  <div class="council-footer">
-    <button class="btn-primary" id="deploy-btn" onclick="deployArmy()" style="display:none;">
-      🐘 DEPLOY ARMY — MARCH TO WAR
-    </button>
+<!-- ROOM WAITING -->
+<div class="screen" id="screen-roomwait">
+  <div class="screen-inner"><div class="center-content">
+    <div class="oracle-icon" id="rwIcon">🏛️</div>
+    <div class="oracle-title" id="rwTitle">War Room Assembled</div>
+    <div style="font-family:'Cinzel',serif;font-size:clamp(42px,14vw,80px);font-weight:900;letter-spacing:10px;color:var(--gold-bright);text-shadow:0 0 40px rgba(201,168,76,.5);margin:8px 0;" id="rwCode"></div>
+    <div style="font-size:18px;color:var(--cream-dim);margin-bottom:8px;" id="rwSubtext">Share this code with your allies</div>
+    <button onclick="copyRoomCode()" style="background:rgba(201,168,76,.1);border:1px solid var(--gold-dim);border-radius:8px;padding:10px 24px;font-family:'Cinzel',serif;font-size:16px;color:var(--gold);cursor:pointer;letter-spacing:2px;margin-bottom:24px;" id="copyBtn">📋 COPY CODE</button>
+    <div style="width:100%;max-width:400px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:20px;">
+      <div style="font-family:'Cinzel',serif;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:14px;">Commanders Present</div>
+      <div id="playersList" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+    <div id="hostControls" style="display:none;margin-top:24px;text-align:center;">
+      <div style="font-size:19px;color:var(--cream-dim);font-style:italic;margin-bottom:16px;">Waiting for all commanders to join...</div>
+      <button class="btn-primary" onclick="hostStartGame()">⚔️ Begin the Campaign</button>
+    </div>
+    <div id="guestWait" style="display:none;margin-top:24px;text-align:center;">
+      <div style="font-size:19px;color:var(--cream-dim);font-style:italic;">Awaiting the host's command...</div>
+      <div style="margin-top:12px;display:flex;gap:6px;justify-content:center;">
+        <span style="width:10px;height:10px;border-radius:50%;background:var(--gold);animation:pulse 1.2s ease infinite;display:inline-block;"></span>
+        <span style="width:10px;height:10px;border-radius:50%;background:var(--gold);animation:pulse 1.2s ease infinite .4s;display:inline-block;"></span>
+        <span style="width:10px;height:10px;border-radius:50%;background:var(--gold);animation:pulse 1.2s ease infinite .8s;display:inline-block;"></span>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- PROLOGUE -->
+<div class="screen" id="screen-prologue">
+  <div class="screen-inner"><div class="center-content">
+    <div class="narrative-text" id="prologueText"></div>
+    <div class="past-life-grid" id="pastLifeCards" style="display:none;"></div>
+    <button class="btn-continue" id="prologueContinue" onclick="showLifeCards()">Who Were You? →</button>
+  </div></div>
+</div>
+
+<!-- PAST LIFE STORY -->
+<div class="screen" id="screen-lifeStory">
+  <div class="screen-inner"><div class="center-content">
+    <div class="narrative-text" id="lifeStoryText"></div>
+    <button class="btn-continue" id="lifeStoryContinue" onclick="goToKarma()">Face Your Karma →</button>
+  </div></div>
+</div>
+
+<!-- KARMA -->
+<div class="screen" id="screen-karma">
+  <div class="screen-inner"><div class="center-content">
+    <div class="narrative-text" id="karmaText"></div>
+    <div class="karma-row" id="karmaCards"></div>
+    <button class="btn-continue" id="karmaContinue" onclick="goToProblem()">Accept Your Fate →</button>
+  </div></div>
+</div>
+
+<!-- PROBLEM -->
+<div class="screen" id="screen-problem">
+  <div class="screen-inner"><div class="center-content">
+    <div class="narrative-text" id="problemText"></div>
+    <button class="btn-continue" id="problemContinue" onclick="goToGoldIntro()">I Accept This Quest →</button>
+  </div></div>
+</div>
+
+<!-- GOLD INTRO -->
+<div class="screen" id="screen-goldintro">
+  <div class="screen-inner"><div class="center-content">
+    <div class="gold-intro-box">
+      <div class="gold-intro-title" id="goldIntroTitle">🪙 The War Treasury</div>
+      <div class="gold-intro-row">
+        <div class="gold-intro-icon">💰</div>
+        <div class="gold-intro-text" id="goldIntroText1">You begin with <strong>1000 Gold Coins</strong> — your kingdom's entire budget for this campaign.</div>
+      </div>
+      <div class="gold-intro-row">
+        <div class="gold-intro-icon">⚔️</div>
+        <div class="gold-intro-text" id="goldIntroText2">Each decision costs gold. Every additional layer, every smarter method — all have a price. <strong>Spend wisely.</strong></div>
+      </div>
+      <div class="gold-intro-row">
+        <div class="gold-intro-icon">🧠</div>
+        <div class="gold-intro-text">In real ML, bigger models cost more compute, time, and money. This is your first taste of the <strong>efficiency vs. performance tradeoff</strong>.</div>
+      </div>
+      <div class="gold-intro-row">
+        <div class="gold-intro-icon">🔮</div>
+        <div class="gold-intro-text">There is no perfect configuration. Discover what works. The Oracle will reveal all after your battle.</div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="goToParadigm()">Enter the War Council →</button>
+  </div></div>
+</div>
+
+<!-- PARADIGM -->
+<div class="screen" id="screen-paradigm">
+  <div class="hud"><div class="hud-gold"><span class="coin">🪙</span><span id="gold1">1000</span></div><div class="hud-phase">Phase 1 of 4</div></div>
+  <div class="screen-inner">
+    <div class="phase-header">
+      <div class="phase-number">Phase I</div>
+      <div class="phase-title" id="p1Title">Learning Method</div>
+      <div class="phase-desc" id="p1Desc">How will your system learn?</div>
+    </div>
+    <div class="choice-grid" id="paradigmGrid"></div>
+    <button class="btn-next" id="paradigmNext" onclick="goToArmy()">March Forward →</button>
   </div>
 </div>
 
-<!-- BATTLE -->
-<div id="screen-battle" class="screen">
-  <div class="battle-symbol" id="battle-symbol">⚔️</div>
-  <div class="battle-title" id="battle-title">Your Army Marches...</div>
-  <div class="battle-status" id="battle-status">The generals are briefed. The war drums pound. Your warriors take formation...</div>
-  <div class="battle-progress"><div class="battle-progress-fill" id="battle-progress-fill"></div></div>
-  <div class="battle-accuracy" id="battle-accuracy">
-    <div class="accuracy-number" id="accuracy-number">—</div>
-    <div class="accuracy-label">Battle Victory Rate</div>
-    <div class="accuracy-rank" id="accuracy-rank"></div>
-    <button class="btn-primary" style="margin-top:16px;max-width:280px;" id="see-results-btn" onclick="showResults()">See All Warriors</button>
+<!-- ARMY -->
+<div class="screen" id="screen-army">
+  <div class="hud"><div class="hud-gold"><span class="coin">🪙</span><span id="gold2">1000</span></div><div class="hud-phase">Phase 2 of 4</div></div>
+  <div class="screen-inner">
+    <div class="phase-header">
+      <div class="phase-number">Phase II</div>
+      <div class="phase-title" id="p2Title">Choose Your Architecture</div>
+      <div class="phase-desc" id="p2Desc">Each approach perceives data differently — choose wisely.</div>
+    </div>
+    <div class="choice-grid" id="armyGrid"></div>
+    <div class="arch-anim hidden" id="archAnim"></div>
+    <button class="btn-next" id="armyNext" onclick="goToStructure()">Forge Your Army →</button>
   </div>
 </div>
 
-<!-- RESULTS -->
-<div id="screen-results" class="screen">
-  <div class="results-header">
-    <div class="results-eyebrow">⚔️ Battle Complete ⚔️</div>
-    <div class="results-title">The Field of Kurukshetra</div>
+<!-- STRUCTURE -->
+<div class="screen" id="screen-structure">
+  <div class="hud"><div class="hud-gold"><span class="coin">🪙</span><span id="gold3">1000</span></div><div class="hud-phase">Phase 3 of 4</div></div>
+  <div class="screen-inner">
+    <div class="phase-header">
+      <div class="phase-number">Phase III</div>
+      <div class="phase-title" id="p3Title">Design Your System</div>
+      <div class="phase-desc" id="p3Desc">Configure the internal structure</div>
+    </div>
+    <div id="structureBuilder"></div>
+    <div class="network-viz" id="networkViz"></div>
+    <button class="btn-next visible" id="structureNext" onclick="goToTraining()" id="structureNextBtn">Lock Configuration →</button>
   </div>
-  <div class="leaderboard" id="leaderboard"></div>
-  <div class="waiting-section" id="waiting-section" style="display:none;">
-    <div class="waiting-title">Warriors Still Fighting...</div>
-    <div class="loader"></div>
-    <div id="waiting-players-list" class="waiting-players"></div>
+</div>
+
+<!-- TRAINING -->
+<div class="screen" id="screen-training">
+  <div class="hud"><div class="hud-gold"><span class="coin">🪙</span><span id="gold4">1000</span></div><div class="hud-phase">Phase 4 of 4</div></div>
+  <div class="screen-inner">
+    <div class="phase-header">
+      <div class="phase-number">Phase IV</div>
+      <div class="phase-title" id="p4Title">Set Training Protocol</div>
+      <div class="phase-desc" id="p4Desc">Configure how your system learns</div>
+    </div>
+    <div id="trainingBuilder"></div>
+    <button class="btn-next visible" id="trainingNext" onclick="startSiege()">⚔️ Lay Siege!</button>
   </div>
-  <button class="btn-primary" id="reveal-btn" onclick="showReveal()" style="display:none;">
-    🔮 Reveal the Secrets of this War
-  </button>
+</div>
+
+<!-- SIEGE -->
+<div class="screen" id="screen-siege">
+  <div class="screen-inner"><div class="center-content">
+    <div class="siege-title" id="siegeTitle">The Challenge Begins</div>
+    <div class="siege-clash" id="siegeEmoji">⚔️</div>
+    <div class="siege-battlefield">
+      <div class="siege-row">
+        <span class="label" style="color:var(--gold);" id="allyLabel">Your System</span>
+        <div class="bar-track"><div class="bar-fill ally" id="allyBar" style="width:100%;"><span class="bar-pct" id="allyPct">100%</span></div></div>
+      </div>
+      <div class="siege-row">
+        <span class="label" style="color:var(--blood);" id="enemyLabel">Hidden Pattern</span>
+        <div class="bar-track"><div class="bar-fill enemy" id="enemyBar" style="width:100%;"><span class="bar-pct" id="enemyPct">100%</span></div></div>
+      </div>
+    </div>
+    <div class="siege-status" id="siegeStatus">Armies clash at the gates...</div>
+    <div class="siege-epoch" id="siegeEpoch"></div>
+  </div></div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="screen-result">
+  <div class="screen-inner"><div class="center-content">
+    <div class="result-verdict" id="resultVerdict"></div>
+    <div class="result-score anim-boom" id="resultScore"></div>
+    <div class="result-label" id="resultLabel">Accuracy</div>
+    <div class="result-message" id="resultMsg"></div>
+    <div class="result-buttons" id="resultBtns"></div>
+  </div></div>
+</div>
+
+<!-- ORACLE -->
+<div class="screen" id="screen-oracle">
+  <div class="screen-inner"><div class="center-content">
+    <div class="oracle-icon">🔮</div>
+    <div class="oracle-title">The Oracle Speaks</div>
+    <div class="oracle-text" id="oracleText"></div>
+    <div class="oracle-hint" id="oracleHint"></div>
+    <div class="result-buttons" style="margin-top:24px;">
+      <button class="btn-primary" onclick="retryFromArmy()">Try Again</button>
+      <button class="btn-secondary" onclick="showReveal()">See The Revelation</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="screen" id="screen-leaderboard">
+  <div class="screen-inner"><div class="center-content">
+    <div class="phase-title" style="margin-bottom:24px;">War Council Results</div>
+    <div class="leaderboard" id="leaderboard"></div>
+    <button class="btn-primary" onclick="showReveal()" style="margin-top:24px;">The Revelation</button>
+  </div></div>
 </div>
 
 <!-- REVEAL -->
-<div id="screen-reveal" class="screen">
-  <div class="reveal-header">
-    <div class="reveal-eyebrow">🔮 The Ancient Secrets</div>
-    <div class="reveal-title">You Were Training a Neural Network</div>
-    <div class="reveal-intro">Every decision you made as a commander was configuring a deep learning model. This is what was happening beneath the battlefield...</div>
-  </div>
-  <div id="reveal-winner-card"></div>
-  <div id="reveal-explanations"></div>
-  <button class="btn-primary" onclick="playAgain()">⚔️ Fight Again</button>
+<div class="screen" id="screen-reveal">
+  <div class="reveal-content" id="revealContent"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const API = '';
-let gameState = {
-  mode: 'solo',
-  playerName: '',
-  playerId: 'p_' + Math.random().toString(36).substr(2,6),
-  roomId: '',
-  decisions: {},
-  myResult: null,
-  allResults: [],
-  ws: null
-};
+// ===================== AUDIO ENGINE =====================
+const AudioEngine=(function(){
+  let ctx,master,currentTrack=null,currentNodes=[];
+  function init(){if(!ctx){ctx=new(window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0.28;master.connect(ctx.destination);}if(ctx.state==='suspended')ctx.resume();}
+  function stopAll(){currentNodes.forEach(n=>{try{n.stop();}catch(e){}});currentNodes=[];currentTrack=null;}
 
-// Decision definitions
-const decisions = [
-  {
-    id: 'attack_formation',
-    icon: '🐘',
-    title: 'Attack Formation',
-    desc: 'How do you deploy your warriors into battle?',
-    type: 'options',
-    options: [
-      { value: 1, icon: '🔴', label: 'Tight', sub: '32 warriors per wave' },
-      { value: 2, icon: '🟡', label: 'Standard', sub: '64 warriors per wave' },
-      { value: 3, icon: '🟢', label: 'Spread', sub: '128 warriors per wave' }
-    ]
-  },
-  {
-    id: 'advance_speed',
-    icon: '🏇',
-    title: "Army's Advance Speed",
-    desc: 'How aggressively does your army push forward?',
-    type: 'options',
-    options: [
-      { value: 'slow', icon: '🐢', label: 'Cautious', sub: 'Slow but precise' },
-      { value: 'medium', icon: '🐎', label: 'Balanced', sub: 'Standard march' },
-      { value: 'fast', icon: '⚡', label: 'Aggressive', sub: 'Full charge' }
-    ]
-  },
-  {
-    id: 'commander',
-    icon: '👑',
-    title: 'Your Commander',
-    desc: 'Which great strategist leads your army?',
-    type: 'options',
-    options: [
-      { value: 'arjuna', icon: '🏹', label: 'Arjuna', sub: 'Disciplined & direct' },
-      { value: 'chanakya', icon: '📜', label: 'Chanakya', sub: 'Adaptive & wise' },
-      { value: 'bhima', icon: '💪', label: 'Bhima', sub: 'Pure momentum' }
-    ]
-  },
-  {
-    id: 'command_layers',
-    icon: '🏯',
-    title: 'Command Hierarchy',
-    desc: 'How many layers of generals command your troops?',
-    type: 'options',
-    options: [
-      { value: 1, icon: '⚡', label: 'Flat', sub: '1 command layer' },
-      { value: 2, icon: '🏛️', label: 'Standard', sub: '2 command layers' },
-      { value: 3, icon: '🗼', label: 'Deep', sub: '3 command layers' }
-    ]
-  },
-  {
-    id: 'supply_discipline',
-    icon: '⚖️',
-    title: 'Resource Discipline',
-    desc: 'How strictly do you ration resources across your kingdom?',
-    type: 'options',
-    options: [
-      { value: 'strict', icon: '🔒', label: 'Strict', sub: 'No soldier hoards' },
-      { value: 'moderate', icon: '⚖️', label: 'Moderate', sub: 'Balanced rationing' },
-      { value: 'loose', icon: '🌊', label: 'Loose', sub: 'Free allocation' }
-    ]
-  },
-  {
-    id: 'war_drills',
-    icon: '🏋️',
-    title: 'War Drills Duration',
-    desc: 'How long does your army train before the main battle?',
-    type: 'options',
-    options: [
-      { value: 50, icon: '⚡', label: 'Quick', sub: '50 drills' },
-      { value: 150, icon: '🏛️', label: 'Standard', sub: '150 drills' },
-      { value: 300, icon: '🔱', label: 'Intensive', sub: '300 drills' }
-    ]
-  },
-  {
-    id: 'retreat_strategy',
-    icon: '🛡️',
-    title: 'Retreat Strategy',
-    desc: 'If your army weakens on the training field, do you pull back?',
-    type: 'toggle',
-    trueLabel: '🛡️ Yes — Retreat and regroup when weakening',
-    falseLabel: '⚔️ No — Fight until the very end'
+  // Helper: create an oscillator with gain envelope
+  function osc(freq,type,startT,dur,peakGain,wave='sine'){
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=wave||'sine';o.frequency.value=freq;
+    g.gain.setValueAtTime(0,startT);
+    g.gain.linearRampToValueAtTime(peakGain,startT+Math.min(0.05,dur*0.2));
+    g.gain.exponentialRampToValueAtTime(0.001,startT+dur);
+    o.connect(g);g.connect(master);o.start(startT);o.stop(startT+dur+0.05);
+    currentNodes.push(o);return o;
   }
-];
 
-// Reveal data (DL explanations)
-const revealData = {
-  attack_formation: {
-    icon: '🐘',
-    warTitle: 'Attack Formation',
-    dlName: 'Batch Size',
-    explanation: {
-      1: { war: 'Tight formation — 32 warriors per wave, moving with precision through enemy lines.', dl: 'Batch Size = 32. Small batches create noisy gradient updates. This noise actually helps — it lets your model escape poor solutions and explore more of the loss landscape.', math: 'w ← w - η · ∇L(w; x_batch=32)' },
-      2: { war: 'Standard formation — 64 warriors advancing with balance of speed and cohesion.', dl: 'Batch Size = 64. The classic sweet spot. Balanced noise and stability. Most models train well here.', math: 'w ← w - η · ∇L(w; x_batch=64)' },
-      3: { war: 'Spread formation — 128 warriors across a wide front, maximizing coverage.', dl: 'Batch Size = 128. Large batches are stable but can converge to sharp minima that generalise poorly. Fast per-epoch, but risks rigidity.', math: 'w ← w - η · ∇L(w; x_batch=128)' }
-    }
-  },
-  advance_speed: {
-    icon: '🏇',
-    warTitle: 'Advance Speed',
-    dlName: 'Learning Rate (η)',
-    explanation: {
-      slow: { war: 'Cautious advance — precise steps, never overextending, reading every terrain change.', dl: 'Learning Rate η = 0.001. Slow but precise. Each weight update is tiny. Guaranteed not to overshoot, but may take very long to converge.', math: 'θ_{t+1} = θ_t - 0.001 · ∇J(θ)' },
-      medium: { war: 'Balanced march — steady advance, adapting pace to the battlefield conditions.', dl: 'Learning Rate η = 0.01. The standard choice. Fast enough to converge, small enough to not oscillate wildly around the minimum.', math: 'θ_{t+1} = θ_t - 0.01 · ∇J(θ)' },
-      fast: { war: 'Full charge — aggressive push, overwhelming enemy before they can react.', dl: 'Learning Rate η = 0.1. Fast but dangerous. May overshoot the optimal weights entirely and oscillate. High risk, high reward.', math: 'θ_{t+1} = θ_t - 0.1 · ∇J(θ)' }
-    }
-  },
-  commander: {
-    icon: '👑',
-    warTitle: 'Commander',
-    dlName: 'Optimizer',
-    explanation: {
-      arjuna: { war: 'Arjuna — the disciplined archer. Straight path, no memory of past mistakes, pure focus on the present battle.', dl: 'Optimizer = SGD. Stochastic Gradient Descent. No momentum, no memory. Pure gradient direction each step. Simple but effective when tuned well.', math: 'w ← w - η · ∇L(w)' },
-      chanakya: { war: 'Chanakya — the adaptive strategist. Learns from every past battle, adjusts tactics per soldier based on their history.', dl: 'Optimizer = Adam (Adaptive Moment Estimation). Tracks momentum and squared gradients per parameter. Adapts learning rate individually. Most powerful general.', math: 'θ_{t+1} = θ_t - η · m̂_t / (√v̂_t + ε)' },
-      bhima: { war: 'Bhima — unstoppable force. Once moving, pure momentum carries him through enemy lines.', dl: 'Optimizer = RMSprop. Divides learning rate by moving average of squared gradients. Great for RNNs and non-stationary objectives.', math: 'w ← w - η · g_t / √(E[g²]_t + ε)' }
-    }
-  },
-  command_layers: {
-    icon: '🏯',
-    warTitle: 'Command Hierarchy',
-    dlName: 'Network Depth (Hidden Layers)',
-    explanation: {
-      1: { war: 'Flat command — soldiers take orders directly from you. Fast decisions, simple strategy.', dl: 'Hidden Layers = 1, size (64,). Shallow network. Can only learn linearly separable or simple patterns. Fast to train, low risk of vanishing gradients.', math: 'output = σ(W² · σ(W¹x + b¹) + b²)' },
-      2: { war: 'Standard hierarchy — two layers of generals coordinate complex manoeuvres.', dl: 'Hidden Layers = 2, sizes (128, 64). Can learn moderately complex patterns. Good balance of expressiveness and trainability.', math: 'h¹=σ(W¹x), h²=σ(W²h¹), ŷ=σ(W³h²)' },
-      3: { war: 'Deep hierarchy — three command layers, complex strategy, risk of confusion down the chain.', dl: 'Hidden Layers = 3, sizes (256, 128, 64). Can learn very complex features but risk vanishing gradients. Deep networks need careful training.', math: '∂L/∂W¹ = ∂L/∂h³ · ∂h³/∂h² · ∂h²/∂h¹ · ∂h¹/∂W¹' }
-    }
-  },
-  supply_discipline: {
-    icon: '⚖️',
-    warTitle: 'Resource Discipline',
-    dlName: 'L2 Regularization (Weight Decay)',
-    explanation: {
-      strict: { war: 'Strict rationing — no soldier hoards resources, every warrior contributes equally.', dl: 'L2 Regularization α = 0.01. Strong penalty on large weights. Forces the model to distribute learning across all neurons. Prevents any single weight from dominating. Reduces overfitting significantly.', math: 'L_total = L_CE + α·||w||² = L_CE + 0.01·Σwᵢ²' },
-      moderate: { war: 'Moderate rationing — some flexibility, but no excessive hoarding tolerated.', dl: 'L2 Regularization α = 0.001. Balanced constraint. Allows model to express complex patterns while keeping weights from exploding.', math: 'L_total = L_CE + 0.001·Σwᵢ²' },
-      loose: { war: 'Loose rationing — warriors accumulate power freely, some become dangerously strong.', dl: 'L2 Regularization α = 0.0001. Minimal constraint. Model free to use any weight distribution. Risk: certain neurons dominate (overfit to training patterns).', math: 'L_total = L_CE + 0.0001·Σwᵢ²' }
-    }
-  },
-  war_drills: {
-    icon: '🏋️',
-    warTitle: 'War Drills Duration',
-    dlName: 'Training Epochs',
-    explanation: {
-      50: { war: 'Quick drills — 50 sessions, army enters battle fresh but possibly underprepared.', dl: 'Max Epochs = 50. Fewer passes through the data. May underfit — model hasn\'t seen enough to learn all patterns. Safe from overfitting but potentially weak.', math: 'One epoch = full pass over all N training samples' },
-      150: { war: 'Standard training — 150 sessions, army well prepared for the battlefield ahead.', dl: 'Max Epochs = 150. Sweet spot for most problems. Enough to converge without overfitting, especially with early stopping active.', math: 'Loss should decrease each epoch: L(t) < L(t-1)' },
-      300: { war: 'Intensive drilling — 300 sessions, army drilled to perfection or exhaustion.', dl: 'Max Epochs = 300. Risk of overfitting without early stopping. Model may memorise training data and fail on new enemies (test set).', math: 'Overfit: train_loss → 0 but val_loss ↑' }
-    }
-  },
-  retreat_strategy: {
-    icon: '🛡️',
-    warTitle: 'Retreat Strategy',
-    dlName: 'Early Stopping',
-    explanation: {
-      true: { war: 'Retreat activated — when your army started weakening on the practice field, you pulled back and saved strength for real battle.', dl: 'Early Stopping = ON. Monitors validation loss. If it doesn\'t improve for 10 consecutive epochs, training stops. Prevents overfitting. Your model trained until the right moment, not until exhaustion.', math: 'Stop if val_loss[t] ≥ min(val_loss) for n_iter_no_change=10 steps' },
-      false: { war: 'No retreat — your army fought through every drill regardless of condition, arriving at battle possibly exhausted or perfectly hardened.', dl: 'Early Stopping = OFF. Model trains for all specified epochs. May overfit if drills were too many. Works if regularization is strong enough to compensate.', math: 'Train for all max_iter epochs regardless of val_loss' }
-    }
-  }
-};
-
-function setMode(mode) {
-  gameState.mode = mode;
-  document.querySelectorAll('.mode-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['solo','create','join'][i] === mode);
-  });
-  const rs = document.getElementById('room-section');
-  const ri = document.getElementById('room-input-section');
-  const rd = document.getElementById('room-display-section');
-  rs.classList.toggle('show', mode !== 'solo');
-  if (mode === 'join') { ri.style.display='block'; rd.style.display='none'; }
-  else if (mode === 'create') { ri.style.display='none'; rd.style.display='none'; }
-  else { ri.style.display='none'; rd.style.display='none'; }
-}
-
-async function startGame() {
-  const name = document.getElementById('player-name').value.trim();
-  if (!name) { showToast('Enter your war name, Commander'); return; }
-  gameState.playerName = name;
-
-  if (gameState.mode === 'create') {
-    // Create room
-    try {
-      const res = await fetch(API + '/create_room', { method: 'POST' });
-      const data = await res.json();
-      gameState.roomId = data.room_id;
-    } catch(e) {
-      // Demo mode - generate local room
-      gameState.roomId = Math.random().toString(36).substr(2,6).toUpperCase();
-    }
-    document.getElementById('room-display-section').style.display = 'block';
-    document.getElementById('room-input-section').style.display = 'none';
-    document.getElementById('room-code-display').textContent = gameState.roomId;
-    connectWebSocket();
-    setTimeout(() => goToCouncil(), 1500);
-  } else if (gameState.mode === 'join') {
-    const code = document.getElementById('room-code-input').value.trim().toUpperCase();
-    if (!code || code.length < 4) { showToast('Enter a valid room code'); return; }
-    gameState.roomId = code;
-    connectWebSocket();
-    goToCouncil();
-  } else {
-    gameState.roomId = 'SOLO_' + gameState.playerId;
-    goToCouncil();
-  }
-}
-
-function connectWebSocket() {
-  try {
-    const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${wsProto}//${window.location.host}/ws/${gameState.roomId}/${gameState.playerId}`;
-    gameState.ws = new WebSocket(wsUrl);
-    gameState.ws.onmessage = (e) => {
-      const msg = JSON.parse(e.data);
-      if (msg.type === 'player_result') {
-        updateWaitingPlayer(msg.player, msg.accuracy);
-      }
-    };
-  } catch(e) {}
-}
-
-function goToCouncil() {
-  showScreen('council');
-  buildDecisionCards();
-}
-
-function buildDecisionCards() {
-  const container = document.getElementById('decisions-container');
-  container.innerHTML = '';
-  
-  decisions.forEach((d, idx) => {
-    const card = document.createElement('div');
-    card.className = 'decision-card';
-    card.id = 'card-' + d.id;
-    card.style.animationDelay = (idx * 0.08) + 's';
-    card.style.animation = 'rise 0.5s ease both';
-    
-    if (d.type === 'options') {
-      const optionsHTML = d.options.map(o => `
-        <button class="option-btn" onclick="selectOption('${d.id}', ${JSON.stringify(o.value)}, this)" data-value="${o.value}">
-          <span class="opt-icon">${o.icon}</span>
-          <span class="opt-label">${o.label}</span>
-          <span class="opt-sub">${o.sub}</span>
-        </button>
-      `).join('');
-      
-      card.innerHTML = `
-        <div class="decision-header">
-          <span class="decision-icon">${d.icon}</span>
-          <div>
-            <div class="decision-title">${d.title}</div>
-            <div class="decision-desc">${d.desc}</div>
-          </div>
-        </div>
-        <div class="decision-options">${optionsHTML}</div>
-      `;
-    } else {
-      card.innerHTML = `
-        <div class="decision-header">
-          <span class="decision-icon">${d.icon}</span>
-          <div>
-            <div class="decision-title">${d.title}</div>
-            <div class="decision-desc">${d.desc}</div>
-          </div>
-        </div>
-        <button class="toggle-btn" id="toggle-${d.id}" onclick="toggleDecision('${d.id}', this)">
-          <div class="toggle-indicator"></div>
-          <span id="toggle-label-${d.id}">${d.falseLabel}</span>
-        </button>
-      `;
-      gameState.decisions[d.id] = false;
-    }
-    
-    container.appendChild(card);
-  });
-  
-  updateProgress();
-}
-
-function selectOption(decisionId, value, btn) {
-  gameState.decisions[decisionId] = value;
-  const card = document.getElementById('card-' + decisionId);
-  card.classList.add('selected');
-  card.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  updateProgress();
-}
-
-function toggleDecision(decisionId, btn) {
-  gameState.decisions[decisionId] = !gameState.decisions[decisionId];
-  btn.classList.toggle('selected', gameState.decisions[decisionId]);
-  const d = decisions.find(x => x.id === decisionId);
-  document.getElementById('toggle-label-' + decisionId).textContent = 
-    gameState.decisions[decisionId] ? d.trueLabel : d.falseLabel;
-  document.getElementById('card-' + decisionId).classList.toggle('selected', gameState.decisions[decisionId] !== false);
-  updateProgress();
-}
-
-function updateProgress() {
-  const total = decisions.length;
-  const filled = decisions.filter(d => gameState.decisions[d.id] !== undefined && 
-    !(d.type === 'options' && gameState.decisions[d.id] === undefined)).length;
-  
-  const optionsFilled = decisions.filter(d => d.type === 'options').filter(d => gameState.decisions[d.id] !== undefined).length;
-  const togglesFilled = decisions.filter(d => d.type === 'toggle').length;
-  const pct = ((optionsFilled + togglesFilled) / total) * 100;
-  
-  document.getElementById('council-progress').style.width = pct + '%';
-  
-  const allOptionsFilled = decisions.filter(d => d.type === 'options').every(d => gameState.decisions[d.id] !== undefined);
-  document.getElementById('deploy-btn').style.display = allOptionsFilled ? 'block' : 'none';
-}
-
-async function deployArmy() {
-  showScreen('battle');
-  animateBattle();
-  
-  const payload = {
-    room_id: gameState.roomId,
-    player_id: gameState.playerId,
-    player_name: gameState.playerName,
-    attack_formation: gameState.decisions.attack_formation || 2,
-    advance_speed: gameState.decisions.advance_speed || 'medium',
-    commander: gameState.decisions.commander || 'chanakya',
-    command_layers: gameState.decisions.command_layers || 2,
-    troop_rotation: 0.2,
-    supply_discipline: gameState.decisions.supply_discipline || 'moderate',
-    war_drills: gameState.decisions.war_drills || 150,
-    retreat_strategy: gameState.decisions.retreat_strategy || false
-  };
-
-  try {
-    const res = await fetch(API + '/battle', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+  function playAmbient(){
+    // Same ambient for landing — low Indian drone
+    init();stopAll();currentTrack='ambient';
+    [[65.4,'sine'],[98.0,'sine'],[130.8,'sine'],[196,'sine'],[261.6,'triangle']].forEach(([f,t],idx)=>{
+      const o2=ctx.createOscillator(),g=ctx.createGain(),flt=ctx.createBiquadFilter();
+      o2.type=t;o2.frequency.value=f;
+      flt.type='lowpass';flt.frequency.value=500+idx*80;
+      g.gain.value=0;g.gain.linearRampToValueAtTime(idx<3?0.07:0.04,ctx.currentTime+2.5);
+      const lfo=ctx.createOscillator(),lfoG=ctx.createGain();
+      lfo.type='sine';lfo.frequency.value=0.1+Math.random()*0.08;lfoG.gain.value=2;
+      lfo.connect(lfoG);lfoG.connect(o2.frequency);lfo.start();
+      o2.connect(flt);flt.connect(g);g.connect(master);o2.start();
+      currentNodes.push(o2,lfo);
     });
-    const data = await res.json();
-    showBattleResult(data.accuracy, data.explanation, data.room_results);
-    gameState.myResult = data;
-    gameState.allResults = data.room_results || [{ name: gameState.playerName, accuracy: data.accuracy }];
-  } catch(e) {
-    // Demo mode — simulate result
-    const acc = simulateAccuracy();
-    const fakeResult = { accuracy: acc, explanation: buildLocalExplanation(), room_results: [{ name: gameState.playerName, accuracy: acc }] };
-    showBattleResult(acc, fakeResult.explanation, fakeResult.room_results);
-    gameState.myResult = fakeResult;
-    gameState.allResults = [{ name: gameState.playerName, accuracy: acc }];
+    function tablaPulse(){
+      if(currentTrack!=='ambient')return;
+      const t=ctx.currentTime,o2=ctx.createOscillator(),g=ctx.createGain();
+      o2.type='sine';o2.frequency.setValueAtTime(180,t);o2.frequency.exponentialRampToValueAtTime(80,t+0.08);
+      g.gain.setValueAtTime(0.09,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+      o2.connect(g);g.connect(master);o2.start(t);o2.stop(t+0.3);currentNodes.push(o2);
+      setTimeout(tablaPulse,1800+Math.random()*800);
+    }
+    setTimeout(tablaPulse,3000);
+  }
+
+  function playPrologue(){
+    // Dark cosmic arpeggio — memory across lifetimes
+    init();stopAll();currentTrack='prologue';
+    const t=ctx.currentTime;
+    // Deep slow drone
+    [55,82.4,110].forEach((f,i)=>{
+      const o2=ctx.createOscillator(),g=ctx.createGain();
+      o2.type='sine';o2.frequency.value=f;
+      const lfo=ctx.createOscillator(),lfoG=ctx.createGain();
+      lfo.type='sine';lfo.frequency.value=0.07+i*0.03;lfoG.gain.value=1.5;
+      lfo.connect(lfoG);lfoG.connect(o2.frequency);lfo.start();
+      g.gain.value=0;g.gain.linearRampToValueAtTime(0.06,t+3);
+      o2.connect(g);g.connect(master);o2.start();
+      currentNodes.push(o2,lfo);
+    });
+    // Ghostly ascending arpeggios
+    function ghostArp(){
+      if(currentTrack!=='prologue')return;
+      const now=ctx.currentTime;
+      [220,261.63,311.13,369.99,440,523.25].forEach((f,i)=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='triangle';o2.frequency.value=f;
+        const s=now+i*0.4;
+        g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(0.04,s+0.1);g.gain.exponentialRampToValueAtTime(0.001,s+2.2);
+        o2.connect(g);g.connect(master);o2.start(s);o2.stop(s+2.5);currentNodes.push(o2);
+      });
+      setTimeout(ghostArp,5000);
+    }
+    setTimeout(ghostArp,1500);
+  }
+
+  // Life story music varies by who you were
+  function playLifeStory(lifeId){
+    init();stopAll();currentTrack='lifestory_'+lifeId;
+    const t=ctx.currentTime;
+    if(lifeId==='healer'){
+      // Gentle, pastoral — pentatonic lullaby
+      const melody=[392,440,523.25,440,392,349.23,392];
+      melody.forEach((f,i)=>{
+        osc(f,'triangle',t+i*0.85,1.8,0.06);
+        osc(f*0.5,'sine',t+i*0.85,2.0,0.03);
+      });
+      // Soft breath pad
+      [196,246.94,293.66].forEach(f=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='sine';o2.frequency.value=f;
+        g.gain.value=0;g.gain.linearRampToValueAtTime(0.025,t+2);
+        o2.connect(g);g.connect(master);o2.start();currentNodes.push(o2);
+      });
+    } else if(lifeId==='scholar'){
+      // Ancient library — temple bells, slow and mystical
+      const freqs=[523.25,659.25,830.61,1046.5,830.61,659.25,784];
+      freqs.forEach((f,i)=>{
+        osc(f,'triangle',t+i*0.65,2.5,0.055);
+        if(i%2===0)osc(f*1.498,'sine',t+i*0.65+0.3,1.8,0.02);
+      });
+      // Low resonance
+      [87.3,130.8].forEach(f=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='sine';o2.frequency.value=f;
+        g.gain.value=0;g.gain.linearRampToValueAtTime(0.04,t+1.5);
+        o2.connect(g);g.connect(master);o2.start();currentNodes.push(o2);
+      });
+    } else if(lifeId==='cartographer'){
+      // Adventure fanfare — bold intervals, exploring
+      const pattern=[261.63,329.63,392,523.25,659.25,523.25,392,440,523.25];
+      pattern.forEach((f,i)=>{
+        osc(f,'square',t+i*0.38,0.7,0.04);
+        osc(f*0.5,'triangle',t+i*0.38,1.0,0.02);
+      });
+      // Rhythmic pulse
+      function mapBeat(){
+        if(!currentTrack.startsWith('lifestory'))return;
+        const now=ctx.currentTime;
+        [0,0.4,0.8,1.2].forEach(off=>{
+          const o2=ctx.createOscillator(),g=ctx.createGain();
+          o2.type='sine';o2.frequency.setValueAtTime(120,now+off);o2.frequency.exponentialRampToValueAtTime(60,now+off+0.12);
+          g.gain.setValueAtTime(0.12,now+off);g.gain.exponentialRampToValueAtTime(0.001,now+off+0.18);
+          o2.connect(g);g.connect(master);o2.start(now+off);o2.stop(now+off+0.2);currentNodes.push(o2);
+        });
+        setTimeout(mapBeat,1600);
+      }
+      setTimeout(mapBeat,3500);
+    } else if(lifeId==='merchant'){
+      // Flowing water / river — sine waves rippling
+      const waterFreqs=[293.66,369.99,440,493.88,587.33,659.25,783.99,659.25,587.33];
+      waterFreqs.forEach((f,i)=>{
+        osc(f,'sine',t+i*0.5,2.5,0.05+Math.random()*0.02);
+        osc(f*0.5,'sine',t+i*0.5,3.0,0.02);
+      });
+      // Ripple LFO texture
+      [146.83,220,293.66].forEach((f,i)=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='sine';o2.frequency.value=f;
+        const lfo=ctx.createOscillator(),lfoG=ctx.createGain();
+        lfo.type='sine';lfo.frequency.value=0.3+i*0.2;lfoG.gain.value=8;
+        lfo.connect(lfoG);lfoG.connect(o2.frequency);lfo.start();
+        g.gain.value=0;g.gain.linearRampToValueAtTime(0.03,t+2);
+        o2.connect(g);g.connect(master);o2.start();currentNodes.push(o2,lfo);
+      });
+    }
+  }
+
+  function playKarmaChime(){
+    init();stopAll();currentTrack='karma';
+    const t=ctx.currentTime;
+    // Mysterious card shuffle sound first
+    [0,0.08,0.16].forEach(off=>{
+      const buf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.06),ctx.sampleRate);
+      const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.3;
+      const src=ctx.createBufferSource(),g=ctx.createGain(),flt=ctx.createBiquadFilter();
+      src.buffer=buf;flt.type='bandpass';flt.frequency.value=3000;
+      g.gain.setValueAtTime(0.08,t+off);g.gain.exponentialRampToValueAtTime(0.001,t+off+0.06);
+      src.connect(flt);flt.connect(g);g.connect(master);src.start(t+off);currentNodes.push(src);
+    });
+    // Pentatonic mystical bells
+    [523.25,659.25,783.99,1046.5,1318.5,1046.5,783.99].forEach((f,i)=>{
+      const o2=ctx.createOscillator(),g=ctx.createGain();
+      o2.type='triangle';o2.frequency.value=f;
+      const s=t+0.5+i*0.3;
+      g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(0.12,s+0.03);g.gain.exponentialRampToValueAtTime(0.001,s+1.2);
+      o2.connect(g);g.connect(master);o2.start(s);o2.stop(s+1.3);currentNodes.push(o2);
+      // Shimmer overtone
+      osc(f*2.01,'sine',s+0.05,0.8,0.015);
+    });
+    // Sustain pad
+    setTimeout(()=>{
+      if(currentTrack!=='karma')return;
+      [261.63,329.63,392,493.88].forEach(f=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='sine';o2.frequency.value=f;
+        g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(0.04,ctx.currentTime+0.6);g.gain.linearRampToValueAtTime(0,ctx.currentTime+6);
+        o2.connect(g);g.connect(master);o2.start();o2.stop(ctx.currentTime+6.5);currentNodes.push(o2);
+      });
+    },2300);
+    // Card flip sound (called from flipKarma separately via playKarmaFlip)
+  }
+
+  function playKarmaFlip(){
+    // Dramatic reveal sting
+    init();
+    const t=ctx.currentTime;
+    [659.25,783.99,1046.5,1318.5].forEach((f,i)=>{
+      osc(f,'triangle',t+i*0.12,0.8,0.1);
+    });
+    // Low boom
+    const o2=ctx.createOscillator(),g=ctx.createGain();
+    o2.type='sine';o2.frequency.setValueAtTime(80,t);o2.frequency.exponentialRampToValueAtTime(40,t+0.4);
+    g.gain.setValueAtTime(0.18,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+    o2.connect(g);g.connect(master);o2.start(t);o2.stop(t+0.55);currentNodes.push(o2);
+  }
+
+  function playProblemReveal(){
+    // Haunting, building tension — the problem from the past life
+    init();stopAll();currentTrack='problem';
+    const t=ctx.currentTime;
+    // Ominous low strings
+    [65.4,98,130.8].forEach((f,i)=>{
+      const o2=ctx.createOscillator(),g=ctx.createGain();
+      o2.type='sawtooth';o2.frequency.value=f;
+      const flt=ctx.createBiquadFilter();flt.type='lowpass';flt.frequency.value=300;
+      g.gain.value=0;g.gain.linearRampToValueAtTime(0.05,t+2+i);
+      o2.connect(flt);flt.connect(g);g.connect(master);o2.start();currentNodes.push(o2);
+    });
+    // Rising question motif — unresolved
+    function questionMotif(){
+      if(currentTrack!=='problem')return;
+      const now=ctx.currentTime;
+      [261.63,293.66,329.63,369.99,415.3,369.99].forEach((f,i)=>{
+        osc(f,'triangle',now+i*0.5,1.5,0.055);
+      });
+      setTimeout(questionMotif,5000);
+    }
+    setTimeout(questionMotif,1000);
+  }
+
+  function playWarDrums(){
+    init();stopAll();currentTrack='siege';
+    // Enhanced with metallic clashes
+    function drumLoop(){
+      if(currentTrack!=='siege')return;
+      const t=ctx.currentTime;
+      // Bass drums
+      [0,0.5,1.0,1.25,1.5,1.75].forEach(off=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='sine';o2.frequency.setValueAtTime(160,t+off);o2.frequency.exponentialRampToValueAtTime(45,t+off+0.18);
+        g.gain.setValueAtTime(0.28,t+off);g.gain.exponentialRampToValueAtTime(0.001,t+off+0.22);
+        o2.connect(g);g.connect(master);o2.start(t+off);o2.stop(t+off+0.25);currentNodes.push(o2);
+      });
+      // High snare noise
+      [0.25,0.75,1.75].forEach(off=>{
+        const buf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.12),ctx.sampleRate);
+        const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.25;
+        const src=ctx.createBufferSource(),g=ctx.createGain(),flt=ctx.createBiquadFilter();
+        src.buffer=buf;flt.type='highpass';flt.frequency.value=1800;
+        g.gain.setValueAtTime(0.14,t+off);g.gain.exponentialRampToValueAtTime(0.001,t+off+0.12);
+        src.connect(flt);flt.connect(g);g.connect(master);src.start(t+off);currentNodes.push(src);
+      });
+      // War horn every 4 loops
+      if(!drumLoop._cnt)drumLoop._cnt=0;
+      if(drumLoop._cnt%4===0){
+        osc(87.3,'sawtooth',t,1.8,0.06);
+        osc(130.8,'sawtooth',t+0.05,1.6,0.04);
+      }
+      drumLoop._cnt++;
+      setTimeout(drumLoop,2000);
+    }
+    drumLoop();
+  }
+
+  function playVictory(){
+    init();stopAll();currentTrack='victory';
+    const t=ctx.currentTime;
+    // Epic ascending fanfare with harmonics
+    [392,523.25,659.25,783.99,1046.5].forEach((f,i)=>{
+      osc(f,'square',t+i*0.22,0.65,0.08);
+      osc(f*1.5,'triangle',t+i*0.22+0.05,0.5,0.03);
+    });
+    // Victory chord sustain
+    setTimeout(()=>{
+      if(currentTrack!=='victory')return;
+      [523.25,659.25,783.99,1046.5].forEach(f=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='triangle';o2.frequency.value=f;
+        g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(0.055,ctx.currentTime+0.5);g.gain.linearRampToValueAtTime(0,ctx.currentTime+4.5);
+        o2.connect(g);g.connect(master);o2.start();o2.stop(ctx.currentTime+5);currentNodes.push(o2);
+      });
+      // Triumphant drums
+      [0,0.6,1.2].forEach(off=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='sine';o2.frequency.setValueAtTime(180,ctx.currentTime+off);o2.frequency.exponentialRampToValueAtTime(60,ctx.currentTime+off+0.15);
+        g.gain.setValueAtTime(0.2,ctx.currentTime+off);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+off+0.25);
+        o2.connect(g);g.connect(master);o2.start(ctx.currentTime+off);o2.stop(ctx.currentTime+off+0.3);currentNodes.push(o2);
+      });
+    },1200);
+  }
+
+  function playDefeat(){
+    init();stopAll();currentTrack='defeat';
+    const t=ctx.currentTime;
+    // Descending lament — slower, sadder
+    [392,349.23,329.63,293.66,261.63].forEach((f,i)=>{
+      osc(f,'sine',t+i*0.65,2.0,0.08);
+    });
+    // Low mournful drone
+    setTimeout(()=>{
+      if(currentTrack!=='defeat')return;
+      [65.4,98].forEach(f=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='sine';o2.frequency.value=f;
+        g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(0.04,ctx.currentTime+0.5);g.gain.linearRampToValueAtTime(0,ctx.currentTime+3);
+        o2.connect(g);g.connect(master);o2.start();o2.stop(ctx.currentTime+3.5);currentNodes.push(o2);
+      });
+    },2500);
+  }
+
+  function playReveal(){
+    init();stopAll();currentTrack='reveal';
+    const t=ctx.currentTime;
+    // Grand revelation — full scale ascending with harmonics
+    [261.63,293.66,329.63,369.99,415.3,466.16,523.25,587.33,659.25,739.99,830.61,932.33,1046.5].forEach((f,i)=>{
+      osc(f,'triangle',t+i*0.12,1.5,0.065);
+      if(i%3===0)osc(f*1.5,'sine',t+i*0.12+0.04,1.2,0.02);
+    });
+    // Warm enlightenment pad
+    setTimeout(()=>{
+      if(currentTrack!=='reveal')return;
+      [261.63,329.63,392,523.25,659.25].forEach(f=>{
+        const o2=ctx.createOscillator(),g=ctx.createGain();
+        o2.type='sine';o2.frequency.value=f;
+        g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(0.028,ctx.currentTime+1.5);g.gain.linearRampToValueAtTime(0,ctx.currentTime+9);
+        o2.connect(g);g.connect(master);o2.start();o2.stop(ctx.currentTime+9.5);currentNodes.push(o2);
+      });
+    },2000);
+  }
+
+  // Each phase gets a distinctly different chime
+  function playPhaseChime(phase){
+    init();
+    const chimes={
+      1:[[523.25,659.25,783.99],[0.22]],// War Council — decisive
+      2:[[440,554.37,659.25,880],[0.18]],// Army — bold march
+      3:[[392,493.88,587.33,739.99],[0.15]],// Structure — building
+      4:[[587.33,739.99,880,1108.7],[0.12]],// Training — urgent
+    };
+    const [freqs,delays]=chimes[phase]||chimes[1];
+    freqs.forEach((f,i)=>{
+      osc(f,'triangle',ctx.currentTime+i*(delays[0]||0.18),0.7,0.07);
+    });
+  }
+
+  function playRoomJoin(){
+    // Warm welcoming chime for multiplayer room
+    init();
+    [523.25,659.25,783.99,1046.5].forEach((f,i)=>{
+      osc(f,'triangle',ctx.currentTime+i*0.15,0.9,0.08);
+    });
+  }
+
+  return {init,stopAll,playAmbient,playPrologue,playLifeStory,playKarmaChime,playKarmaFlip,playProblemReveal,playWarDrums,playVictory,playDefeat,playReveal,playPhaseChime,playRoomJoin};
+})();
+
+// ===================== GAME STATE =====================
+const API='';
+let G={mode:'solo',name:'',pid:'p_'+Math.random().toString(36).substr(2,8),roomId:'',gold:1000,attempts:0,pastLife:null,karma:null,problem:null,paradigm:null,architecture:null,layers:[128,64],activation:'relu',neurons:64,numLayers:2,batchSize:64,learningRate:0.01,alpha:0.001,epochs:150,earlyStopping:false,optimizer:'adam',result:null,ws:null,isHost:false,roomPlayers:{}};
+
+let _roomPlayers={}; // live room players for waiting screen
+
+function updatePlayersList(){
+  const pl=document.getElementById('playersList');
+  if(!pl)return;
+  const names=Object.values(_roomPlayers);
+  if(names.length===0){
+    pl.innerHTML='<div style="color:var(--cream-dim);font-style:italic;font-size:18px;text-align:center;">No one here yet...</div>';
+  } else {
+    pl.innerHTML=names.map((n,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(201,168,76,.06);border-radius:8px;"><span style="font-size:22px;">${i===0?'👑':'⚔️'}</span><span style="font-family:'Cinzel',serif;font-size:19px;color:var(--cream);">${n}</span>${i===0?'<span style="font-size:13px;color:var(--gold-dim);margin-left:auto;">HOST</span>':''}</div>`).join('');
   }
 }
 
-function simulateAccuracy() {
-  // Actually compute a plausible accuracy based on choices
-  let base = 88;
-  const lr = gameState.decisions.advance_speed;
-  const layers = gameState.decisions.command_layers;
-  const epochs = gameState.decisions.war_drills;
-  const es = gameState.decisions.retreat_strategy;
-  const reg = gameState.decisions.supply_discipline;
-  
-  if (lr === 'fast' && epochs > 100) base -= 4;
-  if (lr === 'slow' && !es) base -= 2;
-  if (layers === 3 && !es) base -= 3;
-  if (layers === 1) base -= 5;
-  if (reg === 'loose' && epochs >= 300) base -= 3;
-  if (reg === 'strict') base += 2;
-  if (es) base += 2;
-  if (epochs === 150) base += 1;
-  
-  base += (Math.random() * 8 - 4);
-  return Math.min(98, Math.max(72, Math.round(base * 10) / 10));
+function copyRoomCode(){
+  const code=G.roomId;
+  navigator.clipboard.writeText(code).catch(()=>{});
+  const btn=document.getElementById('copyBtn');
+  btn.textContent='✅ COPIED!';
+  setTimeout(()=>btn.textContent='📋 COPY CODE',2000);
+  toast('Room code '+code+' copied!');
 }
 
-function buildLocalExplanation() {
-  const exp = {};
-  Object.keys(revealData).forEach(key => {
-    const rd = revealData[key];
-    const val = gameState.decisions[key];
-    const e = rd.explanation[val] || rd.explanation[Object.keys(rd.explanation)[0]];
-    exp[key] = { war: e.war, dl: e.dl, math: e.math };
-  });
-  return exp;
-}
-
-const battleMessages = [
-  'The generals are briefed. War drums thunder across the plains...',
-  'Your warriors take their positions. Shields raised, spears ready...',
-  'The first wave advances. Battle mathematics unfold in real time...',
-  'Casualties computed. Gradient of war calculated...',
-  'Reinforcements deployed. The model learns from every fallen warrior...',
-  'Final computation. The battlefield reveals its truth...'
+const LIVES=[
+  {id:'healer',icon:'🏥',name:'Village Healer',desc:'You mend the sick and diagnose the ill',
+   story:'As a Village Healer, you saved thousands. You could read the body like a map — fever here, swelling there.\n\nBut one monsoon, a mysterious plague swept through. Patients who looked identical — some survived, some did not.\n\nYou died, haunted by the question:\n<span class="hl">"How do you tell the sick from the healthy when the signs are hidden inside?"</span>',
+   problem:{id:'tabular',name:'Identify the Sick from the Healthy',desc:'Classify patients by hidden patterns in their body\'s 30 measurements',bestArch:'mlp',dataType:'tabular'}},
+  {id:'scholar',icon:'📜',name:'Temple Scholar',desc:'You decode ancient texts and prophecies',
+   story:'As a Temple Scholar, you spent decades reading palm-leaf manuscripts. Each word flowed into the next — meaning built through sequence.\n\nOne day, a thousand scrolls arrived in unknown tongues. Praise or threat? Wisdom or poison?\n\nYou died unable to judge:\n<span class="hl">"Is this ancient text sacred wisdom or a declaration of war?"</span>',
+   problem:{id:'sequential',name:'Decode the Ancient Scrolls',desc:'Read words in sequence and judge the meaning of entire texts',bestArch:'rnn',dataType:'text'}},
+  {id:'cartographer',icon:'🗺️',name:'Royal Cartographer',desc:'You map territories from aerial views',
+   story:'As a Cartographer, you spotted enemy forts from bird\'s-eye sketches — walls here, moat there. Your eyes scanned in patterns, recognizing shapes within shapes.\n\nBut the enemy built hidden forts disguised as villages. Patterns within patterns within patterns.\n\nYou died unable to see:\n<span class="hl">"Is this pattern in the landscape a village or a hidden fortress?"</span>',
+   problem:{id:'spatial',name:'Map the Hidden Fortresses',desc:'Scan images in overlapping grids to detect patterns within patterns',bestArch:'cnn',dataType:'image'}},
+  {id:'merchant',icon:'🏪',name:'River Merchant',desc:'You trade along great rivers, reading currents',
+   story:'As a River Merchant, you predicted floods by reading the river — yesterday\'s rain, the current\'s speed, birds\' migration. Each clue connected to the last.\n\nBut one year, long-forgotten droughts returned as floods. The river remembered what you forgot.\n\nYou died unable to predict:\n<span class="hl">"What will the river do next, given everything it has ever remembered?"</span>',
+   problem:{id:'timeseries',name:'Predict the River\'s Fury',desc:'Read long chains of past events to predict what comes next',bestArch:'lstm',dataType:'timeseries'}}
 ];
 
-let battleInterval;
-function animateBattle() {
-  let step = 0;
-  let progress = 0;
-  document.getElementById('battle-accuracy').classList.remove('show');
-  document.getElementById('battle-symbol').textContent = '⚔️';
-  
-  const symbols = ['⚔️','🏹','🐘','🔱','⚡','👑'];
-  
-  battleInterval = setInterval(() => {
-    if (step < battleMessages.length) {
-      document.getElementById('battle-status').textContent = battleMessages[step];
-      document.getElementById('battle-symbol').textContent = symbols[step % symbols.length];
-      step++;
-    }
-    progress = Math.min(95, progress + Math.random() * 15 + 5);
-    document.getElementById('battle-progress-fill').style.width = progress + '%';
-  }, 800);
-}
+const KARMA_MODS=[
+  {icon:'🌙',name:'Clarity',desc:'The stars align — your path is clear'},
+  {icon:'🌪️',name:'Chaos',desc:'The winds of fate bring noise and confusion'},
+  {icon:'⚖️',name:'Balance',desc:'Equal forces on both sides'},
+  {icon:'🔥',name:'Fury',desc:'Time burns short — act swiftly'}
+];
 
-function showBattleResult(accuracy, explanation, roomResults) {
-  clearInterval(battleInterval);
-  document.getElementById('battle-progress-fill').style.width = '100%';
-  document.getElementById('battle-title').textContent = 'Battle Concluded!';
-  document.getElementById('battle-symbol').textContent = accuracy >= 90 ? '👑' : accuracy >= 85 ? '🏆' : accuracy >= 80 ? '⚔️' : '🛡️';
-  
-  setTimeout(() => {
-    const el = document.getElementById('battle-accuracy');
-    el.classList.add('show');
-    document.getElementById('accuracy-number').textContent = accuracy + '%';
-    
-    let rank = '';
-    if (accuracy >= 95) rank = 'Your army was virtually unstoppable. The gods of mathematics smiled upon you.';
-    else if (accuracy >= 90) rank = 'A dominant victory. Your strategic choices were remarkably sound.';
-    else if (accuracy >= 85) rank = 'A solid win. Your army held the field with discipline.';
-    else if (accuracy >= 80) rank = 'Hard fought. Some strategic choices could be refined.';
-    else rank = 'The battlefield was brutal. Much to learn for the next war.';
-    
-    document.getElementById('accuracy-rank').textContent = rank;
-    
-    if (gameState.mode === 'solo') {
-      document.getElementById('see-results-btn').style.display = 'block';
-    } else {
-      document.getElementById('see-results-btn').textContent = 'See Leaderboard';
-      document.getElementById('see-results-btn').style.display = 'block';
-    }
-  }, 500);
-}
+const PARADIGMS=[
+  {id:'supervised',icon:'📋',name:'Study Past Battles',
+   sub:'Learn from labeled war records — each battle marked as victory or defeat.',
+   dl:'In ML: You train on labeled data (input→known output). The model learns to predict labels. Used for classification and regression.',
+   cost:0},
+  {id:'unsupervised',icon:'🔍',name:'Scout & Discover',
+   sub:'Send scouts with no maps — let them find natural groupings on their own.',
+   dl:'In ML: No labels. The model finds hidden structure in data. Used for clustering (K-means), dimensionality reduction (PCA), anomaly detection.',
+   cost:0},
+  {id:'adversarial',icon:'🎭',name:'The Art of Deception',
+   sub:'Two armies train against each other — one forges fakes, one detects fakes.',
+   dl:'In ML: Generative Adversarial Network (GAN). Generator creates fake data; Discriminator tries to spot fakes. Together they improve until fakes are indistinguishable.',
+   cost:0}
+];
 
-function showResults() {
-  showScreen('results');
-  
-  const results = gameState.allResults.sort((a,b) => b.accuracy - a.accuracy);
-  const lb = document.getElementById('leaderboard');
-  lb.innerHTML = '';
-  
-  results.forEach((r, i) => {
-    const card = document.createElement('div');
-    card.className = `rank-card rank-${i+1}${r.name === gameState.playerName ? ' is-me' : ''}`;
-    card.style.animationDelay = (i * 0.12) + 's';
-    
-    const medals = ['🥇','🥈','🥉'];
-    const rankLabel = i < 3 ? medals[i] : (i+1);
-    
-    card.innerHTML = `
-      <div class="rank-number">${rankLabel}</div>
-      <div class="rank-name">${r.name}${r.name === gameState.playerName ? ' (You)' : ''}</div>
-      <div class="rank-score">${r.accuracy || r.accuracy}<span>%</span></div>
-    `;
-    lb.appendChild(card);
+const ARMIES=[
+  {id:'mlp',icon:'🗡️',name:'The Infantry',
+   sub:'Basic warriors. Each soldier connects to every other. Simple, powerful, no assumptions about data structure.',
+   dl:'MLP = Multi-Layer Perceptron. Fully connected layers. Works on flat/tabular data. Each neuron sees ALL features. No spatial or temporal awareness.',
+   cost:100},
+  {id:'cnn',icon:'🐘',name:'Elephant Patrol',
+   sub:'Scouts scan in small overlapping grids — spot local patterns, then combine them into bigger pictures.',
+   dl:'CNN = Convolutional Neural Network. A small filter (kernel) slides across the input. It learns to detect edges, textures, shapes. Layers stack: pixels→edges→shapes→objects.',
+   cost:200},
+  {id:'rnn',icon:'📨',name:'Messenger Relay',
+   sub:'A chain of scouts. Each passes a whispered message to the next. Meaning builds through sequence.',
+   dl:'RNN = Recurrent Neural Network. Hidden state carries context forward: hₜ = σ(Wₓxₜ + Wₕhₜ₋₁). Struggles with long sequences — memory fades.',
+   cost:200},
+  {id:'lstm',icon:'📜',name:'Scroll Bearers',
+   sub:'Like Messenger Relay, but each scout carries memory scrolls with Forget and Remember gates.',
+   dl:'LSTM = Long Short-Term Memory. Three gates: Forget (erase old memory), Input (write new memory), Output (read from memory). Solves vanishing gradient of RNNs.',
+   cost:250},
+  {id:'transformer',icon:'👁️',name:'The All-Seeing Eye',
+   sub:'An oracle that can focus attention on any part of the battlefield simultaneously.',
+   dl:'Transformer = Self-Attention. Every token attends to every other token directly. Attention(Q,K,V) = softmax(QKᵀ/√d)V. No sequential bottleneck. Powers GPT, BERT.',
+   cost:400}
+];
+
+const ACTIVATIONS=[
+  {id:'relu',icon:'⚡',name:'War Cry (ReLU)',sub:'f(x)=max(0,x) — Positive signals pass, negatives die. Fast, sparse, avoids vanishing gradient.'},
+  {id:'sigmoid',icon:'🎯',name:'Calm Focus (Sigmoid)',sub:'f(x)=1/(1+e⁻ˣ) — Squashes all values to 0-1. Good for probability outputs. Suffers vanishing gradients.'},
+  {id:'tanh',icon:'🌊',name:'Tidal Force (Tanh)',sub:'f(x)=(eˣ-e⁻ˣ)/(eˣ+e⁻ˣ) — Swings -1 to +1. Zero-centered. Stronger gradient than sigmoid.'}
+];
+
+const OPTIMIZERS=[
+  {id:'sgd',icon:'🚶',name:'Brute March (SGD)',sub:'Simple constant push in gradient direction. No memory. Needs careful learning rate tuning.',cost:50},
+  {id:'adam',icon:'🧠',name:'Adaptive Strategy (Adam)',sub:'Tracks moving average of gradient + squared gradient. Adaptive per-parameter learning rates. Industry standard.',cost:100},
+  {id:'rmsprop',icon:'⚖️',name:'Scaled Assault (RMSprop)',sub:'Divides learning rate by running average of gradient magnitudes. Good for non-stationary problems.',cost:80}
+];
+
+// ===================== LIFE CONTEXTS — per-life narrative layer =====================
+const LIFE_CONTEXTS = {
+  healer: {
+    reborn: `In this life, you are reborn as Royal Physician to the greatest empire.\n\nThe plague has returned. Patients come by the hundreds — all showing similar signs, yet some are dying inside while others are not. No eye can see the difference. But 30 hidden measurements, taken from each patient's cells, hold the answer.\n\n<span class="hl">"Can you tell the sick from the healthy when the signs are hidden inside?"</span>\n\nBuild your diagnostic system. Solve what your past self could not.`,
+    goldIntroTitle: '🏥 The Royal Medical Budget',
+    goldIntroText1: 'You receive <strong>1000 Gold</strong> — the kingdom\'s full research allocation for your diagnostic system.',
+    goldIntroText2: 'Every additional diagnostic layer, every finer resolution, every longer training course — all cost from this fund. <strong>Spend wisely.</strong>',
+    p1: { title: 'Diagnostic Method', desc: 'How will your system learn to read the body\'s hidden signs?' },
+    p2: { title: 'Choose Your Diagnostic School', desc: 'Each school of medicine sees cellular data differently — choose the one built for 30-feature biopsies.' },
+    p3: { title: 'Design Your Diagnostic Protocol', desc: 'Configure the internal layers of your diagnostic engine' },
+    p4: { title: 'Set Your Training Regimen', desc: 'How long and hard will your system study patient records before diagnosing the unknown?' },
+    paradigms: [
+      { id:'supervised', icon:'📋', name:'Study Diagnosed Cases', sub:'Learn from past patients — each biopsy labeled benign or malignant. Your system learns to match cell measurements to diagnoses.', dl:'In ML: Supervised Learning. Input = 30 cellular measurements. Label = cancer/no cancer. The model learns to map features → diagnosis. Powers real clinical AI today.' },
+      { id:'unsupervised', icon:'🔍', name:'Find Natural Patient Clusters', sub:'No prior diagnoses. Let the system find which patients naturally group together — perhaps malignant cases cluster in the measurement space.', dl:'In ML: Unsupervised Learning. No labels. The model finds hidden structure. Used for patient subtyping, anomaly detection in medical data, rare disease discovery.' },
+      { id:'adversarial', icon:'🎭', name:'Synthetic Biopsy Training', sub:'Generate synthetic patient profiles to fill gaps in your training data. A second system learns to distinguish real from fake biopsies — both sharpen each other.', dl:'In ML: GAN. Generator creates synthetic medical records; Discriminator detects fakes. Used for medical data augmentation when labeled real cases are scarce.' }
+    ],
+    armies: [
+      { id:'mlp', icon:'⚕️', name:'The Empirical Physician', sub:'Examines all 30 cell measurements simultaneously with no spatial assumptions. Pure statistical pattern-matching from the raw numbers. Ideal for structured biopsy data.', dl:'MLP = Multi-Layer Perceptron. Every measurement connects to every neuron. No assumptions about which features relate. The right tool when data is tabular with no spatial or temporal structure.', cost:100 },
+      { id:'cnn', icon:'🔬', name:'The Microscope Method', sub:'Scans measurements in overlapping windows — built for images where nearby pixels form patterns. Cell measurements are not pixels; locality doesn\'t apply here.', dl:'CNN = Convolutional Neural Network. Designed for spatial data (images). Applies a sliding kernel to detect local patterns. For raw numerical biopsies, this spatial assumption is wrong.', cost:200 },
+      { id:'rnn', icon:'📈', name:'The Case History Reader', sub:'Reads measurements in sequence, each informing the next. Built for patient timelines over time — not for a single simultaneous biopsy snapshot.', dl:'RNN = Recurrent Neural Network. Hidden state flows across a sequence. Works for longitudinal patient data. But a single biopsy is not a sequence — all 30 values exist simultaneously.', cost:200 },
+      { id:'lstm', icon:'🧬', name:'The Long Memory Physician', sub:'Carries memory across long patient histories. Forget and Input gates decide what to remember. Powerful for evolving conditions — less so for one-shot measurements.', dl:'LSTM = Long Short-Term Memory. Gated memory for long sequences. Excellent for patient histories tracked over months, but overkill for single-snapshot tabular feature vectors.', cost:250 },
+      { id:'transformer', icon:'🔭', name:'The Omniscient Diagnostician', sub:'Attends to all 30 measurements simultaneously, weighing each against every other. Sees relationships no single-pass method can detect.', dl:'Transformer = Self-Attention. Every feature attends to every other: Attention(Q,K,V). Extremely powerful, but requires large datasets. For 569 patients, may overpower the data.', cost:400 }
+    ],
+    structure: {
+      layerLabel: '🔬 Diagnostic Depth — Layers of Abstraction',
+      layerSub: 'In DL: Each layer transforms the measurements into increasingly abstract representations. Layer 1 might detect "high radius + high concavity"; Layer 3 might detect complex multi-feature cancer signatures. More layers = richer diagnosis, but higher cost and risk of overfitting.',
+      neuronLabel: '⚕️ Diagnostic Resolution — Neurons per Layer',
+      neuronSub: 'In DL: How many distinct internal patterns each diagnostic layer can simultaneously track. 32 neurons = coarse pattern detection. 256 neurons = fine-grained, but risks the system memorizing the 455 training patients rather than learning general patterns.',
+      actLabel: '⚡ Signal Threshold — Activation Function',
+      actSub: 'In DL: Without activation, each diagnostic layer is just a weighted sum of measurements — a linear function. No matter how many you stack, they collapse to one. Activation introduces the non-linearity needed to detect complex disease signatures.',
+    },
+    training: {
+      bsLabel: '📋 Patient Batch Size',
+      bsSub: 'In DL: How many patient biopsies the system reviews before updating its internal weights. Small batches = noisier gradient estimates but better generalization. Large batches = smooth but may converge to overconfident diagnoses.',
+      lrLabel: '⏱️ Adjustment Rate (η) — How Fast to Rewrite Diagnoses',
+      lrSub: 'In DL: Step size in gradient descent. Too small = thousands of passes before learning anything. Too large = the system keeps flip-flopping, never settling on a reliable diagnosis.',
+      optLabel: '🧠 Learning Method — Optimization Strategy',
+      optSub: 'In DL: How the system uses errors to update weights. SGD = simple constant push. Adam = adaptive per-parameter rates, like a physician who studies hardest in the areas where they\'ve been most wrong.',
+      epLabel: '📅 Training Duration — Complete Reviews of All Cases',
+      epSub: 'In DL: One epoch = reviewing all 455 training biopsies once. Too few = undertrained, misses critical patterns. Too many = memorizes individual patient biopsies, fails on new patients.',
+      esLabel: '🛑 Early Discharge — Stop When Generalization Plateaus',
+      esSub: 'In DL: Hold back a validation set of patients. If accuracy on these stops improving, halt training. Prevents the system from memorizing rather than understanding the disease.',
+      esOff: 'Complete Full Training', esOn: 'Stop When Validated',
+      esOffSub: 'All epochs. Risk: memorizing training patients.', esOnSub: 'Stops when validation accuracy plateaus. Prevents overfitting.'
+    },
+    siege: {
+      title: 'Diagnosis Begins', emoji: '🔬',
+      allyLabel: 'Your System', enemyLabel: 'Hidden Disease',
+      msgs: ['Processing 30 cellular measurements...', 'Cross-referencing biopsy patterns across 455 training cases...', 'Internal diagnostic layers sharpen their weights...', 'The hidden malignancy signal strengthens...', 'Final sweep — commit to your diagnostic protocol!'],
+      epochLabel: 'Training Pass',
+      winMsg: 'The cellular pattern is decoded!', loseMsg: 'The disease remains hidden...',
+      resultWin: 'DIAGNOSED', resultLose: 'MISDIAGNOSED',
+      winMsgs: (acc) => acc>=90?'Brilliant diagnosis. Your system reads what the eye cannot.':acc>=80?'Strong accuracy. A sound diagnostic protocol.':'Hard-won clarity. Room for refinement remains.',
+      loseMsg2: 'Your diagnostic school was not suited for this data structure. The Oracle of Medicine knows why...'
+    },
+    oracle: { intro: (n) => `Physician, your <span class="hl">${n}</span> studied diligently. But it was not designed for 30-feature tabular biopsy data.` },
+    reveal: {
+      pre: '🔬 The Medical Revelation',
+      title: 'You Just Built a Clinical AI System',
+      intro: 'Every diagnostic decision you made has a precise name in Machine Learning. Here is what your medical system actually did.',
+      p1game: (p) => `📋 Diagnostic Method: <strong>${p.name}</strong>`,
+      p2game: (a) => `⚕️ School: <strong>${a.name}</strong>`,
+      p3game: (layers,neurons,act) => `🔬 Protocol: ${layers} diagnostic layers × ${neurons} neurons | Signal: ${act}`,
+      p4game: (bs,lr,ep,opt,es) => `📋 Training: ${bs} patients/batch | η=${lr} | ${ep} epochs | ${opt}${es?' | Early Stop':''}`,
+      insight: (acc) => `You just ran a complete machine learning experiment on <strong>569 real patient biopsies</strong> — the Wisconsin Breast Cancer Dataset, collected at the University of Wisconsin Hospitals. Each of the 30 features is a real cellular measurement: radius, texture, perimeter, area, smoothness, compactness, concavity, symmetry...\n\nYour model achieved <strong>${acc}% accuracy</strong> at distinguishing malignant from benign tumors — automatically, from 30 numbers alone.\n\nThis is exactly what clinical decision-support AI does today. The difference between a system that helps oncologists and one that doesn't often comes down to these same choices: architecture, depth, learning rate, optimizer. Real ML engineers make them every day. Your past-life self died not knowing. You just built the system they needed.`
+    }
+  },
+
+  scholar: {
+    reborn: `In this life, you are reborn as Sage-King of the great library — with access to every scroll ever written.\n\nThe thousand foreign scrolls still wait. Your scholars have decoded some. The rest remain unknown in intent.\n\n<span class="hl">"Is this text sacred wisdom — or a declaration of war?"</span>\n\nBuild your decoding system. Solve what your past self could not.`,
+    goldIntroTitle: '📜 The Temple\'s Knowledge Fund',
+    goldIntroText1: 'The great library grants you <strong>1000 Gold</strong> — the full annual research budget for your text classification project.',
+    goldIntroText2: 'Every additional interpretation layer, every wider vocabulary, every extra study session — all cost from this fund. <strong>Spend wisely.</strong>',
+    p1: { title: 'Decoding Method', desc: 'How will your system learn to read intent from text it has never seen before?' },
+    p2: { title: 'Choose Your School of Interpretation', desc: 'Each school reads text differently — choose the one built for meaning that flows through sequence.' },
+    p3: { title: 'Design Your Interpretation System', desc: 'Configure the internal layers of your text-decoding engine' },
+    p4: { title: 'Set Your Study Protocol', desc: 'How many scrolls will your system read, and how carefully, before it judges the unknown texts?' },
+    paradigms: [
+      { id:'supervised', icon:'📋', name:'Learn from Decoded Scrolls', sub:'Study texts that masters have already classified — sacred or hostile. Your system learns which word patterns signal which intent.', dl:'In ML: Supervised Learning. Each text has a label. The model learns features → intent. This is how every spam filter, sentiment detector, and content moderator works.' },
+      { id:'unsupervised', icon:'🔍', name:'Seek Hidden Script Patterns', sub:'No prior classifications. Let the system discover which texts naturally cluster together — perhaps by author style, hidden topic, or structural similarity.', dl:'In ML: Unsupervised Learning. Topic modeling (LDA), document clustering, latent semantic analysis. Discovers structure without human annotation.' },
+      { id:'adversarial', icon:'🎭', name:'The Forgery School', sub:'One scholar generates convincing fake sacred texts; another learns to distinguish real from forged. Both improve until authentic and fake are indistinguishable.', dl:'In ML: GAN for text. Generator creates synthetic text; Discriminator detects fakes. Used for style transfer, text augmentation, generating training data.' }
+    ],
+    armies: [
+      { id:'mlp', icon:'📖', name:'The Lexicographer', sub:'Reads the scroll as a bag of words — a count of what appears, ignoring the order. "Not good" and "good, not" look identical. Fast, but blind to sequence.', dl:'MLP = Multi-Layer Perceptron. On bag-of-words features, this is a classic text classifier. It cannot distinguish "not good" from "good, not" — word order is invisible to it.', cost:100 },
+      { id:'cnn', icon:'👁️', name:'The Phrase Hunter', sub:'Scans text in overlapping windows — detecting recurring phrases and local patterns. A kernel of width 3 detects trigrams. "Not very good" becomes a detectable pattern.', dl:'CNN for text = 1D convolution over word embeddings. Detects n-gram patterns. Faster than RNNs. Misses very long-range dependencies ("the beginning of this scroll contradicts its ending").', cost:200 },
+      { id:'rnn', icon:'📨', name:'The Sequential Reader', sub:'Reads one word at a time, left to right. Memory of earlier words flows into later readings. Meaning builds through the scroll\'s sequence — but early words fade.', dl:'RNN = Recurrent Neural Network. hₜ = σ(Wₓxₜ + Wₕhₜ₋₁). Each word updates hidden state h. Context accumulates. But for long texts, the first sentence\'s meaning has faded by the last.', cost:200 },
+      { id:'lstm', icon:'📜', name:'The Memory Scholar', sub:'Like the Sequential Reader, but equipped with Forget and Remember mechanisms. The opening declaration stays in memory even 1,000 words later.', dl:'LSTM = Long Short-Term Memory. Gated cells: Forget Gate erases irrelevant history; Input Gate writes new memories; Output Gate reads from memory. The gold standard for text before Transformers.', cost:250 },
+      { id:'transformer', icon:'🌐', name:'The Omniscient Sage', sub:'Sees the entire scroll at once. Every word attends to every other word directly — the final word can reference the opening passage without any sequential chain between them.', dl:'Transformer = Self-Attention. Attention(Q,K,V) = softmax(QKᵀ/√dₖ)V. Every token attends to every other. No sequential bottleneck. Powers GPT, BERT, all modern language AI.', cost:400 }
+    ],
+    structure: {
+      layerLabel: '📖 Levels of Interpretation — Abstraction Layers',
+      layerSub: 'In DL: Each layer transforms text features into increasingly abstract representations. Layer 1 detects word-level patterns; Layer 3 detects conceptual-level intent. More levels = deeper understanding, but higher cost and risk of memorizing specific scrolls.',
+      neuronLabel: '🔤 Vocabulary of Understanding — Neurons per Layer',
+      neuronSub: 'In DL: How many distinct concepts each interpretation layer can hold simultaneously. 32 neurons = coarse semantic space. 256 neurons = fine-grained but risks memorizing individual scroll phrases rather than learning the language.',
+      actLabel: '⚡ Meaning Gate — Activation Function',
+      actSub: 'In DL: Without activation, interpretation layers are pure linear combinations of word features — no matter how many, they collapse to one flat equation. Activation lets the system detect that "not good" ≠ "good."',
+    },
+    training: {
+      bsLabel: '📜 Scroll Batch — Texts per Study Session',
+      bsSub: 'In DL: How many texts the system reads before updating its language model. Small batches = noisier but better generalization to rare phrasings. Large batches = stable but may miss unusual constructions.',
+      lrLabel: '⏱️ Learning Pace — How Boldly to Rewrite Understanding (η)',
+      lrSub: 'In DL: Step size in gradient descent. Too cautious = takes thousands of texts to learn anything. Too bold = keeps flip-flopping between interpretations, never converging on reliable meaning.',
+      optLabel: '🧠 Learning School — How to Apply Gradient Corrections',
+      optSub: 'In DL: Different optimizers use gradient information differently. Adam maintains a per-parameter adaptive rate — like a scholar who studies most intensely where their understanding has been most wrong.',
+      epLabel: '📅 Study Epochs — Complete Passes Through All Known Texts',
+      epSub: 'In DL: One epoch = reading every training scroll once. Too few = hasn\'t absorbed enough patterns. Too many = memorizes specific scrolls word-for-word rather than understanding the underlying language structure.',
+      esLabel: '🛑 Early Verdict — Stop When Held-Out Texts Are Mastered',
+      esSub: 'In DL: A portion of classified scrolls is reserved for validation. If the system\'s accuracy on these stops improving, halt training. Prevents rote memorization of training texts.',
+      esOff: 'Study to the End', esOn: 'Stop When Mastered',
+      esOffSub: 'Complete all study epochs. Risk: memorizing training scrolls.', esOnSub: 'Stops when validation accuracy plateaus. Prevents overfitting.'
+    },
+    siege: {
+      title: 'The Decoding Begins', emoji: '📜',
+      allyLabel: 'Your System', enemyLabel: 'Unknown Text',
+      msgs: ['Processing the unknown script...', 'Cross-referencing with classified training texts...', 'Semantic patterns crystallize through layers...', 'The hidden intent becomes legible...', 'Final pass — declare your reading!'],
+      epochLabel: 'Study Pass',
+      winMsg: 'The scrolls yield their intent!', loseMsg: 'The text remains inscrutable...',
+      resultWin: 'DECODED', resultLose: 'UNDECIPHERED',
+      winMsgs: (acc) => acc>=90?'Masterful decoding. The ancient language has no secrets from you.':acc>=80?'Strong interpretation. Your system reads what trained scholars could not.':'Partial understanding. The deepest layers of meaning still elude you.',
+      loseMsg2: 'Your interpretation school was not suited for this text structure. The Oracle of the Library knows why...'
+    },
+    oracle: { intro: (n) => `Scholar, your <span class="hl">${n}</span> studied faithfully. But it was not built to read meaning from sequence.` },
+    reveal: {
+      pre: '📜 The Scholarly Revelation',
+      title: 'You Just Built a Text Classification System',
+      intro: 'Every choice you made as a scholar has a precise name in Natural Language Processing. Here is what your system actually did.',
+      p1game: (p) => `📋 Decoding Method: <strong>${p.name}</strong>`,
+      p2game: (a) => `📖 School: <strong>${a.name}</strong>`,
+      p3game: (layers,neurons,act) => `📜 System: ${layers} interpretation layers × ${neurons} neurons | Gate: ${act}`,
+      p4game: (bs,lr,ep,opt,es) => `📋 Study: ${bs} scrolls/session | η=${lr} | ${ep} passes | ${opt}${es?' | Early Stop':''}`,
+      insight: (acc) => `Here is what your decoding experiment actually ran on: <strong>569 real data samples, each with 30 features, binary classification</strong>. In NLP, those 30 numbers would be word embedding dimensions, TF-IDF scores, or n-gram frequencies. The math is identical.\n\nYour ${acc}% classification accuracy reflects every architectural decision you made — the same decisions a real NLP engineer makes when building a sentiment classifier, spam detector, or content moderator.\n\nThe architecture matters enormously: an LSTM reads "the king, who had ruled for forty years and seen three famines, was not well" sequentially and understands the final "not well" in context. An MLP sees only a word-count vector and cannot grasp that the sentence structure matters. Your past-life self died unable to judge intent. You just built the system they needed.`
+    }
+  },
+
+  cartographer: {
+    reborn: `In this life, you are reborn as Master Surveyor to the Royal Court — keeper of every map, commander of every aerial scout.\n\nThe hidden fortresses are out there. Disguised as villages in the landscape. Only patterns within patterns within patterns will expose them.\n\n<span class="hl">"Is this cluster of shapes a village — or a hidden fortress in disguise?"</span>\n\nBuild your detection system. Solve what your past self could not.`,
+    goldIntroTitle: '🗺️ The Royal Survey Budget',
+    goldIntroText1: 'The kingdom grants you <strong>1000 Gold</strong> — the full allocation for your pattern-detection research expedition.',
+    goldIntroText2: 'Every additional scanning layer, every finer detector, every extra training pass — all cost from the survey treasury. <strong>Spend wisely.</strong>',
+    p1: { title: 'Survey Method', desc: 'How will your system learn to classify what it sees in the landscape?' },
+    p2: { title: 'Choose Your Mapping Instrument', desc: 'Each instrument perceives spatial data differently — choose the one built for patterns within patterns.' },
+    p3: { title: 'Design Your Detection System', desc: 'Configure the internal scanning layers of your spatial recognition engine' },
+    p4: { title: 'Set Your Expedition Protocol', desc: 'How thoroughly will your scanner train on known territories before surveying the unknown?' },
+    paradigms: [
+      { id:'supervised', icon:'📋', name:'Map from Labeled Territories', sub:'Learn from aerial views already classified — fortress or village. Your system learns which spatial patterns always indicate hidden fortifications.', dl:'In ML: Supervised Learning. Each image/region has a label. The model learns visual features → classification. The basis of every object detection and image classification system.' },
+      { id:'unsupervised', icon:'🔍', name:'Find Natural Landscape Clusters', sub:'No labels. Let the system find which regions cluster together in feature space — perhaps fortresses share subtle structural signatures your eye never noticed.', dl:'In ML: Unsupervised Learning. Image clustering, visual anomaly detection, finding latent groups in spatial data without human annotation.' },
+      { id:'adversarial', icon:'🎭', name:'Counterfeit Map Training', sub:'Generate convincing fake fortress-disguises; train your scanner to detect them. The generator sharpens the detector; the detector pressures the generator.', dl:'In ML: GAN for images. Generator synthesizes realistic fake training images; Discriminator learns to detect them. Powers image synthesis, data augmentation, and style transfer.' }
+    ],
+    armies: [
+      { id:'mlp', icon:'📍', name:'The Coordinate Mapper', sub:'Records every grid coordinate independently. No concept of which squares are adjacent — treats each point as equally unrelated to its neighbors. Blind to spatial structure.', dl:'MLP = Multi-Layer Perceptron. Flattens the spatial grid into a vector and treats each point independently. "This texture at this position" is invisible. Misses the local patterns that define shapes.', cost:100 },
+      { id:'cnn', icon:'🐘', name:'The Grid Scanner', sub:'Sweeps the landscape in overlapping grids — first detecting edges, then shapes built from edges, then structures built from shapes. Exactly how spatial recognition works.', dl:'CNN = Convolutional Neural Network. Kernel slides across the spatial input detecting local patterns at every position. Layers stack: pixels→edges→shapes→objects. The standard for spatial pattern detection.', cost:200 },
+      { id:'rnn', icon:'🛤️', name:'The Trail Follower', sub:'Reads spatial data as a linear sequence — row by row. Loses the 2D structure: a shape is not the same when its rows are read sequentially versus seen at once.', dl:'RNN = Recurrent Neural Network. Processes a sequence, not a grid. Would read an image row-by-row, losing the crucial spatial relationships between adjacent rows. Wrong inductive bias for spatial data.', cost:200 },
+      { id:'lstm', icon:'🧭', name:'The Memory Navigator', sub:'Remembers what was seen earlier in the sequential scan. Powerful for long routes — but spatial maps are 2D grids, not paths. The wrong memory structure for this domain.', dl:'LSTM = Long Short-Term Memory. Gated memory for long sequences. Excellent for routes and timelines. Struggles with 2D spatial data because it lacks the local spatial inductive bias CNNs provide.', cost:250 },
+      { id:'transformer', icon:'👁️', name:'The Eagle Eye', sub:'Surveys every region simultaneously. Every grid square attends to every other grid square directly — seeing the whole fortress-pattern at once, regardless of where it appears.', dl:'Vision Transformer (ViT) = Self-Attention over image patches. Every patch attends to every other: finds global spatial relationships. Outperforms CNNs at large scale, but data-hungry.', cost:400 }
+    ],
+    structure: {
+      layerLabel: '🔭 Detection Depth — Scanning Layers',
+      layerSub: 'In DL: Each layer builds a more abstract spatial representation. Layer 1 detects edges and gradients. Layer 2 detects shapes built from edges. Layer 3 detects structures built from shapes. More depth = more complex patterns detected, but higher cost.',
+      neuronLabel: '🗺️ Pattern Vocabulary — Detectors per Layer',
+      neuronSub: 'In DL: How many distinct spatial patterns each layer can simultaneously detect. 32 detectors = coarse pattern recognition. 256 = fine-grained but risks memorizing specific training landscapes rather than learning generalizable spatial signatures.',
+      actLabel: '⚡ Edge Threshold — Activation Function',
+      actSub: 'In DL: Without activation, your scanning layers are linear — they can detect only linear gradients, never the non-linear boundaries that define a fortress wall versus a village fence. Activation makes shape detection possible.',
+    },
+    training: {
+      bsLabel: '🗺️ Survey Batch — Map Regions per Training Session',
+      bsSub: 'In DL: How many map regions the scanner studies before updating its pattern library. Small batches = noisier but finds more varied terrain patterns. Large batches = stable but may miss rare fortress disguise types.',
+      lrLabel: '⏱️ Survey Speed — Pattern Update Rate (η)',
+      lrSub: 'In DL: How aggressively the system revises its pattern library after each batch. Cautious = slow but thorough — won\'t overwrite good patterns with noise. Aggressive = fast but risks destabilizing already-learned spatial features.',
+      optLabel: '🧠 Survey Method — Optimization Strategy',
+      optSub: 'In DL: Different optimizers read the gradient terrain differently. Adam adapts per spatial feature — like a cartographer who surveys most carefully where the terrain has been most confusing.',
+      epLabel: '📅 Expedition Length — Full Reviews of All Training Regions',
+      epSub: 'In DL: One epoch = the scanner reviews every training map region once. Too few = hasn\'t seen enough terrain variety. Too many = memorizes specific maps rather than learning universal spatial patterns.',
+      esLabel: '🛑 Early Return — Stop When Validation Maps Are Mastered',
+      esSub: 'In DL: A portion of labeled maps is reserved for testing. If accuracy on these stops improving, halt the expedition. Prevents the scanner from memorizing training landscapes instead of learning to generalize.',
+      esOff: 'Full Expedition', esOn: 'Return Early',
+      esOffSub: 'Complete all training epochs. Risk: memorizing training maps.', esOnSub: 'Stops when validation map accuracy plateaus. Prevents overfitting.'
+    },
+    siege: {
+      title: 'The Survey Begins', emoji: '🗺️',
+      allyLabel: 'Your Scanner', enemyLabel: 'Hidden Fortress',
+      msgs: ['Scanning terrain in overlapping grids...', 'Edge detection layer activating — walls, ditches, structures...', 'Shape patterns emerging from raw pixel data...', 'The hidden fortress structure becomes visible...', 'Final classification — fortress or village?'],
+      epochLabel: 'Survey Pass',
+      winMsg: 'The fortress is exposed!', loseMsg: 'The fortress remains hidden...',
+      resultWin: 'MAPPED', resultLose: 'UNSEEN',
+      winMsgs: (acc) => acc>=90?'Masterful survey. Hidden patterns revealed themselves to your instrument.':acc>=80?'Strong detection. Your spatial system reads what human eyes miss.':'Partial success. Some fortresses still hide from your scanner.',
+      loseMsg2: 'Your mapping instrument was not built for spatial pattern detection. The Oracle of Maps knows why...'
+    },
+    oracle: { intro: (n) => `Cartographer, your <span class="hl">${n}</span> mapped faithfully. But it was not built to see patterns within patterns within patterns.` },
+    reveal: {
+      pre: '🗺️ The Cartographic Revelation',
+      title: 'You Just Built a Spatial Pattern Recognition System',
+      intro: 'Every choice you made as a cartographer has a precise name in Computer Vision. Here is what your system actually did.',
+      p1game: (p) => `📋 Survey Method: <strong>${p.name}</strong>`,
+      p2game: (a) => `🗺️ Instrument: <strong>${a.name}</strong>`,
+      p3game: (layers,neurons,act) => `🔭 Scanner: ${layers} detection layers × ${neurons} detectors | Threshold: ${act}`,
+      p4game: (bs,lr,ep,opt,es) => `🗺️ Expedition: ${bs} regions/session | η=${lr} | ${ep} passes | ${opt}${es?' | Early Return':''}`,
+      insight: (acc) => `Your spatial classification experiment ran on the Wisconsin Breast Cancer Dataset — <strong>569 samples, 30 features, binary classification</strong>. In real computer vision, those 30 numbers would be pixel intensities, HOG descriptors, or CNN feature maps extracted from aerial imagery.\n\nYour architecture choice reveals your spatial intuition: a CNN's kernel knows that "this texture at this position, relative to that edge" is meaningful. An MLP treats every coordinate as independent, missing the spatial relationships entirely.\n\nEvery satellite object detection system, every medical imaging AI, every autonomous vehicle camera uses these same decisions. Your ${acc}% accuracy is the fingerprint of every choice you made. Your past-life self died unable to see the hidden patterns. You just built the system they needed.`
+    }
+  },
+
+  merchant: {
+    reborn: `In this life, you are reborn as Oracle of the Waterways — every flood record ever written is yours to study.\n\nThe river remembers everything. Three hundred years of water levels, rainfall, upstream readings. Somewhere in that history, the pattern of the next great flood is already written.\n\n<span class="hl">"What will the river do next, given everything it has ever remembered?"</span>\n\nBuild your prediction system. Solve what your past self could not.`,
+    goldIntroTitle: '🌊 The River Trade Fund',
+    goldIntroText1: 'The guild of merchants grants you <strong>1000 Gold</strong> — the full annual research budget for your forecasting system.',
+    goldIntroText2: 'Every additional memory layer, every wider pattern bank, every extra training season — all cost from the trade treasury. <strong>Spend wisely.</strong>',
+    p1: { title: 'Prediction Method', desc: 'How will your system learn to predict the river\'s future from its past?' },
+    p2: { title: 'Choose Your Forecasting Instrument', desc: 'Each instrument reads time differently — choose the one built for long chains of sequential memory.' },
+    p3: { title: 'Design Your Forecasting System', desc: 'Configure the internal memory layers of your temporal prediction engine' },
+    p4: { title: 'Set Your Training Seasons', desc: 'How many historical flood cycles will your system study before predicting the next?' },
+    paradigms: [
+      { id:'supervised', icon:'📋', name:'Study Historical Flood Records', sub:'Learn from past seasons — each marked as flood or safe. Your system learns which sequences of river readings always precede disaster.', dl:'In ML: Supervised Learning on sequences. Input = historical measurements. Label = flood/no flood. Powers weather prediction, financial forecasting, any "predict the next value from past values" problem.' },
+      { id:'unsupervised', icon:'🔍', name:'Find Hidden River Cycles', sub:'No flood labels. Let the system discover the river\'s natural rhythms — perhaps there are cycles your ancestors never documented, visible only in the raw measurement patterns.', dl:'In ML: Unsupervised time series. Anomaly detection in sensor streams, discovering seasonal cycles, finding regime changes without labels. Used in industrial monitoring.' },
+      { id:'adversarial', icon:'🎭', name:'Simulate False River Histories', sub:'Generate synthetic river histories with realistic patterns; train your prediction system against them. It learns to distinguish true river behavior from noise and fabrication.', dl:'In ML: GAN for time series. Generator creates synthetic sequences; Discriminator learns real from fake. Used for financial data augmentation, simulation training, rare event generation.' }
+    ],
+    armies: [
+      { id:'mlp', icon:'📊', name:'The Ledger Reader', sub:'Reads today\'s measurements and immediately predicts. No memory of yesterday, last month, or last decade. Each reading is treated as isolated — the river\'s history is invisible to it.', dl:'MLP = Multi-Layer Perceptron. Sees only the current feature vector. Cannot detect that "three consecutive rising readings always precede a flood." Temporal context does not exist for it.', cost:100 },
+      { id:'cnn', icon:'🌊', name:'The Pattern Spotter', sub:'Scans the river\'s recent readings in overlapping windows — detecting short-term recurring shapes: rise-plateau-surge, or drop-stabilize-drop patterns.', dl:'CNN for time series = 1D convolution. Detects local temporal motifs (short-term patterns). Fast and effective for recognizable recurring shapes. Cannot detect "the drought of 10 years ago predicts today\'s flood."', cost:200 },
+      { id:'rnn', icon:'📨', name:'The Current Reader', sub:'Reads the river\'s history one reading at a time. Memory of yesterday flows into today\'s prediction. But the drought of ten years ago has faded — recent memory dominates.', dl:'RNN = Recurrent Neural Network. hₜ = σ(Wₓxₜ + Wₕhₜ₋₁). Running context. Natural for sequential data. But vanishing gradients mean distant events fade from memory — the river\'s long history is partially lost.', cost:200 },
+      { id:'lstm', icon:'🔮', name:'The Long Memory Oracle', sub:'Remembers the drought of ten years ago as clearly as yesterday\'s rainfall. Forget and Input gates decide which historical readings to carry forward and which to release.', dl:'LSTM = Long Short-Term Memory. Gated memory cells: Forget Gate erases irrelevant history, Input Gate writes critical new readings, Output Gate decides what the prediction needs from memory. The gold standard for time series.', cost:250 },
+      { id:'transformer', icon:'⏳', name:'The Time Weaver', sub:'Sees all historical readings simultaneously. The flood of last spring attends directly to the drought of fifty years ago — no sequential chain, no fading memory.', dl:'Temporal Transformer = Self-Attention over time steps. Every step attends to every other: Attention(Q,K,V). No vanishing gradient across time. Handles arbitrarily long sequences. Powers modern forecasting.', cost:400 }
+    ],
+    structure: {
+      layerLabel: '🌊 Forecast Depth — Memory Layers',
+      layerSub: 'In DL: Each memory layer extracts increasingly abstract temporal patterns. Layer 1 detects short-term trends. Layer 3 detects multi-scale cycles: daily rhythms embedded in seasonal patterns embedded in decadal trends. More depth = longer memory, higher cost.',
+      neuronLabel: '📊 Pattern Capacity — Memory Units per Layer',
+      neuronSub: 'In DL: How many distinct temporal patterns each layer can simultaneously track. 32 units = coarse cycle detection. 256 = fine-grained, but risks memorizing specific historical years rather than learning the river\'s underlying physical laws.',
+      actLabel: '⚡ Signal Gate — Activation Function',
+      actSub: 'In DL: Without activation, your memory layers are linear — they can detect only linear trends, never the complex non-linear cycles of a real river. Activation makes it possible to learn "when level exceeds 3.7 after 3 weeks of rain following a dry summer, flood probability is 94%."',
+    },
+    training: {
+      bsLabel: '📊 Historical Sample — Seasons per Training Batch',
+      bsSub: 'In DL: How many historical river seasons the system reviews before updating its forecast model. Fewer seasons = noisier but adapts to local river variation. More seasons = stable but may smooth over critical rare events that matter most.',
+      lrLabel: '⏱️ Adaptation Rate — How Aggressively to Revise Forecasts (η)',
+      lrSub: 'In DL: Step size in gradient descent. Too fast = the system keeps changing its flood model with every new data point. Too slow = takes centuries of records before adjusting the forecast.',
+      optLabel: '🧠 Forecasting Method — How to Apply Historical Corrections',
+      optSub: 'In DL: Different optimizers interpret gradient information differently. Adam adapts per parameter — like a river oracle who revises their flood model most aggressively where their predictions have been most wrong.',
+      epLabel: '📅 Training Seasons — Complete Reviews of Historical Records',
+      epSub: 'In DL: One epoch = reviewing all recorded river seasons once. Too few = the system hasn\'t seen enough cycles to understand the river. Too many = memorizes specific historical years rather than learning the river\'s underlying patterns.',
+      esLabel: '🛑 Seasonal Cutoff — Stop When Held-Out Predictions Stabilize',
+      esSub: 'In DL: A portion of historical seasons is reserved for testing. If forecast accuracy on these stops improving, halt training. Prevents the oracle from memorizing history rather than learning the river\'s laws.',
+      esOff: 'All Historical Seasons', esOn: 'Stop When Stable',
+      esOffSub: 'Complete all training epochs. Risk: memorizing historical anomalies.', esOnSub: 'Stops when validation forecast accuracy plateaus. Prevents overfitting.'
+    },
+    siege: {
+      title: 'Reading the River', emoji: '🌊',
+      allyLabel: 'Your Forecast', enemyLabel: 'Hidden Pattern',
+      msgs: ['Tracing the river\'s three centuries of memory...', 'Temporal patterns surfacing across seasonal cycles...', 'Long-range dependencies crystallize in the memory layers...', 'The hidden flood signature strengthens...', 'Final reading — what does the river remember?'],
+      epochLabel: 'Historical Season',
+      winMsg: 'The river\'s pattern is mapped!', loseMsg: 'The current hides its secret...',
+      resultWin: 'PREDICTED', resultLose: 'CONFOUNDED',
+      winMsgs: (acc) => acc>=90?'Oracle-level accuracy. The river holds no secrets from your memory system.':acc>=80?'Strong forecast. Your system reads what three generations of merchants missed.':'Partial prediction. The river\'s deepest cycles still elude you.',
+      loseMsg2: 'Your forecasting instrument was not built to hold the river\'s long memory. The Oracle of the Waterways knows why...'
+    },
+    oracle: { intro: (n) => `River-reader, your <span class="hl">${n}</span> listened carefully. But it was not built to carry memory across the river\'s long history.` },
+    reveal: {
+      pre: '🌊 The River\'s Revelation',
+      title: 'You Just Built a Time Series Prediction System',
+      intro: 'Every choice you made as a river oracle has a precise name in Sequence Modeling and Time Series Machine Learning. Here is what your system actually did.',
+      p1game: (p) => `📋 Prediction Method: <strong>${p.name}</strong>`,
+      p2game: (a) => `🌊 Instrument: <strong>${a.name}</strong>`,
+      p3game: (layers,neurons,act) => `📊 System: ${layers} memory layers × ${neurons} units | Gate: ${act}`,
+      p4game: (bs,lr,ep,opt,es) => `🌊 Training: ${bs} seasons/batch | η=${lr} | ${ep} passes | ${opt}${es?' | Early Cutoff':''}`,
+      insight: (acc) => `Your time series forecasting experiment ran on the Wisconsin Breast Cancer Dataset — <strong>569 samples, 30 features, binary classification</strong>. Think of those 30 features not as simultaneous measurements, but as 30 sequential readings from the river taken over time. The mathematics is identical.\n\nYour architecture reveals your temporal intuition: an LSTM's forget gate is exactly like deciding "the drought of ten years ago is now irrelevant — the current upstream level is what matters." An MLP has no such mechanism — it reads each moment as if no history exists.\n\nEvery flood prediction system, financial forecaster, and industrial sensor monitor uses these same decisions. Your ${acc}% accuracy is the record of every choice you made. Your past-life self died reading the river wrong. You just built the system they needed.`
+    }
+  }
+};
+
+function LC(){ return LIFE_CONTEXTS[G.pastLife?.id] || LIFE_CONTEXTS.healer; }
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function updGold(){document.querySelectorAll('[id^="gold"]').forEach(e=>e.textContent=G.gold);}
+function spend(n){G.gold=Math.max(0,G.gold-n);updGold();}
+
+function typeText(el,text,spd=28){
+  return new Promise(resolve=>{
+    el.innerHTML='';let i=0;
+    function go(){
+      if(i>=text.length){resolve();return;}
+      if(text[i]==='<'){let end=text.indexOf('>',i);el.innerHTML+=text.substring(i,end+1);i=end+1;go();return;}
+      if(text[i]==='\n'){el.innerHTML+='<br><br>';}else{el.innerHTML+=text[i];}
+      i++;setTimeout(go,spd);
+    }
+    go();
   });
-  
-  document.getElementById('reveal-btn').style.display = 'block';
-  document.getElementById('waiting-section').style.display = 'none';
 }
 
-function showReveal() {
-  showScreen('reveal');
-  
-  // Winner card
-  const winner = gameState.allResults.sort((a,b) => b.accuracy - a.accuracy)[0];
-  document.getElementById('reveal-winner-card').innerHTML = `
-    <div class="reveal-winner">
-      <div class="winner-crown">👑</div>
-      <div class="winner-label">Supreme Commander</div>
-      <div class="winner-name">${winner?.name || gameState.playerName}</div>
-      <div class="winner-score">${winner?.accuracy || gameState.myResult?.accuracy}% battle accuracy — Their army was the most intelligent.</div>
+// ===================== LANDING =====================
+function setMode(mode,btn){
+  G.mode=mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('roomSection').className='room-section'+(mode==='join'?' visible':'');
+}
+
+async function startGame(){
+  G.name=document.getElementById('playerName').value.trim();
+  if(!G.name){toast('Enter your name, Commander');return;}
+  AudioEngine.init();
+
+  if(G.mode==='solo'){
+    G.roomId='SOLO_'+Math.random().toString(36).substr(2,4).toUpperCase();
+    G.isHost=true;
+    startPrologue();
+
+  } else if(G.mode==='create'){
+    try{
+      const r=await fetch(API+'/create_room',{method:'POST'});
+      const d=await r.json();
+      G.roomId=d.room_id;
+    }catch(e){
+      G.roomId=Math.random().toString(36).substr(2,6).toUpperCase();
+    }
+    G.isHost=true;
+    _roomPlayers={[G.pid]:G.name};
+    showRoomWait(true);
+
+  } else if(G.mode==='join'){
+    G.roomId=document.getElementById('roomInput').value.trim().toUpperCase();
+    if(!G.roomId){toast('Enter a room code');return;}
+    G.isHost=false;
+    _roomPlayers={[G.pid]:G.name};
+    showRoomWait(false);
+  }
+}
+
+function showRoomWait(isHost){
+  show('roomwait');
+  AudioEngine.playRoomJoin();
+  document.getElementById('rwCode').textContent=G.roomId;
+  document.getElementById('hostControls').style.display=isHost?'block':'none';
+  document.getElementById('guestWait').style.display=isHost?'none':'block';
+  document.getElementById('rwTitle').textContent=isHost?'War Room Created':'War Room Joined';
+  document.getElementById('rwSubtext').textContent=isHost?'Share this code with your allies':'Waiting for the host to begin...';
+  updatePlayersList();
+  connectWS();
+  // Add self immediately
+  broadcastJoin();
+}
+
+function broadcastJoin(){
+  if(G.ws&&G.ws.readyState===1){
+    G.ws.send(JSON.stringify({type:'player_joined',pid:G.pid,name:G.name}));
+  } else {
+    setTimeout(broadcastJoin,300);
+  }
+}
+
+function hostStartGame(){
+  if(G.ws&&G.ws.readyState===1){
+    G.ws.send(JSON.stringify({type:'start_game',by:G.name}));
+  }
+  startPrologue();
+}
+
+function connectWS(){
+  if(G.mode==='solo')return;
+  try{
+    const p=location.protocol==='https:'?'wss:':'ws:';
+    G.ws=new WebSocket(`${p}//${location.host}/ws/${G.roomId}/${G.pid}`);
+    G.ws.onopen=()=>{};
+    G.ws.onmessage=e=>{
+      try{
+        const m=JSON.parse(e.data);
+        if(m.type==='player_joined'){
+          if(!_roomPlayers[m.pid]){
+            _roomPlayers[m.pid]=m.name;
+            updatePlayersList();
+            toast('⚔️ '+m.name+' joined the war room!');
+            AudioEngine.playRoomJoin();
+            // New joiner: announce yourself back
+            if(G.ws&&G.ws.readyState===1){
+              G.ws.send(JSON.stringify({type:'player_joined',pid:G.pid,name:G.name}));
+            }
+          }
+        } else if(m.type==='start_game'){
+          if(!G.isHost){
+            toast('The host has begun the campaign!');
+            startPrologue();
+          }
+        } else if(m.type==='player_result'){
+          toast('⚔️ '+m.player+' scored '+m.accuracy+'%!');
+        }
+      }catch(err){}
+    };
+    G.ws.onerror=()=>{};
+  }catch(e){}
+}
+
+// ===================== PROLOGUE (manual advance) =====================
+async function startPrologue(){
+  show('prologue');
+  AudioEngine.playPrologue();
+  const el=document.getElementById('prologueText');
+  await typeText(el,'In another life, you were not a king...\n\nYou were someone else entirely. Someone who faced a problem they could never solve.\n\nTheir failure follows you across lifetimes.',32);
+  document.getElementById('prologueContinue').classList.add('visible');
+}
+
+function showLifeCards(){
+  document.getElementById('prologueContinue').classList.remove('visible');
+  const el=document.getElementById('prologueText');
+  el.innerHTML='<em style="color:var(--gold-dim)">Who were you, in that forgotten life?</em>';
+  const cards=document.getElementById('pastLifeCards');
+  cards.style.display='grid';
+  cards.innerHTML=LIVES.map((l,i)=>`
+    <div class="life-card anim-fadeUp" style="animation-delay:${i*0.1}s" onclick="pickLife('${l.id}',this)">
+      <div class="icon">${l.icon}</div>
+      <div class="name">${l.name}</div>
+      <div class="desc">${l.desc}</div>
+    </div>`).join('');
+}
+
+async function pickLife(id,el){
+  G.pastLife=LIVES.find(l=>l.id===id);
+  document.querySelectorAll('.life-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  await new Promise(r=>setTimeout(r,450));
+  show('lifeStory');
+  AudioEngine.playLifeStory(id);
+  const txt=document.getElementById('lifeStoryText');
+  await typeText(txt,G.pastLife.story,24);
+  document.getElementById('lifeStoryContinue').classList.add('visible');
+}
+
+// ===================== KARMA (manual) =====================
+async function goToKarma(){
+  show('karma');
+  AudioEngine.playKarmaChime();
+  const el=document.getElementById('karmaText');
+  await typeText(el,'The gods offer you another chance.\n\nBut fate adds its own twist.\n\nChoose a card to reveal your karma for this battle...',32);
+  const row=document.getElementById('karmaCards');
+  const shuffled=[...KARMA_MODS].sort(()=>Math.random()-0.5).slice(0,3);
+  row.innerHTML=shuffled.map((k,i)=>`<div class="karma-card" onclick="flipKarma(this,${i})" data-i="${i}"><span class="face">🃏</span><span class="back">${k.icon}</span></div>`).join('');
+  row._data=shuffled;
+}
+
+async function flipKarma(el,i){
+  if(G.karma)return;
+  G.karma=document.getElementById('karmaCards')._data[i];
+  el.classList.add('flipped');
+  AudioEngine.playKarmaFlip();
+  await new Promise(r=>setTimeout(r,500));
+  document.querySelectorAll('.karma-card').forEach(c=>{if(!c.classList.contains('flipped'))c.style.opacity='0.3';});
+  const txt=document.getElementById('karmaText');
+  await typeText(txt,`<span class="hl">${G.karma.icon} ${G.karma.name}</span>\n\n${G.karma.desc}\n\nYour karma is sealed. Your destiny calls.`,32);
+  document.getElementById('karmaContinue').classList.add('visible');
+}
+
+// ===================== PROBLEM (manual) =====================
+async function goToProblem(){
+  show('problem');
+  AudioEngine.playProblemReveal();
+  G.problem=G.pastLife.problem;
+  const el=document.getElementById('problemText');
+  await typeText(el,LC().reborn,28);
+  document.getElementById('problemContinue').classList.add('visible');
+}
+
+function goToGoldIntro(){
+  const lc=LC();
+  document.getElementById('goldIntroTitle').textContent=lc.goldIntroTitle;
+  document.getElementById('goldIntroText1').innerHTML=lc.goldIntroText1;
+  document.getElementById('goldIntroText2').innerHTML=lc.goldIntroText2;
+  show('goldintro');
+}
+
+// ===================== PHASE 1: PARADIGM =====================
+function goToParadigm(){
+  show('paradigm');G.gold=1000;G.attempts++;updGold();
+  AudioEngine.playPhaseChime(1);
+  const lc=LC();
+  document.getElementById('p1Title').textContent=lc.p1.title;
+  document.getElementById('p1Desc').textContent=lc.p1.desc;
+  document.getElementById('paradigmNext').textContent='Move Forward →';
+  const grid=document.getElementById('paradigmGrid');
+  grid.innerHTML=lc.paradigms.map(p=>`
+    <div class="choice-card" onclick="selParadigm('${p.id}',this)">
+      <div class="choice-icon">${p.icon}</div>
+      <div class="choice-info">
+        <div class="choice-name">${p.name}</div>
+        <div class="choice-sub">${p.sub}</div>
+        <div class="choice-dl">${p.dl}</div>
+      </div>
+    </div>`).join('');
+}
+
+function selParadigm(id,el){
+  G.paradigm=id;
+  document.querySelectorAll('#paradigmGrid .choice-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('paradigmNext').classList.add('visible');
+}
+
+// ===================== PHASE 2: ARMY =====================
+function goToArmy(){
+  if(!G.paradigm){toast('Choose your method first');return;}
+  show('army');updGold();
+  AudioEngine.playPhaseChime(2);
+  const lc=LC();
+  document.getElementById('p2Title').textContent=lc.p2.title;
+  document.getElementById('p2Desc').textContent=lc.p2.desc;
+  const grid=document.getElementById('armyGrid');
+  grid.innerHTML=lc.armies.map(a=>`
+    <div class="choice-card" onclick="selArmy('${a.id}',${a.cost},this)">
+      <div class="choice-icon">${a.icon}</div>
+      <div class="choice-info">
+        <div class="choice-name">${a.name}</div>
+        <div class="choice-sub">${a.sub}</div>
+        <div class="choice-dl">${a.dl}</div>
+      </div>
+      <div class="choice-cost">🪙 ${a.cost}</div>
+    </div>`).join('');
+}
+
+let prevArmyCost=0;
+function selArmy(id,cost,el){
+  G.gold+=prevArmyCost;prevArmyCost=cost;G.architecture=id;spend(cost);
+  document.querySelectorAll('#armyGrid .choice-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('armyNext').classList.add('visible');
+  showArchAnim(id);
+}
+
+function showArchAnim(id){
+  const box=document.getElementById('archAnim');
+  box.classList.remove('hidden');
+  if(id==='cnn'){
+    // Create 5x5 grid with scanner
+    const cells=Array(25).fill(0).map((_,i)=>`<div class="cnn-cell${Math.random()>.6?' bright':''}"></div>`).join('');
+    box.innerHTML=`<div style="position:relative"><div class="cnn-grid">${cells}</div><div class="cnn-scanner"></div></div><div style="font-size:16px;color:var(--gold-dim);margin-left:16px;max-width:200px;font-style:italic;">Filter slides across, detecting local patterns at each position</div>`;
+  } else if(id==='rnn'){
+    box.innerHTML=`<div class="rnn-chain"><div class="rnn-node">x₁</div><div class="rnn-arrow">→</div><div class="rnn-node">h₁</div><div class="rnn-arrow">→</div><div class="rnn-node">h₂</div><div class="rnn-arrow">→</div><div class="rnn-node">h₃</div><div class="rnn-arrow">→</div><div class="rnn-node">ŷ</div></div><div style="font-size:16px;color:var(--gold-dim);margin-top:10px;font-style:italic;">Hidden state flows through time, carrying memory</div>`;
+  } else if(id==='lstm'){
+    box.innerHTML=`<div class="lstm-gate"><div class="gate-box">🗑️ Forget</div><span style="color:var(--gold);">→</span><div class="gate-box">📝 Input</div><span style="color:var(--gold);">→</span><div class="gate-box">💾 Cell</div><span style="color:var(--gold);">→</span><div class="gate-box">📤 Output</div></div><div style="font-size:16px;color:var(--gold-dim);margin-top:10px;font-style:italic;">Three gates control what to remember, what to add, what to output</div>`;
+  } else if(id==='transformer'){
+    const intensities=['0.1','0.3','0.8','0.5','0.9','0.2','0.6','0.4','0.7','0.1','0.95','0.3','0.4','0.7','0.2','0.85'];
+    const cells=intensities.map(v=>`<div class="attn-cell" style="background:rgba(201,168,76,${v});animation:attentionPulse ${1+Math.random()}s ease infinite;animation-delay:${Math.random()*0.5}s;"></div>`).join('');
+    box.innerHTML=`<div class="attn-grid">${cells}</div><div style="font-size:16px;color:var(--gold-dim);margin-left:16px;max-width:200px;font-style:italic;">Every token attends to every other — bright = high attention weight</div>`;
+  } else if(id==='mlp'){
+    box.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center">${[4,6,4,2].map((n,li)=>`<div style="display:flex;flex-direction:column;gap:6px;align-items:center">${Array(n).fill(0).map(()=>`<div style="width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,0.5);border:1px solid var(--gold);"></div>`).join('')}</div>${li<3?'<div style="color:var(--gold-dim);font-size:22px;">→</div>':''}`).join('')}</div><div style="font-size:16px;color:var(--gold-dim);margin-top:10px;font-style:italic;">Every neuron connects to every neuron in the next layer</div>`;
+  } else {
+    box.classList.add('hidden');
+  }
+}
+
+// ===================== PHASE 3: STRUCTURE =====================
+function goToStructure(){
+  if(!G.architecture){toast('Choose your approach first');return;}
+  show('structure');updGold();
+  AudioEngine.playPhaseChime(3);
+  const lc=LC();
+  document.getElementById('p3Title').textContent=lc.p3.title;
+  document.getElementById('p3Desc').textContent=lc.p3.desc;
+  buildStructure();
+}
+
+let costs={layers:100,neurons:100};
+function buildStructure(){
+  const lc=LC();
+  const s=lc.structure;
+  const b=document.getElementById('structureBuilder');
+  b.innerHTML=`
+    <div class="builder-section">
+      <div class="builder-label">${s.layerLabel}</div>
+      <div class="builder-sublabel">${s.layerSub}</div>
+      <div class="builder-options">
+        <div class="builder-opt" onclick="setL(1,50,this)">1 Layer<span class="cost">🪙 50</span><span class="sub-text">Surface-level patterns only. Fast training.</span></div>
+        <div class="builder-opt selected" onclick="setL(2,100,this)">2 Layers<span class="cost">🪙 100</span><span class="sub-text">Balanced. Good for most problems.</span></div>
+        <div class="builder-opt" onclick="setL(3,200,this)">3 Layers<span class="cost">🪙 200</span><span class="sub-text">Deep abstraction. Risk of vanishing gradients.</span></div>
+      </div>
     </div>
-  `;
-  
-  // Explanation cards
-  const container = document.getElementById('reveal-explanations');
-  container.innerHTML = '';
-  
-  const myDecisions = gameState.decisions;
-  
-  Object.keys(revealData).forEach((key, idx) => {
-    const rd = revealData[key];
-    const val = myDecisions[key];
-    const e = rd.explanation[val] || rd.explanation[Object.keys(rd.explanation)[1]];
-    
-    const card = document.createElement('div');
-    card.className = 'reveal-card';
-    card.style.animationDelay = (idx * 0.1) + 's';
-    
-    card.innerHTML = `
-      <div class="reveal-card-header">
-        <span class="reveal-icon">${rd.icon}</span>
-        <div>
-          <div class="decision-title">${rd.warTitle} → <span style="color:var(--saffron)">${rd.dlName}</span></div>
-          <div class="reveal-war">"${e.war}"</div>
-        </div>
+    <div class="builder-section">
+      <div class="builder-label">${s.neuronLabel}</div>
+      <div class="builder-sublabel">${s.neuronSub}</div>
+      <div class="builder-options">
+        <div class="builder-opt" onclick="setN(32,50,this)">32 units<span class="cost">🪙 50</span><span class="sub-text">Lean. May underfit complex patterns.</span></div>
+        <div class="builder-opt selected" onclick="setN(64,100,this)">64 units<span class="cost">🪙 100</span><span class="sub-text">Standard capacity. Industry default.</span></div>
+        <div class="builder-opt" onclick="setN(128,150,this)">128 units<span class="cost">🪙 150</span><span class="sub-text">Rich representation. Stronger capacity.</span></div>
+        <div class="builder-opt" onclick="setN(256,200,this)">256 units<span class="cost">🪙 200</span><span class="sub-text">Maximum capacity. Risk overfit on small data.</span></div>
       </div>
-      <div class="reveal-card-body">
-        <div class="reveal-dl"><strong>${rd.dlName}:</strong> ${e.dl}</div>
-        <div class="reveal-math">${e.math}</div>
+    </div>
+    <div class="builder-section">
+      <div class="builder-label">${s.actLabel}</div>
+      <div class="builder-sublabel">${s.actSub}</div>
+      <div class="builder-options">
+        <div class="builder-opt${G.activation==='relu'?' selected':''}" onclick="setAct('relu',this)">⚡ ReLU — f(x)=max(0,x)<span class="sub-text">Positive signals pass, negatives cut off. Fast, sparse, avoids vanishing gradient.</span></div>
+        <div class="builder-opt${G.activation==='sigmoid'?' selected':''}" onclick="setAct('sigmoid',this)">🎯 Sigmoid — f(x)=1/(1+e⁻ˣ)<span class="sub-text">Squashes all values to 0–1. Good for probabilities. Suffers vanishing gradients in deep nets.</span></div>
+        <div class="builder-opt${G.activation==='tanh'?' selected':''}" onclick="setAct('tanh',this)">🌊 Tanh — f(x)=(eˣ-e⁻ˣ)/(eˣ+e⁻ˣ)<span class="sub-text">Swings -1 to +1. Zero-centered. Stronger gradient than sigmoid.</span></div>
       </div>
-    `;
-    container.appendChild(card);
-  });
+    </div>`;
+  renderViz();
 }
 
-function updateWaitingPlayer(name, accuracy) {
-  const list = document.getElementById('waiting-players-list');
-  let existing = list.querySelector(`[data-name="${name}"]`);
-  if (!existing) {
-    existing = document.createElement('div');
-    existing.className = 'waiting-player';
-    existing.dataset.name = name;
-    existing.innerHTML = `<div class="waiting-dot"></div><div class="waiting-name">${name}</div><div class="waiting-score"></div>`;
-    list.appendChild(existing);
+function setL(n,c,el){G.gold+=costs.layers;costs.layers=c;G.numLayers=n;spend(c);el.parentElement.querySelectorAll('.builder-opt').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');updLayers();renderViz();}
+function setN(n,c,el){G.gold+=costs.neurons;costs.neurons=c;G.neurons=n;spend(c);el.parentElement.querySelectorAll('.builder-opt').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');updLayers();renderViz();}
+function setAct(id,el){G.activation=id;el.parentElement.querySelectorAll('.builder-opt').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');}
+function updLayers(){const n=G.neurons;G.layers=G.numLayers===1?[n]:G.numLayers===2?[n,Math.floor(n/2)]:[n,Math.floor(n/2),Math.floor(n/4)];}
+
+function renderViz(){
+  const v=document.getElementById('networkViz');
+  const data=[[4,'Input'],...G.layers.map((n,i)=>[Math.min(Math.round(n/16),8),'H'+(i+1)]),[2,'Output']];
+  v.innerHTML=data.map(([cnt,lbl],li)=>{
+    const dots=Array(Math.max(2,cnt)).fill(0).map((_,ni)=>`<div class="neuron${li===0?' input':li===data.length-1?' output':''}" style="animation:fadeIn 0.3s ${ni*0.04}s both"></div>`).join('');
+    return `<div class="layer-col">${dots}<div class="layer-label">${lbl}</div></div>`;
+  }).join('<div style="color:var(--gold-dim);font-size:18px;">→</div>');
+}
+
+// ===================== PHASE 4: TRAINING =====================
+function goToTraining(){
+  show('training');updGold();
+  const lc=LC();
+  document.getElementById('p4Title').textContent=lc.p4.title;
+  document.getElementById('p4Desc').textContent=lc.p4.desc;
+  buildTraining();
+  AudioEngine.playPhaseChime(4);
+}
+let tcosts={bs:80,lr:80,opt:100,ep:100};
+function buildTraining(){
+  const t=LC().training;
+  const optimizerOpts=[
+    {id:'sgd',icon:'🚶',name:'Constant Gradient — SGD',sub:'Simple constant push in the gradient direction. No memory. Requires careful rate tuning. Slow but transparent.',cost:50},
+    {id:'adam',icon:'🧠',name:'Adaptive Momentum — Adam',sub:'Tracks moving average of gradient AND squared gradient. Per-parameter adaptive rates. The industry standard for most problems.',cost:100},
+    {id:'rmsprop',icon:'⚖️',name:'RMS Scaling — RMSprop',sub:'Divides learning rate by running average of gradient magnitudes. Good for non-stationary problems and recurrent networks.',cost:80}
+  ];
+  document.getElementById('trainingBuilder').innerHTML=`
+    <div class="builder-section">
+      <div class="builder-label">${t.bsLabel}</div>
+      <div class="builder-sublabel">${t.bsSub}</div>
+      <div class="builder-options">
+        <div class="builder-opt" onclick="setT('batchSize',32,'bs',50,this)">Small — 32<span class="cost">🪙 50</span><span class="sub-text">Noisy gradients. Good generalization. Slow per epoch.</span></div>
+        <div class="builder-opt selected" onclick="setT('batchSize',64,'bs',80,this)">Medium — 64<span class="cost">🪙 80</span><span class="sub-text">Balanced stability and noise. Industry default.</span></div>
+        <div class="builder-opt" onclick="setT('batchSize',128,'bs',50,this)">Large — 128<span class="cost">🪙 50</span><span class="sub-text">Stable but may converge to sharp (bad) minima.</span></div>
+      </div>
+    </div>
+    <div class="builder-section">
+      <div class="builder-label">${t.lrLabel}</div>
+      <div class="builder-sublabel">${t.lrSub}</div>
+      <div class="builder-options">
+        <div class="builder-opt" onclick="setT('learningRate',0.001,'lr',50,this)">🐢 Cautious — η=0.001<span class="cost">🪙 50</span><span class="sub-text">Slow but precise. Safe for complex loss landscapes.</span></div>
+        <div class="builder-opt selected" onclick="setT('learningRate',0.01,'lr',80,this)">🐎 Steady — η=0.01<span class="cost">🪙 80</span><span class="sub-text">Standard starting point. Works well with Adam.</span></div>
+        <div class="builder-opt" onclick="setT('learningRate',0.1,'lr',50,this)">⚡ Aggressive — η=0.1<span class="cost">🪙 50</span><span class="sub-text">Fast start, high risk of overshooting the optimum.</span></div>
+      </div>
+    </div>
+    <div class="builder-section">
+      <div class="builder-label">${t.optLabel}</div>
+      <div class="builder-sublabel">${t.optSub}</div>
+      <div class="builder-options">
+        ${optimizerOpts.map(o=>`<div class="builder-opt${G.optimizer===o.id?' selected':''}" onclick="setT('optimizer','${o.id}','opt',${o.cost},this)">${o.icon} ${o.name}<span class="cost">🪙 ${o.cost}</span><span class="sub-text">${o.sub}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="builder-section">
+      <div class="builder-label">${t.epLabel}</div>
+      <div class="builder-sublabel">${t.epSub}</div>
+      <div class="builder-options">
+        <div class="builder-opt" onclick="setT('epochs',50,'ep',50,this)">Brief — 50<span class="cost">🪙 50</span><span class="sub-text">May underfit. Not enough iterations to converge.</span></div>
+        <div class="builder-opt selected" onclick="setT('epochs',150,'ep',100,this)">Full — 150<span class="cost">🪙 100</span><span class="sub-text">Usually sufficient. Good balance for this dataset.</span></div>
+        <div class="builder-opt" onclick="setT('epochs',300,'ep',200,this)">Extended — 300<span class="cost">🪙 200</span><span class="sub-text">Risk of overfitting without early stopping.</span></div>
+      </div>
+    </div>
+    <div class="builder-section">
+      <div class="builder-label">${t.esLabel}</div>
+      <div class="builder-sublabel">${t.esSub}</div>
+      <div class="builder-options">
+        <div class="builder-opt${!G.earlyStopping?' selected':''}" onclick="setT('earlyStopping',false,'es',0,this)">${t.esOff}<span class="sub-text">${t.esOffSub}</span></div>
+        <div class="builder-opt${G.earlyStopping?' selected':''}" onclick="setT('earlyStopping',true,'es',0,this)">${t.esOn}<span class="sub-text">${t.esOnSub}</span></div>
+      </div>
+    </div>`;
+}
+function setT(key,val,ckey,cost,el){if(tcosts[ckey])G.gold+=tcosts[ckey];tcosts[ckey]=cost;G[key]=val;spend(cost);el.parentElement.querySelectorAll('.builder-opt').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');}
+
+// ===================== SIEGE =====================
+async function startSiege(){
+  show('siege');
+  AudioEngine.playWarDrums();
+  const lcs=LC().siege;
+  document.getElementById('siegeTitle').textContent=lcs.title;
+  document.getElementById('siegeEmoji').textContent=lcs.emoji;
+  document.getElementById('allyLabel').textContent=lcs.allyLabel;
+  document.getElementById('enemyLabel').textContent=lcs.enemyLabel;
+  const status=document.getElementById('siegeStatus'),epoch=document.getElementById('siegeEpoch');
+  const aBar=document.getElementById('allyBar'),eBar=document.getElementById('enemyBar');
+  const aPct=document.getElementById('allyPct'),ePct=document.getElementById('enemyPct');
+  aBar.style.width='100%';eBar.style.width='100%';aPct.textContent='100%';ePct.textContent='100%';
+
+  const wrongChoice=G.problem.bestArch!==G.architecture&&G.architecture!=='mlp';
+  const msgs=lcs.msgs;
+  let accuracy;
+  try{
+    const payload={room_id:G.roomId,player_id:G.pid,player_name:G.name,
+      attack_formation:G.batchSize===32?1:G.batchSize===64?2:3,
+      advance_speed:G.learningRate===0.001?'slow':G.learningRate===0.01?'medium':'fast',
+      commander:G.optimizer==='sgd'?'arjuna':G.optimizer==='adam'?'chanakya':'bhima',
+      command_layers:G.numLayers,troop_rotation:0.0,
+      supply_discipline:G.alpha===0.01?'strict':G.alpha===0.001?'moderate':'loose',
+      war_drills:G.epochs,retreat_strategy:G.earlyStopping};
+    const fetchP=fetch(API+'/battle',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json());
+    for(let i=0;i<msgs.length;i++){
+      status.textContent=msgs[i];
+      epoch.textContent=`${lcs.epochLabel} ${(i+1)*Math.floor(G.epochs/5)} / ${G.epochs}`;
+      const p=((i+1)/msgs.length)*100;
+      aBar.style.width=Math.max(100-p*0.3,70)+'%';aPct.textContent=Math.round(Math.max(100-p*0.3,70))+'%';
+      eBar.style.width=Math.max(100-p*0.8,20)+'%';ePct.textContent=Math.round(Math.max(100-p*0.8,20))+'%';
+      await new Promise(r=>setTimeout(r,800));
+    }
+    const res=await fetchP;accuracy=res.accuracy;G.result=res;
+  }catch(e){accuracy=simAcc();G.result={accuracy,explanation:{}};}
+  if(wrongChoice)accuracy=Math.round(Math.max(accuracy*0.62,42+Math.random()*14)*100)/100;
+  const enemyHp=Math.max(100-accuracy,0);
+  eBar.style.width=enemyHp+'%';ePct.textContent=Math.round(enemyHp)+'%';
+  aBar.style.width=Math.min(accuracy,100)+'%';aPct.textContent=Math.round(accuracy)+'%';
+  status.textContent=accuracy>=70?lcs.winMsg:lcs.loseMsg;
+  await new Promise(r=>setTimeout(r,1200));
+  showResult(accuracy,wrongChoice);
+}
+
+function simAcc(){let b=75;if(G.learningRate===0.01)b+=8;else if(G.learningRate===0.001)b+=5;else b-=5;if(G.numLayers===2)b+=5;if(G.epochs>=150)b+=4;if(G.earlyStopping)b+=2;if(G.optimizer==='adam')b+=3;if(G.neurons>=64)b+=2;return Math.min(Math.round((b+Math.random()*6-3)*100)/100,98.5);}
+
+// ===================== RESULT =====================
+function showResult(acc,wrong){
+  show('result');
+  const lcs=LC().siege;
+  const v=document.getElementById('resultVerdict'),s=document.getElementById('resultScore'),m=document.getElementById('resultMsg'),btns=document.getElementById('resultBtns');
+  if(wrong||acc<65){
+    AudioEngine.playDefeat();
+    v.textContent=lcs.resultLose;v.className='result-verdict defeat anim-boom';
+    s.textContent=Math.round(acc)+'%';
+    document.getElementById('resultLabel').textContent='Accuracy Achieved';
+    m.textContent=lcs.loseMsg2;
+    btns.innerHTML='<button class="btn-primary" onclick="showOracle()">Consult the Oracle</button><button class="btn-secondary" onclick="showReveal()">See The Revelation</button>';
+  }else{
+    AudioEngine.playVictory();
+    v.textContent=lcs.resultWin;v.className='result-verdict victory anim-boom';
+    s.textContent=Math.round(acc)+'%';
+    document.getElementById('resultLabel').textContent='Accuracy Achieved';
+    m.textContent=lcs.winMsgs(acc);
+    btns.innerHTML='<button class="btn-primary" onclick="showLBorReveal()">Continue →</button>';
   }
-  if (accuracy) {
-    existing.querySelector('.waiting-dot').classList.add('done');
-    existing.querySelector('.waiting-score').textContent = accuracy + '%';
-    
-    // Add to results
-    const exists = gameState.allResults.find(r => r.name === name);
-    if (!exists) gameState.allResults.push({ name, accuracy });
-  }
 }
 
-function playAgain() {
-  gameState.decisions = {};
-  gameState.myResult = null;
-  gameState.allResults = [];
-  showScreen('landing');
+function showLBorReveal(){if(G.mode!=='solo'&&G.result&&G.result.room_results&&G.result.room_results.length>1)showLB();else showReveal();}
+
+// ===================== ORACLE =====================
+function showOracle(){
+  show('oracle');
+  const lc=LC();
+  const lcArmy=lc.armies.find(a=>a.id===G.architecture)||lc.armies[0];
+  const bestArmy=lc.armies.find(a=>a.id===G.problem.bestArch)||lc.armies[0];
+  document.getElementById('oracleText').innerHTML=lc.oracle.intro(lcArmy.name);
+  let hint='';
+  if(G.problem.dataType==='image'&&G.architecture!=='cnn')
+    hint=`Your mission required scanning patterns within patterns — edges, shapes, structures nested inside each other. The <strong>${bestArmy.name} (CNN)</strong> uses a small filter that slides across the input in overlapping grids, detecting local features at every position. Your chosen approach had to treat each coordinate as independent — like recognizing a fortress by memorizing its pixel list rather than its shape.`;
+  else if(G.problem.dataType==='text'&&!['rnn','lstm','transformer'].includes(G.architecture))
+    hint=`Scrolls are read word by word — meaning builds through SEQUENCE. The <strong>${bestArmy.name}</strong> maintains a hidden state that flows across the text: hₜ = σ(Wₓxₜ + Wₕhₜ₋₁). Each word updates this state. Your approach saw all words as independent features with no sense of order — "not good" and "good, not" looked identical.`;
+  else if(G.problem.dataType==='timeseries'&&!['lstm','rnn'].includes(G.architecture))
+    hint=`The river has LONG memory — the drought of ten years ago shapes today's flood. The <strong>${bestArmy.name} (LSTM)</strong> maintains memory cells with Forget and Input gates that decide what to carry across time. Your approach had no temporal memory mechanism — it could not learn that distant past events predict today's outcome.`;
+  else if(G.problem.dataType==='tabular'&&G.architecture!=='mlp')
+    hint=`These 30 measurements exist simultaneously — there is no spatial layout, no sequence, no local structure. The <strong>${bestArmy.name} (MLP)</strong> treats every feature equally with full connections. Your approach tried to find local patterns or sequential meaning that simply doesn't exist in flat independent measurements.`;
+  else
+    hint='Your approach was appropriate for this data type, but the training configuration may need adjustment. Try a different learning rate, more depth, or enable early stopping. The architecture matters most — then the hyperparameters.';
+  document.getElementById('oracleHint').innerHTML=hint;
 }
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + id).classList.add('active');
-  window.scrollTo(0,0);
+function retryFromArmy(){G.architecture=null;prevArmyCost=0;G.gold=1000;costs={layers:100,neurons:100};tcosts={bs:80,lr:80,opt:100,ep:100};G.karma=null;goToParadigm();}
+
+// ===================== LEADERBOARD =====================
+function showLB(){
+  show('leaderboard');
+  const lb=document.getElementById('leaderboard'),res=(G.result.room_results||[]).sort((a,b)=>b.accuracy-a.accuracy);
+  lb.innerHTML=res.map((r,i)=>{const m=i===0?'gold':i===1?'silver':i===2?'bronze':'';const ic=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+    return `<div class="lb-entry ${m}" style="animation-delay:${i*0.12}s"><div class="lb-rank">${ic}</div><div class="lb-name">${r.name}${r.name===G.name?' (You)':''}</div><div class="lb-score">${r.accuracy}%</div></div>`;}).join('');
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2500);
+// ===================== REVEAL (comprehensive, per-life) =====================
+function showReveal(){
+  show('reveal');
+  AudioEngine.playReveal();
+  const c=document.getElementById('revealContent');
+  const lc=LC();
+  const lcr=lc.reveal;
+  const lcArmy=lc.armies.find(a=>a.id===G.architecture)||lc.armies[0];
+  const par=lc.paradigms.find(p=>p.id===G.paradigm)||lc.paradigms[0];
+  const act=G.activation==='relu'?'ReLU':G.activation==='sigmoid'?'Sigmoid':'Tanh';
+  const optNames={sgd:'SGD',adam:'Adam',rmsprop:'RMSprop'};
+  const archNames={mlp:'Multi-Layer Perceptron (MLP)',cnn:'Convolutional Neural Network (CNN)',rnn:'Recurrent Neural Network (RNN)',lstm:'Long Short-Term Memory (LSTM)',transformer:'Transformer (Self-Attention)'};
+  const parNames={supervised:'Supervised Learning',unsupervised:'Unsupervised Learning',adversarial:'Generative Adversarial Network (GAN)'};
+  const parMath={
+    supervised:'Loss = -Σ yᵢ·log(ŷᵢ) [Cross-Entropy]\nBackpropagation: ∂L/∂w propagated through all layers',
+    unsupervised:'Autoencoder: minimize ||x - decoder(encoder(x))||²\nOr K-means: minimize Σ||xᵢ - μₖ||²',
+    adversarial:'min_G max_D [ E[log D(x)] + E[log(1-D(G(z)))] ]\nGenerator G fools Discriminator D — Nash equilibrium'
+  };
+  const archMath={
+    mlp:'y = σ(W₃·σ(W₂·σ(W₁·x + b₁) + b₂) + b₃)\nEach layer = linear transform + activation. Fully connected.',
+    cnn:'Feature map = σ(Input ⊛ Kernel + b)\nKernel slides across input with stride. Multiple kernels = multiple feature detectors.',
+    rnn:'hₜ = σ(Wₓ·xₜ + Wₕ·hₜ₋₁ + b)\nPrevious hidden state hₜ₋₁ feeds into current step. Memory degrades over long sequences.',
+    lstm:'fₜ = σ(Wf·[hₜ₋₁,xₜ]+bf)  [Forget gate]\niₜ = σ(Wi·[hₜ₋₁,xₜ]+bi)  [Input gate]\nCₜ = fₜ⊙Cₜ₋₁ + iₜ⊙tanh(Wc·[hₜ₋₁,xₜ]+bc)\noₜ = σ(Wo·[hₜ₋₁,xₜ]+bo)  [Output gate]',
+    transformer:'Attention(Q,K,V) = softmax(QKᵀ/√dₖ)·V\nQ=query, K=key, V=value. Every token attends to every other.'
+  };
+  const acc=G.result?Math.round(G.result.accuracy||simAcc()):'??';
+  const correctArch=G.architecture===G.problem.bestArch||G.architecture==='mlp';
+  const bestArmy=lc.armies.find(a=>a.id===G.problem.bestArch)||lc.armies[0];
+
+  c.innerHTML=`
+    <div class="reveal-header">
+      <div class="reveal-pre">${lcr.pre}</div>
+      <div class="reveal-title">${lcr.title}</div>
+      <div class="reveal-intro">${lcr.intro}</div>
+    </div>
+
+    <div class="reveal-card anim-fadeUp" style="animation-delay:.1s">
+      <div class="section-label">Step 0 — The Problem</div>
+      <div class="game-side">${G.pastLife?.icon||'🏛️'} Past Life: <strong>"${G.pastLife?.name||'Unknown'}"</strong> — ${G.pastLife?.desc||''}</div>
+      <div class="arrow-down">↓ translates to ↓</div>
+      <div class="ml-side">ML Problem Type: Binary Classification on ${G.problem.dataType} data</div>
+      <div class="ml-detail">Every ML project starts here: what kind of data do I have? What am I predicting? The data type drives every subsequent choice — architecture, preprocessing, loss function, evaluation metric. This is the question your past-life self never had a framework to answer.</div>
+      <div class="math-eq">Data → Features → Model → Loss → Optimizer → Training → Evaluation\nThis is the ML pipeline. You just ran it.</div>
+    </div>
+
+    <div class="reveal-card anim-fadeUp" style="animation-delay:.2s">
+      <div class="section-label">Phase 1 — Learning Method</div>
+      <div class="game-side">${lcr.p1game(par)}</div>
+      <div class="arrow-down">↓ translates to ↓</div>
+      <div class="ml-side">ML Paradigm: ${parNames[G.paradigm]}</div>
+      <div class="ml-detail">${G.paradigm==='supervised'?'You trained on labeled examples — each data point had a known answer. The model learned to map inputs → labels via gradient descent on a loss function. This covers 90% of real-world ML: spam detection, medical diagnosis, image classification, text sentiment.':G.paradigm==='unsupervised'?'No labels. The model found hidden structure in raw data through similarity and compression. Used for: customer segmentation, anomaly detection, data compression, dimensionality reduction, representation learning.':'Two neural networks in a zero-sum game. The Generator creates synthetic data; the Discriminator detects fakes. As they compete, both improve — until generated data is statistically indistinguishable from real. Powers deepfakes, image synthesis, data augmentation.'}</div>
+      <div class="math-eq">${parMath[G.paradigm]}</div>
+    </div>
+
+    <div class="reveal-card anim-fadeUp" style="animation-delay:.3s">
+      <div class="section-label">Phase 2 — Architecture</div>
+      <div class="game-side">${lcr.p2game(lcArmy)}</div>
+      <div class="arrow-down">↓ translates to ↓</div>
+      <div class="ml-side">Neural Architecture: ${archNames[G.architecture]}</div>
+      ${!correctArch?`<div class="ml-side" style="color:var(--saffron);">⚠️ For ${G.problem.dataType} data, the better choice was: <strong>${archNames[G.problem.bestArch]}</strong> (${bestArmy.name})</div>`:''}
+      <div class="ml-detail">${lcArmy.dl}</div>
+      <div class="math-eq">${archMath[G.architecture]}</div>
+    </div>
+
+    <div class="reveal-card anim-fadeUp" style="animation-delay:.4s">
+      <div class="section-label">Phase 3 — Network Structure</div>
+      <div class="game-side">${lcr.p3game(G.numLayers,G.neurons,act)}</div>
+      <div class="arrow-down">↓ translates to ↓</div>
+      <div class="ml-side">Network: Input(30) → ${G.layers.join(' → ')} → Output(2)</div>
+      <div class="ml-detail">You chose <strong>${G.numLayers} hidden layer${G.numLayers>1?'s':''}</strong> with <strong>${G.neurons} neurons</strong> each. Activation: <strong>${act}</strong> — without it, no matter how many layers, the network can only learn linear functions. Every neuron computes: output = activation(W · input + b). The total number of learnable weights is how much the network can "remember."</div>
+      <div class="math-eq">h⁽ˡ⁾ = ${G.activation==='relu'?'max(0, W⁽ˡ⁾·h⁽ˡ⁻¹⁾ + b⁽ˡ⁾)':G.activation==='sigmoid'?'σ(W⁽ˡ⁾·h⁽ˡ⁻¹⁾ + b⁽ˡ⁾)  where σ(x)=1/(1+e⁻ˣ)':'tanh(W⁽ˡ⁾·h⁽ˡ⁻¹⁾ + b⁽ˡ⁾)'}
+Total learnable parameters ≈ ${((G.layers[0]*30)+(G.layers.slice(1).reduce((a,b,i)=>a+G.layers[i]*b,0))+G.layers[G.layers.length-1]*2).toLocaleString()} weights</div>
+    </div>
+
+    <div class="reveal-card anim-fadeUp" style="animation-delay:.5s">
+      <div class="section-label">Phase 4 — Training Configuration</div>
+      <div class="game-side">${lcr.p4game(G.batchSize,G.learningRate,G.epochs,optNames[G.optimizer],G.earlyStopping)}</div>
+      <div class="arrow-down">↓ translates to ↓</div>
+      <div class="ml-side">Hyperparameters that control HOW the model learns</div>
+      <div class="ml-detail"><strong>Batch Size ${G.batchSize}:</strong> Each gradient update uses ${G.batchSize} samples. Smaller = noisier gradients (better generalization, escape local minima). Larger = smoother gradients (faster per epoch, risk of sharp minima).<br><br><strong>Learning Rate η=${G.learningRate}:</strong> Step size in gradient space. The single most impactful hyperparameter. Too small = slow. Too large = diverge or oscillate.<br><br><strong>${optNames[G.optimizer]}:</strong> ${G.optimizer==='adam'?'Maintains exponential moving averages of gradient (m) and squared gradient (v). Adaptive per-parameter learning rates. Works across most architectures.':G.optimizer==='sgd'?'Pure gradient descent. Simple. Requires careful learning rate scheduling. Used in many state-of-the-art results with momentum.':'Divides learning rate by running RMS of gradients. Good for RNNs and non-stationary objectives.'}</div>
+      <div class="math-eq">${G.optimizer==='adam'?'mₜ = β₁mₜ₋₁ + (1-β₁)gₜ  [momentum]\nvₜ = β₂vₜ₋₁ + (1-β₂)gₜ²  [adaptive scale]\nθₜ₊₁ = θₜ - η·m̂ₜ/(√v̂ₜ+ε)':G.optimizer==='sgd'?'θₜ₊₁ = θₜ - η·∇J(θ)\nOne gradient step per batch. Simple but effective.':'vₜ = ρ·vₜ₋₁ + (1-ρ)·gₜ²\nθₜ₊₁ = θₜ - η·gₜ/√(vₜ+ε)'}
+Epochs: ${G.epochs}${G.earlyStopping?' with Early Stopping (halts when validation loss plateaus)':''}</div>
+    </div>
+
+    <div class="reveal-pipeline anim-fadeUp" style="animation-delay:.65s">
+      <div class="pipe-title">Your Complete ML Pipeline</div>
+      <div class="pipeline-flow">
+        <div class="pipeline-step">Problem<br><small>${G.pastLife?.id}</small></div><div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">Data<br><small>${G.problem.dataType}</small></div><div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">Paradigm<br><small>${G.paradigm}</small></div><div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">Model<br><small>${G.architecture.toUpperCase()}</small></div><div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">Network<br><small>${G.layers.join('→')}</small></div><div class="pipeline-arrow">→</div>
+        <div class="pipeline-step">Train<br><small>η=${G.learningRate}, ${G.epochs}ep</small></div><div class="pipeline-arrow">→</div>
+        <div class="pipeline-step" style="${acc>=70?'border-color:var(--victory);background:rgba(45,138,78,.12)':'border-color:var(--blood);background:rgba(139,26,26,.12)'}">Result<br><small>${acc}% acc</small></div>
+      </div>
+    </div>
+
+    <div class="reveal-insight anim-fadeUp" style="animation-delay:.8s">
+      <div class="insight-title">💡 What This Means For You</div>
+      ${lcr.insight(acc).replace(/\n/g,'<br><br>')}
+    </div>
+
+    <div style="text-align:center;margin-top:36px;">
+      <button class="btn-primary" onclick="playAgain()">↩ Try Another Life</button>
+    </div>`;
 }
 
-// Init
-setMode('solo');
+function playAgain(){
+  G={...G,gold:1000,attempts:0,pastLife:null,karma:null,problem:null,paradigm:null,architecture:null,
+    layers:[128,64],activation:'relu',neurons:64,numLayers:2,batchSize:64,learningRate:0.01,
+    alpha:0.001,epochs:150,earlyStopping:false,optimizer:'adam',result:null,
+    mode:'solo',roomId:'',isHost:false,ws:null};
+  _roomPlayers={};
+  prevArmyCost=0;costs={layers:100,neurons:100};tcosts={bs:80,lr:80,opt:100,ep:100};
+  show('landing');
+  AudioEngine.stopAll();
+}
 </script>
 </body>
 </html>
