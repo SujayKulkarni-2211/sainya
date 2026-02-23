@@ -122,66 +122,131 @@ def get_dl_explanation(decisions: WarDecisions, result: dict) -> dict:
     }
     return explanations
 
+class JoinRoom(BaseModel):
+    room_id: str
+    player_id: str
+    player_name: str
+
 @app.post("/create_room")
 async def create_room():
     room_id = str(uuid.uuid4())[:6].upper()
-    rooms[room_id] = {"players": {}, "round": 0, "status": "waiting", "results": []}
+    rooms[room_id] = {"players": {}, "status": "waiting", "results": {}}
     connections[room_id] = []
     return {"room_id": room_id}
+
+@app.post("/join_room")
+async def join_room(data: JoinRoom):
+    room_id = data.room_id.upper()
+    if room_id not in rooms:
+        return {"ok": False, "error": "Room not found. Check the code and try again."}
+    if rooms[room_id]["status"] == "started":
+        return {"ok": False, "error": "This room's campaign has already begun."}
+    # Register player in room
+    rooms[room_id]["players"][data.player_id] = {"name": data.player_name, "accuracy": None}
+    # Broadcast updated player list to everyone in the room
+    player_list = [{"pid": pid, "name": p["name"]} for pid, p in rooms[room_id]["players"].items()]
+    await broadcast_to_room(room_id, {"type": "player_list", "players": player_list})
+    return {"ok": True, "room_id": room_id, "players": player_list}
+
+async def broadcast_to_room(room_id: str, msg: dict):
+    if room_id not in connections:
+        return
+    dead = []
+    for ws in connections[room_id]:
+        try:
+            await ws.send_json(msg)
+        except:
+            dead.append(ws)
+    for ws in dead:
+        connections[room_id].remove(ws)
 
 @app.post("/battle")
 async def battle(decisions: WarDecisions):
     result = train_model(decisions)
     explanation = get_dl_explanation(decisions, result)
-    
+
     room_id = decisions.room_id
     if room_id not in rooms:
-        rooms[room_id] = {"players": {}, "round": 0, "status": "battling", "results": []}
-    
-    rooms[room_id]["players"][decisions.player_id] = {
+        rooms[room_id] = {"players": {}, "status": "battling", "results": {}}
+
+    # Store result
+    rooms[room_id]["results"][decisions.player_id] = {
         "name": decisions.player_name,
         "accuracy": result["accuracy"],
         "iterations": result["iterations"],
-        "decisions": decisions.dict(),
-        "explanation": explanation
     }
-    
-    # Broadcast to room
-    if room_id in connections:
-        for ws in connections[room_id]:
-            try:
-                await ws.send_json({
-                    "type": "player_result",
-                    "player": decisions.player_name,
-                    "accuracy": result["accuracy"]
-                })
-            except:
-                pass
-    
+    # Also update player entry
+    if decisions.player_id in rooms[room_id]["players"]:
+        rooms[room_id]["players"][decisions.player_id]["accuracy"] = result["accuracy"]
+
+    # Broadcast result to all in room
+    await broadcast_to_room(room_id, {
+        "type": "player_result",
+        "player": decisions.player_name,
+        "player_id": decisions.player_id,
+        "accuracy": result["accuracy"]
+    })
+
+    # Build current leaderboard
+    all_results = [{"name": v["name"], "accuracy": v["accuracy"]}
+                   for v in rooms[room_id]["results"].values()]
+    all_results.sort(key=lambda x: x["accuracy"], reverse=True)
+
     return {
         "accuracy": result["accuracy"],
         "iterations": result["iterations"],
         "explanation": explanation,
-        "room_results": list(rooms[room_id]["players"].values()) if room_id in rooms else []
+        "room_results": all_results
     }
 
 @app.get("/room/{room_id}")
 async def get_room(room_id: str):
+    room_id = room_id.upper()
     if room_id not in rooms:
         return {"error": "Room not found"}
-    return rooms[room_id]
+    room = rooms[room_id]
+    player_list = [{"pid": pid, "name": p["name"], "accuracy": p.get("accuracy")}
+                   for pid, p in room["players"].items()]
+    results = [{"name": v["name"], "accuracy": v["accuracy"]}
+               for v in room.get("results", {}).values()]
+    results.sort(key=lambda x: x["accuracy"] if x["accuracy"] is not None else 0, reverse=True)
+    total_players = len(room["players"])
+    finished_players = len(room.get("results", {}))
+    return {
+        "players": player_list,
+        "results": results,
+        "status": room["status"],
+        "total_players": total_players,
+        "finished_players": finished_players
+    }
+
+@app.post("/start_room/{room_id}")
+async def start_room(room_id: str):
+    room_id = room_id.upper()
+    if room_id not in rooms:
+        return {"error": "Room not found"}
+    rooms[room_id]["status"] = "started"
+    await broadcast_to_room(room_id, {"type": "start_game"})
+    return {"ok": True}
 
 @app.websocket("/ws/{room_id}/{player_id}")
 async def websocket_endpoint(websocket: WebSocket, room_id: str, player_id: str):
     await websocket.accept()
+    room_id = room_id.upper()
     if room_id not in connections:
         connections[room_id] = []
     connections[room_id].append(websocket)
+
+    # Register player in room if not already there
+    if room_id in rooms and player_id not in rooms[room_id]["players"]:
+        # Will be registered via /join_room, but just in case
+        pass
+
     try:
         while True:
             data = await websocket.receive_text()
             msg = json.loads(data)
-            # Broadcast to all in room
+            # Broadcast to all others in room
             for ws in connections[room_id]:
                 if ws != websocket:
                     try:
@@ -189,7 +254,8 @@ async def websocket_endpoint(websocket: WebSocket, room_id: str, player_id: str)
                     except:
                         pass
     except WebSocketDisconnect:
-        connections[room_id].remove(websocket)
+        if websocket in connections.get(room_id, []):
+            connections[room_id].remove(websocket)
 
 @app.get("/health")
 async def health():

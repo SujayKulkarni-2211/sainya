@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SANKHYA — सांख्य</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
@@ -193,6 +193,23 @@ body{font-family:'EB Garamond',serif;background:var(--black);color:var(--cream);
 .lb-rank{font-family:'Cinzel',serif;font-size:26px;font-weight:700;color:var(--gold);width:40px;}
 .lb-name{flex:1;font-size:22px;color:var(--cream);}
 .lb-score{font-family:'Cinzel',serif;font-size:24px;font-weight:700;color:var(--gold-bright);}
+.lb-entry.battling{border-color:var(--saffron);background:rgba(212,98,26,.08);}
+.lb-entry.battling .lb-score{color:var(--saffron);font-size:16px;}
+.lb-entry.waiting{border-color:rgba(201,168,76,.1);}
+.lb-entry.waiting .lb-score{color:var(--cream-dim);font-size:16px;}
+
+/* Live scoreboard panel */
+.live-scoreboard{width:100%;max-width:500px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.15);border-radius:14px;padding:20px;margin-top:20px;}
+.live-scoreboard-title{font-family:'Cinzel',serif;font-size:16px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.live-scoreboard-title .count-badge{background:rgba(201,168,76,.15);border:1px solid var(--gold-dim);border-radius:20px;padding:2px 12px;font-size:14px;color:var(--gold);}
+.live-sb-entry{display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.08);border-radius:8px;margin-bottom:6px;transition:all 0.4s ease;}
+.live-sb-entry.finished{border-color:var(--gold);background:rgba(201,168,76,.1);}
+.live-sb-entry.in-battle{border-color:var(--saffron);background:rgba(212,98,26,.06);animation:glowPulse 2s infinite;}
+.live-sb-entry .sb-icon{font-size:22px;}
+.live-sb-entry .sb-name{flex:1;font-family:'Cinzel',serif;font-size:17px;color:var(--cream);}
+.live-sb-entry .sb-status{font-family:'Cinzel',serif;font-size:15px;color:var(--cream-dim);}
+.live-sb-entry.finished .sb-status{color:var(--gold-bright);font-weight:700;font-size:18px;}
+.room-error-msg{color:var(--saffron);font-size:16px;text-align:center;min-height:22px;margin-top:4px;font-style:italic;}
 
 /* Reveal */
 .reveal-content{padding:40px 20px 60px;max-width:760px;margin:0 auto;}
@@ -219,6 +236,112 @@ body{font-family:'EB Garamond',serif;background:var(--black);color:var(--cream);
 /* Toast */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--charcoal);border:1px solid var(--gold-dim);border-radius:10px;padding:12px 24px;font-size:18px;color:var(--cream);z-index:1000;display:none;animation:fadeUp 0.3s ease;}
 .toast.show{display:block;}
+
+/* ===== MOBILE RESPONSIVENESS ===== */
+@media(max-width:600px){
+  body{font-size:18px;line-height:1.6;}
+  .screen-inner{padding:16px 14px 36px;}
+  .landing-content{gap:20px;padding:24px 14px;}
+  .title-symbol{font-size:64px;}
+  .title-sanskrit{letter-spacing:8px;font-size:clamp(16px,4vw,22px);}
+  .title-tagline{font-size:clamp(16px,4vw,22px);}
+  .landing-form{max-width:100%;}
+  .mode-btns{flex-direction:column;}
+  .mode-btn{padding:12px 10px;font-size:14px;}
+  .btn-primary,.btn-secondary,.btn-continue,.btn-next{font-size:18px;padding:14px 24px;width:100%;text-align:center;}
+  .center-content{padding:24px 12px;gap:16px;}
+  .narrative-text{font-size:clamp(18px,4.5vw,26px);line-height:1.7;}
+  .life-card{padding:18px 14px;}
+  .life-card .icon{font-size:44px;margin-bottom:8px;}
+  .life-card .name{font-size:20px;}
+  .life-card .desc{font-size:16px;}
+  .karma-row{gap:10px;}
+  .karma-card{width:90px;height:120px;font-size:32px;}
+  .karma-card .back{font-size:40px;}
+  .hud{padding:10px 14px;font-size:13px;}
+  .hud-gold{font-size:18px;}
+  .hud-gold .coin{font-size:20px;}
+  .phase-header{padding:8px 0 14px;}
+  .phase-title{font-size:clamp(24px,6vw,36px);}
+  .phase-desc{font-size:17px;}
+  .choice-card{padding:14px 12px;gap:12px;min-height:auto;}
+  .choice-icon{font-size:36px;}
+  .choice-name{font-size:20px;}
+  .choice-sub{font-size:16px;}
+  .choice-dl{font-size:14px;}
+  .choice-cost{font-size:16px;}
+  .builder-section{padding:14px 12px;margin-bottom:10px;}
+  .builder-label{font-size:16px;}
+  .builder-sublabel{font-size:14px;margin-bottom:8px;}
+  .builder-options{gap:8px;}
+  .builder-opt{padding:10px 12px;font-size:15px;min-width:60px;}
+  .builder-opt .cost{font-size:12px;}
+  .builder-opt .sub-text{font-size:11px;}
+  .network-viz{padding:14px;gap:12px;min-height:80px;}
+  .neuron{width:14px;height:14px;}
+  .layer-label{font-size:11px;}
+  .siege-title{font-size:clamp(28px,7vw,40px);}
+  .siege-battlefield{padding:16px;}
+  .siege-row{font-size:16px;gap:8px;}
+  .siege-row .label{width:80px;font-size:14px;}
+  .siege-clash{font-size:40px;}
+  .siege-status{font-size:18px;}
+  .result-score{font-size:64px;}
+  .result-verdict{font-size:clamp(30px,8vw,50px);}
+  .result-message{font-size:20px;}
+  .result-buttons{flex-direction:column;width:100%;}
+  .result-buttons .btn-primary,.result-buttons .btn-secondary{width:100%;}
+  .oracle-icon{font-size:56px;}
+  .oracle-title{font-size:clamp(24px,6vw,34px);}
+  .oracle-text{font-size:18px;}
+  .oracle-hint{font-size:17px;padding:16px;}
+  .gold-intro-box{padding:20px 16px;}
+  .gold-intro-title{font-size:clamp(22px,5.5vw,32px);}
+  .gold-intro-row{gap:10px;margin-bottom:12px;padding-bottom:12px;}
+  .gold-intro-icon{font-size:26px;}
+  .gold-intro-text{font-size:16px;}
+  .reveal-content{padding:24px 12px 48px;}
+  .reveal-title{font-size:clamp(24px,6vw,38px);}
+  .reveal-intro{font-size:20px;}
+  .reveal-card{padding:18px 14px;}
+  .reveal-card .game-side{font-size:18px;}
+  .reveal-card .ml-side{font-size:18px;}
+  .reveal-card .ml-detail{font-size:16px;}
+  .reveal-card .math-eq{font-size:14px;padding:10px 12px;}
+  .pipeline-flow{gap:4px;font-size:14px;}
+  .pipeline-step{padding:8px 6px;font-size:13px;}
+  .pipeline-step small{font-size:11px;}
+  .pipeline-arrow{font-size:16px;}
+  .reveal-insight{padding:16px;font-size:17px;}
+  .reveal-pipeline{padding:18px 12px;}
+  .arch-anim{padding:12px;min-height:60px;}
+  .lb-entry{padding:10px 12px;}
+  .lb-rank{font-size:22px;}
+  .lb-name{font-size:18px;}
+  .lb-score{font-size:20px;}
+  .live-scoreboard{padding:14px;margin-top:14px;}
+  .live-sb-entry{padding:8px 10px;}
+  .live-sb-entry .sb-name{font-size:15px;}
+  .live-sb-entry .sb-status{font-size:13px;}
+  .toast{font-size:15px;padding:10px 18px;left:10px;right:10px;transform:none;width:auto;}
+}
+
+/* Extra small screens */
+@media(max-width:360px){
+  body{font-size:16px;}
+  .title-main{font-size:clamp(40px,14vw,72px);}
+  .btn-primary,.btn-secondary,.btn-continue,.btn-next{font-size:16px;padding:12px 18px;}
+  .choice-card{flex-direction:column;align-items:stretch;}
+  .choice-icon{font-size:30px;text-align:center;}
+  .choice-cost{text-align:center;}
+}
+
+/* Particle canvas */
+#particleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;}
+
+/* Volume control */
+.vol-btn{position:fixed;top:12px;right:12px;z-index:200;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.25);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;color:var(--gold);transition:all 0.3s;}
+.vol-btn:hover{background:rgba(201,168,76,.25);border-color:var(--gold);}
 </style>
 </head>
 <body>
@@ -242,8 +365,9 @@ body{font-family:'EB Garamond',serif;background:var(--black);color:var(--cream);
       </div>
       <div class="room-section" id="roomSection">
         <input class="input-field" id="roomInput" placeholder="Room code" maxlength="6" style="text-transform:uppercase;text-align:center;font-size:28px;letter-spacing:8px;">
+        <div class="room-error-msg" id="roomError"></div>
       </div>
-      <button class="btn-primary" onclick="startGame()">Begin Your Destiny</button>
+      <button class="btn-primary" id="startBtn" onclick="startGame()">Begin Your Destiny</button>
     </div>
   </div>
 </div>
@@ -259,6 +383,14 @@ body{font-family:'EB Garamond',serif;background:var(--black);color:var(--cream);
     <div style="width:100%;max-width:400px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:20px;">
       <div style="font-family:'Cinzel',serif;font-size:15px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-dim);margin-bottom:14px;">Commanders Present</div>
       <div id="playersList" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+    <!-- Live scoreboard - shown during battle phase -->
+    <div class="live-scoreboard" id="liveScoreboard" style="display:none;">
+      <div class="live-scoreboard-title">
+        <span>Battle Progress</span>
+        <span class="count-badge" id="liveFinishedCount">0 / 0 finished</span>
+      </div>
+      <div id="liveScoreEntries"></div>
     </div>
     <div id="hostControls" style="display:none;margin-top:24px;text-align:center;">
       <div style="font-size:19px;color:var(--cream-dim);font-style:italic;margin-bottom:16px;">Waiting for all commanders to join...</div>
@@ -441,9 +573,14 @@ body{font-family:'EB Garamond',serif;background:var(--black);color:var(--cream);
 <!-- LEADERBOARD -->
 <div class="screen" id="screen-leaderboard">
   <div class="screen-inner"><div class="center-content">
-    <div class="phase-title" style="margin-bottom:24px;">War Council Results</div>
+    <div style="font-size:48px;margin-bottom:8px;" id="lbTopIcon">🏆</div>
+    <div class="phase-title" style="margin-bottom:6px;">War Council Results</div>
+    <div style="font-size:18px;color:var(--cream-dim);font-style:italic;margin-bottom:24px;" id="lbSubtitle">Final rankings from the battlefield</div>
     <div class="leaderboard" id="leaderboard"></div>
-    <button class="btn-primary" onclick="showReveal()" style="margin-top:24px;">The Revelation</button>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:24px;">
+      <button class="btn-primary" onclick="showReveal()">The Revelation</button>
+      <button class="btn-secondary" onclick="fetchAndShowLB()">Refresh Rankings</button>
+    </div>
   </div></div>
 </div>
 
@@ -453,13 +590,26 @@ body{font-family:'EB Garamond',serif;background:var(--black);color:var(--cream);
 </div>
 
 <div class="toast" id="toast"></div>
+<canvas id="particleCanvas"></canvas>
+<button class="vol-btn" id="volBtn" onclick="toggleMute()" title="Toggle Sound">🔊</button>
 
 <script>
 // ===================== AUDIO ENGINE =====================
 const AudioEngine=(function(){
-  let ctx,master,currentTrack=null,currentNodes=[];
-  function init(){if(!ctx){ctx=new(window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0.28;master.connect(ctx.destination);}if(ctx.state==='suspended')ctx.resume();}
-  function stopAll(){currentNodes.forEach(n=>{try{n.stop();}catch(e){}});currentNodes=[];currentTrack=null;}
+  let ctx,master,currentTrack=null,currentNodes=[],trackGeneration=0,isMuted=false;
+  function init(){
+    if(!ctx){ctx=new(window.AudioContext||window.webkitAudioContext)();master=ctx.createGain();master.gain.value=0.28;master.connect(ctx.destination);}
+    // Always try to resume — critical for mobile and repeat plays
+    if(ctx.state==='suspended'){ctx.resume();}
+    return ctx;
+  }
+  function stopAll(){
+    trackGeneration++;
+    currentNodes.forEach(n=>{try{n.stop();}catch(e){}});
+    currentNodes=[];currentTrack=null;
+  }
+  function setMuted(m){isMuted=m;if(master)master.gain.value=m?0:0.28;}
+  function getMuted(){return isMuted;}
 
   // Helper: create an oscillator with gain envelope
   function osc(freq,type,startT,dur,peakGain,wave='sine'){
@@ -473,8 +623,8 @@ const AudioEngine=(function(){
   }
 
   function playAmbient(){
-    // Same ambient for landing — low Indian drone
     init();stopAll();currentTrack='ambient';
+    const gen=trackGeneration;
     [[65.4,'sine'],[98.0,'sine'],[130.8,'sine'],[196,'sine'],[261.6,'triangle']].forEach(([f,t],idx)=>{
       const o2=ctx.createOscillator(),g=ctx.createGain(),flt=ctx.createBiquadFilter();
       o2.type=t;o2.frequency.value=f;
@@ -487,7 +637,7 @@ const AudioEngine=(function(){
       currentNodes.push(o2,lfo);
     });
     function tablaPulse(){
-      if(currentTrack!=='ambient')return;
+      if(gen!==trackGeneration)return;
       const t=ctx.currentTime,o2=ctx.createOscillator(),g=ctx.createGain();
       o2.type='sine';o2.frequency.setValueAtTime(180,t);o2.frequency.exponentialRampToValueAtTime(80,t+0.08);
       g.gain.setValueAtTime(0.09,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
@@ -498,10 +648,9 @@ const AudioEngine=(function(){
   }
 
   function playPrologue(){
-    // Dark cosmic arpeggio — memory across lifetimes
     init();stopAll();currentTrack='prologue';
+    const gen=trackGeneration;
     const t=ctx.currentTime;
-    // Deep slow drone
     [55,82.4,110].forEach((f,i)=>{
       const o2=ctx.createOscillator(),g=ctx.createGain();
       o2.type='sine';o2.frequency.value=f;
@@ -512,9 +661,8 @@ const AudioEngine=(function(){
       o2.connect(g);g.connect(master);o2.start();
       currentNodes.push(o2,lfo);
     });
-    // Ghostly ascending arpeggios
     function ghostArp(){
-      if(currentTrack!=='prologue')return;
+      if(gen!==trackGeneration)return;
       const now=ctx.currentTime;
       [220,261.63,311.13,369.99,440,523.25].forEach((f,i)=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
@@ -528,18 +676,16 @@ const AudioEngine=(function(){
     setTimeout(ghostArp,1500);
   }
 
-  // Life story music varies by who you were
   function playLifeStory(lifeId){
     init();stopAll();currentTrack='lifestory_'+lifeId;
+    const gen=trackGeneration;
     const t=ctx.currentTime;
     if(lifeId==='healer'){
-      // Gentle, pastoral — pentatonic lullaby
       const melody=[392,440,523.25,440,392,349.23,392];
       melody.forEach((f,i)=>{
         osc(f,'triangle',t+i*0.85,1.8,0.06);
         osc(f*0.5,'sine',t+i*0.85,2.0,0.03);
       });
-      // Soft breath pad
       [196,246.94,293.66].forEach(f=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='sine';o2.frequency.value=f;
@@ -547,13 +693,11 @@ const AudioEngine=(function(){
         o2.connect(g);g.connect(master);o2.start();currentNodes.push(o2);
       });
     } else if(lifeId==='scholar'){
-      // Ancient library — temple bells, slow and mystical
       const freqs=[523.25,659.25,830.61,1046.5,830.61,659.25,784];
       freqs.forEach((f,i)=>{
         osc(f,'triangle',t+i*0.65,2.5,0.055);
         if(i%2===0)osc(f*1.498,'sine',t+i*0.65+0.3,1.8,0.02);
       });
-      // Low resonance
       [87.3,130.8].forEach(f=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='sine';o2.frequency.value=f;
@@ -561,15 +705,13 @@ const AudioEngine=(function(){
         o2.connect(g);g.connect(master);o2.start();currentNodes.push(o2);
       });
     } else if(lifeId==='cartographer'){
-      // Adventure fanfare — bold intervals, exploring
       const pattern=[261.63,329.63,392,523.25,659.25,523.25,392,440,523.25];
       pattern.forEach((f,i)=>{
         osc(f,'square',t+i*0.38,0.7,0.04);
         osc(f*0.5,'triangle',t+i*0.38,1.0,0.02);
       });
-      // Rhythmic pulse
       function mapBeat(){
-        if(!currentTrack.startsWith('lifestory'))return;
+        if(gen!==trackGeneration)return;
         const now=ctx.currentTime;
         [0,0.4,0.8,1.2].forEach(off=>{
           const o2=ctx.createOscillator(),g=ctx.createGain();
@@ -581,13 +723,11 @@ const AudioEngine=(function(){
       }
       setTimeout(mapBeat,3500);
     } else if(lifeId==='merchant'){
-      // Flowing water / river — sine waves rippling
       const waterFreqs=[293.66,369.99,440,493.88,587.33,659.25,783.99,659.25,587.33];
       waterFreqs.forEach((f,i)=>{
         osc(f,'sine',t+i*0.5,2.5,0.05+Math.random()*0.02);
         osc(f*0.5,'sine',t+i*0.5,3.0,0.02);
       });
-      // Ripple LFO texture
       [146.83,220,293.66].forEach((f,i)=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='sine';o2.frequency.value=f;
@@ -602,8 +742,8 @@ const AudioEngine=(function(){
 
   function playKarmaChime(){
     init();stopAll();currentTrack='karma';
+    const gen=trackGeneration;
     const t=ctx.currentTime;
-    // Mysterious card shuffle sound first
     [0,0.08,0.16].forEach(off=>{
       const buf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.06),ctx.sampleRate);
       const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.3;
@@ -612,19 +752,16 @@ const AudioEngine=(function(){
       g.gain.setValueAtTime(0.08,t+off);g.gain.exponentialRampToValueAtTime(0.001,t+off+0.06);
       src.connect(flt);flt.connect(g);g.connect(master);src.start(t+off);currentNodes.push(src);
     });
-    // Pentatonic mystical bells
     [523.25,659.25,783.99,1046.5,1318.5,1046.5,783.99].forEach((f,i)=>{
       const o2=ctx.createOscillator(),g=ctx.createGain();
       o2.type='triangle';o2.frequency.value=f;
       const s=t+0.5+i*0.3;
       g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(0.12,s+0.03);g.gain.exponentialRampToValueAtTime(0.001,s+1.2);
       o2.connect(g);g.connect(master);o2.start(s);o2.stop(s+1.3);currentNodes.push(o2);
-      // Shimmer overtone
       osc(f*2.01,'sine',s+0.05,0.8,0.015);
     });
-    // Sustain pad
     setTimeout(()=>{
-      if(currentTrack!=='karma')return;
+      if(gen!==trackGeneration)return;
       [261.63,329.63,392,493.88].forEach(f=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='sine';o2.frequency.value=f;
@@ -632,7 +769,6 @@ const AudioEngine=(function(){
         o2.connect(g);g.connect(master);o2.start();o2.stop(ctx.currentTime+6.5);currentNodes.push(o2);
       });
     },2300);
-    // Card flip sound (called from flipKarma separately via playKarmaFlip)
   }
 
   function playKarmaFlip(){
@@ -650,10 +786,9 @@ const AudioEngine=(function(){
   }
 
   function playProblemReveal(){
-    // Haunting, building tension — the problem from the past life
     init();stopAll();currentTrack='problem';
+    const gen=trackGeneration;
     const t=ctx.currentTime;
-    // Ominous low strings
     [65.4,98,130.8].forEach((f,i)=>{
       const o2=ctx.createOscillator(),g=ctx.createGain();
       o2.type='sawtooth';o2.frequency.value=f;
@@ -661,9 +796,8 @@ const AudioEngine=(function(){
       g.gain.value=0;g.gain.linearRampToValueAtTime(0.05,t+2+i);
       o2.connect(flt);flt.connect(g);g.connect(master);o2.start();currentNodes.push(o2);
     });
-    // Rising question motif — unresolved
     function questionMotif(){
-      if(currentTrack!=='problem')return;
+      if(gen!==trackGeneration)return;
       const now=ctx.currentTime;
       [261.63,293.66,329.63,369.99,415.3,369.99].forEach((f,i)=>{
         osc(f,'triangle',now+i*0.5,1.5,0.055);
@@ -675,18 +809,17 @@ const AudioEngine=(function(){
 
   function playWarDrums(){
     init();stopAll();currentTrack='siege';
-    // Enhanced with metallic clashes
+    const gen=trackGeneration;
+    let cnt=0;
     function drumLoop(){
-      if(currentTrack!=='siege')return;
+      if(gen!==trackGeneration)return;
       const t=ctx.currentTime;
-      // Bass drums
       [0,0.5,1.0,1.25,1.5,1.75].forEach(off=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='sine';o2.frequency.setValueAtTime(160,t+off);o2.frequency.exponentialRampToValueAtTime(45,t+off+0.18);
         g.gain.setValueAtTime(0.28,t+off);g.gain.exponentialRampToValueAtTime(0.001,t+off+0.22);
         o2.connect(g);g.connect(master);o2.start(t+off);o2.stop(t+off+0.25);currentNodes.push(o2);
       });
-      // High snare noise
       [0.25,0.75,1.75].forEach(off=>{
         const buf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.12),ctx.sampleRate);
         const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*0.25;
@@ -695,13 +828,11 @@ const AudioEngine=(function(){
         g.gain.setValueAtTime(0.14,t+off);g.gain.exponentialRampToValueAtTime(0.001,t+off+0.12);
         src.connect(flt);flt.connect(g);g.connect(master);src.start(t+off);currentNodes.push(src);
       });
-      // War horn every 4 loops
-      if(!drumLoop._cnt)drumLoop._cnt=0;
-      if(drumLoop._cnt%4===0){
+      if(cnt%4===0){
         osc(87.3,'sawtooth',t,1.8,0.06);
         osc(130.8,'sawtooth',t+0.05,1.6,0.04);
       }
-      drumLoop._cnt++;
+      cnt++;
       setTimeout(drumLoop,2000);
     }
     drumLoop();
@@ -709,22 +840,20 @@ const AudioEngine=(function(){
 
   function playVictory(){
     init();stopAll();currentTrack='victory';
+    const gen=trackGeneration;
     const t=ctx.currentTime;
-    // Epic ascending fanfare with harmonics
     [392,523.25,659.25,783.99,1046.5].forEach((f,i)=>{
       osc(f,'square',t+i*0.22,0.65,0.08);
       osc(f*1.5,'triangle',t+i*0.22+0.05,0.5,0.03);
     });
-    // Victory chord sustain
     setTimeout(()=>{
-      if(currentTrack!=='victory')return;
+      if(gen!==trackGeneration)return;
       [523.25,659.25,783.99,1046.5].forEach(f=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='triangle';o2.frequency.value=f;
         g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(0.055,ctx.currentTime+0.5);g.gain.linearRampToValueAtTime(0,ctx.currentTime+4.5);
         o2.connect(g);g.connect(master);o2.start();o2.stop(ctx.currentTime+5);currentNodes.push(o2);
       });
-      // Triumphant drums
       [0,0.6,1.2].forEach(off=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='sine';o2.frequency.setValueAtTime(180,ctx.currentTime+off);o2.frequency.exponentialRampToValueAtTime(60,ctx.currentTime+off+0.15);
@@ -736,14 +865,13 @@ const AudioEngine=(function(){
 
   function playDefeat(){
     init();stopAll();currentTrack='defeat';
+    const gen=trackGeneration;
     const t=ctx.currentTime;
-    // Descending lament — slower, sadder
     [392,349.23,329.63,293.66,261.63].forEach((f,i)=>{
       osc(f,'sine',t+i*0.65,2.0,0.08);
     });
-    // Low mournful drone
     setTimeout(()=>{
-      if(currentTrack!=='defeat')return;
+      if(gen!==trackGeneration)return;
       [65.4,98].forEach(f=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='sine';o2.frequency.value=f;
@@ -755,15 +883,14 @@ const AudioEngine=(function(){
 
   function playReveal(){
     init();stopAll();currentTrack='reveal';
+    const gen=trackGeneration;
     const t=ctx.currentTime;
-    // Grand revelation — full scale ascending with harmonics
     [261.63,293.66,329.63,369.99,415.3,466.16,523.25,587.33,659.25,739.99,830.61,932.33,1046.5].forEach((f,i)=>{
       osc(f,'triangle',t+i*0.12,1.5,0.065);
       if(i%3===0)osc(f*1.5,'sine',t+i*0.12+0.04,1.2,0.02);
     });
-    // Warm enlightenment pad
     setTimeout(()=>{
-      if(currentTrack!=='reveal')return;
+      if(gen!==trackGeneration)return;
       [261.63,329.63,392,523.25,659.25].forEach(f=>{
         const o2=ctx.createOscillator(),g=ctx.createGain();
         o2.type='sine';o2.frequency.value=f;
@@ -796,7 +923,15 @@ const AudioEngine=(function(){
     });
   }
 
-  return {init,stopAll,playAmbient,playPrologue,playLifeStory,playKarmaChime,playKarmaFlip,playProblemReveal,playWarDrums,playVictory,playDefeat,playReveal,playPhaseChime,playRoomJoin};
+  // UI click sound
+  function playClick(){
+    init();
+    const t=ctx.currentTime;
+    osc(880,'sine',t,0.06,0.05);
+    osc(1320,'triangle',t+0.02,0.04,0.03);
+  }
+
+  return {init,stopAll,playAmbient,playPrologue,playLifeStory,playKarmaChime,playKarmaFlip,playProblemReveal,playWarDrums,playVictory,playDefeat,playReveal,playPhaseChime,playRoomJoin,playClick,setMuted,getMuted};
 })();
 
 // ===================== GAME STATE =====================
@@ -804,16 +939,55 @@ const API='';
 let G={mode:'solo',name:'',pid:'p_'+Math.random().toString(36).substr(2,8),roomId:'',gold:1000,attempts:0,pastLife:null,karma:null,problem:null,paradigm:null,architecture:null,layers:[128,64],activation:'relu',neurons:64,numLayers:2,batchSize:64,learningRate:0.01,alpha:0.001,epochs:150,earlyStopping:false,optimizer:'adam',result:null,ws:null,isHost:false,roomPlayers:{}};
 
 let _roomPlayers={}; // live room players for waiting screen
+let _liveResults={}; // live results as players finish: {pid: {name, accuracy, player_id}}
+let _firstHostPid=null; // track who created the room
 
 function updatePlayersList(){
   const pl=document.getElementById('playersList');
   if(!pl)return;
-  const names=Object.values(_roomPlayers);
-  if(names.length===0){
+  const entries=Object.entries(_roomPlayers);
+  if(entries.length===0){
     pl.innerHTML='<div style="color:var(--cream-dim);font-style:italic;font-size:18px;text-align:center;">No one here yet...</div>';
   } else {
-    pl.innerHTML=names.map((n,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(201,168,76,.06);border-radius:8px;"><span style="font-size:22px;">${i===0?'👑':'⚔️'}</span><span style="font-family:'Cinzel',serif;font-size:19px;color:var(--cream);">${n}</span>${i===0?'<span style="font-size:13px;color:var(--gold-dim);margin-left:auto;">HOST</span>':''}</div>`).join('');
+    pl.innerHTML=entries.map(([pid,name],i)=>{
+      const isFirst=_firstHostPid?pid===_firstHostPid:i===0;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(201,168,76,.06);border-radius:8px;"><span style="font-size:22px;">${isFirst?'👑':'⚔️'}</span><span style="font-family:'Cinzel',serif;font-size:19px;color:var(--cream);">${name}</span>${isFirst?'<span style="font-size:13px;color:var(--gold-dim);margin-left:auto;">HOST</span>':''}</div>`;
+    }).join('');
   }
+}
+
+function updateLiveScoreboard(){
+  const board=document.getElementById('liveScoreboard');
+  const entries=document.getElementById('liveScoreEntries');
+  const countEl=document.getElementById('liveFinishedCount');
+  if(!board||!entries)return;
+
+  const totalPlayers=Object.keys(_roomPlayers).length;
+  const finishedCount=Object.keys(_liveResults).length;
+
+  if(finishedCount===0&&totalPlayers<=1){
+    board.style.display='none';return;
+  }
+
+  board.style.display='block';
+  if(countEl)countEl.textContent=finishedCount+' / '+totalPlayers+' finished';
+
+  // Build entries: finished players sorted by accuracy, then in-battle players
+  const finished=Object.values(_liveResults).sort((a,b)=>(b.accuracy||0)-(a.accuracy||0));
+  const battlePids=Object.keys(_roomPlayers).filter(pid=>!_liveResults[pid]);
+
+  let html='';
+  finished.forEach((r,i)=>{
+    const medal=i===0&&finishedCount>1?'🥇':i===1&&finishedCount>2?'🥈':i===2&&finishedCount>3?'🥉':'⚔️';
+    const isYou=r.name===G.name?' (You)':'';
+    html+=`<div class="live-sb-entry finished anim-fadeUp" style="animation-delay:${i*0.08}s"><span class="sb-icon">${medal}</span><span class="sb-name">${r.name}${isYou}</span><span class="sb-status">${r.accuracy}%</span></div>`;
+  });
+  battlePids.forEach(pid=>{
+    const name=_roomPlayers[pid]||'Unknown';
+    const isYou=name===G.name?' (You)':'';
+    html+=`<div class="live-sb-entry in-battle"><span class="sb-icon">⏳</span><span class="sb-name">${name}${isYou}</span><span class="sb-status">In Battle...</span></div>`;
+  });
+  entries.innerHTML=html;
 }
 
 function copyRoomCode(){
@@ -1188,11 +1362,16 @@ function setMode(mode,btn){
   G.mode=mode;
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
   document.getElementById('roomSection').className='room-section'+(mode==='join'?' visible':'');
+  const errEl=document.getElementById('roomError');
+  if(errEl)errEl.textContent='';
 }
 
 async function startGame(){
   G.name=document.getElementById('playerName').value.trim();
   if(!G.name){toast('Enter your name, Commander');return;}
+  const errEl=document.getElementById('roomError');
+  if(errEl)errEl.textContent='';
+  const startBtn=document.getElementById('startBtn');
   AudioEngine.init();
 
   if(G.mode==='solo'){
@@ -1201,22 +1380,49 @@ async function startGame(){
     startPrologue();
 
   } else if(G.mode==='create'){
+    startBtn.disabled=true;startBtn.textContent='Creating Room...';
     try{
       const r=await fetch(API+'/create_room',{method:'POST'});
       const d=await r.json();
       G.roomId=d.room_id;
+      await fetch(API+'/join_room',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({room_id:G.roomId,player_id:G.pid,player_name:G.name})});
     }catch(e){
-      G.roomId=Math.random().toString(36).substr(2,6).toUpperCase();
+      toast('Could not create room. Check your connection.');
+      startBtn.disabled=false;startBtn.textContent='Begin Your Destiny';return;
     }
+    startBtn.disabled=false;startBtn.textContent='Begin Your Destiny';
     G.isHost=true;
     _roomPlayers={[G.pid]:G.name};
+    _liveResults={};
     showRoomWait(true);
 
   } else if(G.mode==='join'){
     G.roomId=document.getElementById('roomInput').value.trim().toUpperCase();
-    if(!G.roomId){toast('Enter a room code');return;}
+    if(!G.roomId){
+      if(errEl)errEl.textContent='Enter a room code to join';
+      toast('Enter a room code');return;
+    }
+    startBtn.disabled=true;startBtn.textContent='Joining...';
+    try{
+      const r=await fetch(API+'/join_room',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({room_id:G.roomId,player_id:G.pid,player_name:G.name})});
+      const d=await r.json();
+      if(!d.ok){
+        if(errEl)errEl.textContent=d.error||'Could not join room';
+        toast(d.error||'Could not join room');
+        startBtn.disabled=false;startBtn.textContent='Begin Your Destiny';return;
+      }
+      _roomPlayers={};
+      (d.players||[]).forEach(p=>{_roomPlayers[p.pid]=p.name;});
+    }catch(e){
+      if(errEl)errEl.textContent='Could not reach server. Check your connection.';
+      toast('Could not reach server. Check your connection.');
+      startBtn.disabled=false;startBtn.textContent='Begin Your Destiny';return;
+    }
+    startBtn.disabled=false;startBtn.textContent='Begin Your Destiny';
     G.isHost=false;
-    _roomPlayers={[G.pid]:G.name};
+    _liveResults={};
     showRoomWait(false);
   }
 }
@@ -1229,24 +1435,15 @@ function showRoomWait(isHost){
   document.getElementById('guestWait').style.display=isHost?'none':'block';
   document.getElementById('rwTitle').textContent=isHost?'War Room Created':'War Room Joined';
   document.getElementById('rwSubtext').textContent=isHost?'Share this code with your allies':'Waiting for the host to begin...';
+  if(isHost)_firstHostPid=G.pid;
+  document.getElementById('liveScoreboard').style.display='none';
   updatePlayersList();
   connectWS();
-  // Add self immediately
-  broadcastJoin();
-}
-
-function broadcastJoin(){
-  if(G.ws&&G.ws.readyState===1){
-    G.ws.send(JSON.stringify({type:'player_joined',pid:G.pid,name:G.name}));
-  } else {
-    setTimeout(broadcastJoin,300);
-  }
 }
 
 function hostStartGame(){
-  if(G.ws&&G.ws.readyState===1){
-    G.ws.send(JSON.stringify({type:'start_game',by:G.name}));
-  }
+  // Tell server to mark room as started & broadcast to all
+  fetch(API+'/start_room/'+G.roomId,{method:'POST'}).catch(()=>{});
   startPrologue();
 }
 
@@ -1259,17 +1456,15 @@ function connectWS(){
     G.ws.onmessage=e=>{
       try{
         const m=JSON.parse(e.data);
-        if(m.type==='player_joined'){
-          if(!_roomPlayers[m.pid]){
-            _roomPlayers[m.pid]=m.name;
-            updatePlayersList();
-            toast('⚔️ '+m.name+' joined the war room!');
-            AudioEngine.playRoomJoin();
-            // New joiner: announce yourself back
-            if(G.ws&&G.ws.readyState===1){
-              G.ws.send(JSON.stringify({type:'player_joined',pid:G.pid,name:G.name}));
-            }
-          }
+        if(m.type==='player_list'){
+          _roomPlayers={};
+          (m.players||[]).forEach(p=>{_roomPlayers[p.pid]=p.name;});
+          if(!_firstHostPid&&m.players&&m.players.length>0)_firstHostPid=m.players[0].pid;
+          updatePlayersList();
+          updateLiveScoreboard();
+          AudioEngine.playRoomJoin();
+          const count=Object.keys(_roomPlayers).length;
+          toast('⚔️ '+count+' commander'+(count>1?'s':'')+' in the war room');
         } else if(m.type==='start_game'){
           if(!G.isHost){
             toast('The host has begun the campaign!');
@@ -1277,8 +1472,21 @@ function connectWS(){
           }
         } else if(m.type==='player_result'){
           toast('⚔️ '+m.player+' scored '+m.accuracy+'%!');
+          // Update live results for scoreboard
+          _liveResults[m.player_id||m.player]={name:m.player,accuracy:m.accuracy,player_id:m.player_id};
+          updateLiveScoreboard();
+          // Also keep G._roomResults in sync
+          if(!G._roomResults)G._roomResults=[];
+          const existing=G._roomResults.findIndex(r=>r.name===m.player);
+          if(existing>=0)G._roomResults[existing].accuracy=m.accuracy;
+          else G._roomResults.push({name:m.player,accuracy:m.accuracy});
         }
       }catch(err){}
+    };
+    G.ws.onclose=()=>{
+      if(G.mode!=='solo'&&G.roomId){
+        setTimeout(()=>{if(G.mode!=='solo')connectWS();},2000);
+      }
     };
     G.ws.onerror=()=>{};
   }catch(e){}
@@ -1311,6 +1519,7 @@ async function pickLife(id,el){
   G.pastLife=LIVES.find(l=>l.id===id);
   document.querySelectorAll('.life-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
+  AudioEngine.playClick();haptic();
   await new Promise(r=>setTimeout(r,450));
   show('lifeStory');
   AudioEngine.playLifeStory(id);
@@ -1335,7 +1544,7 @@ async function flipKarma(el,i){
   if(G.karma)return;
   G.karma=document.getElementById('karmaCards')._data[i];
   el.classList.add('flipped');
-  AudioEngine.playKarmaFlip();
+  AudioEngine.playKarmaFlip();haptic('medium');
   await new Promise(r=>setTimeout(r,500));
   document.querySelectorAll('.karma-card').forEach(c=>{if(!c.classList.contains('flipped'))c.style.opacity='0.3';});
   const txt=document.getElementById('karmaText');
@@ -1452,37 +1661,64 @@ function goToStructure(){
 }
 
 let costs={layers:100,neurons:100};
+function getThematicLayers(){
+  const id=G.pastLife?.id;
+  if(id==='healer') return ['Single Examination','Double Screening','Deep Biopsy Analysis'];
+  if(id==='scholar') return ['Surface Reading','Cross-Referenced Study','Deep Hermeneutics'];
+  if(id==='cartographer') return ['Aerial Glance','Layered Survey','Deep Terrain Scan'];
+  if(id==='merchant') return ['Single Season Watch','Multi-Season Memory','Generational Record'];
+  return ['Single Rank','Double Formation','Deep Phalanx'];
+}
+function getThematicNeurons(){
+  const id=G.pastLife?.id;
+  if(id==='healer') return ['Small Clinic (32)','District Hospital (64)','Royal Infirmary (128)','Imperial Medical Corps (256)'];
+  if(id==='scholar') return ['Single Desk (32)','Study Hall (64)','Grand Library (128)','Omniscient Archive (256)'];
+  if(id==='cartographer') return ['Scout Party (32)','Survey Team (64)','Cartography Corps (128)','Imperial Mapmakers (256)'];
+  if(id==='merchant') return ['Local Gauge (32)','River Station (64)','Observatory Network (128)','Imperial Forecast Bureau (256)'];
+  return ['Small Platoon (32)','Standard Regiment (64)','Grand Battalion (128)','Imperial Legion (256)'];
+}
+function getThematicActivations(){
+  const id=G.pastLife?.id;
+  if(id==='healer') return ['⚡ Threshold Diagnosis — Only clear symptoms pass','🎯 Measured Prognosis — Every sign weighed precisely','🌊 Contrasting Analysis — Opposing indicators compared'];
+  if(id==='scholar') return ['⚡ Bold Interpretation — Only strong meanings pass','🎯 Balanced Weighing — Every word measured carefully','🌊 Dialectical Reading — Opposing meanings contrasted'];
+  if(id==='cartographer') return ['⚡ Sharp Edge Detection — Only clear features pass','🎯 Smooth Gradient Map — Every shade measured precisely','🌊 Contrast Enhancement — Light and dark compared'];
+  if(id==='merchant') return ['⚡ Decisive Signal — Only rising trends pass','🎯 Cautious Assessment — Every change measured precisely','🌊 Tidal Reading — Rise and fall both tracked'];
+  return ['⚡ War Cry — Only the strong survive','🎯 Calm Focus — Every signal measured','🌊 Tidal Force — Push and pull balanced'];
+}
 function buildStructure(){
   const lc=LC();
   const s=lc.structure;
   const b=document.getElementById('structureBuilder');
+  const layerNames=getThematicLayers();
+  const neuronNames=getThematicNeurons();
+  const actNames=getThematicActivations();
   b.innerHTML=`
     <div class="builder-section">
       <div class="builder-label">${s.layerLabel}</div>
       <div class="builder-sublabel">${s.layerSub}</div>
       <div class="builder-options">
-        <div class="builder-opt" onclick="setL(1,50,this)">1 Layer<span class="cost">🪙 50</span><span class="sub-text">Surface-level patterns only. Fast training.</span></div>
-        <div class="builder-opt selected" onclick="setL(2,100,this)">2 Layers<span class="cost">🪙 100</span><span class="sub-text">Balanced. Good for most problems.</span></div>
-        <div class="builder-opt" onclick="setL(3,200,this)">3 Layers<span class="cost">🪙 200</span><span class="sub-text">Deep abstraction. Risk of vanishing gradients.</span></div>
+        <div class="builder-opt" onclick="setL(1,50,this)">${layerNames[0]}<span class="cost">🪙 50</span><span class="sub-text">Quick to deploy. Sees only surface patterns.</span></div>
+        <div class="builder-opt selected" onclick="setL(2,100,this)">${layerNames[1]}<span class="cost">🪙 100</span><span class="sub-text">Balanced depth. Can see patterns within patterns.</span></div>
+        <div class="builder-opt" onclick="setL(3,200,this)">${layerNames[2]}<span class="cost">🪙 200</span><span class="sub-text">Maximum depth. Risks losing the signal in complexity.</span></div>
       </div>
     </div>
     <div class="builder-section">
       <div class="builder-label">${s.neuronLabel}</div>
       <div class="builder-sublabel">${s.neuronSub}</div>
       <div class="builder-options">
-        <div class="builder-opt" onclick="setN(32,50,this)">32 units<span class="cost">🪙 50</span><span class="sub-text">Lean. May underfit complex patterns.</span></div>
-        <div class="builder-opt selected" onclick="setN(64,100,this)">64 units<span class="cost">🪙 100</span><span class="sub-text">Standard capacity. Industry default.</span></div>
-        <div class="builder-opt" onclick="setN(128,150,this)">128 units<span class="cost">🪙 150</span><span class="sub-text">Rich representation. Stronger capacity.</span></div>
-        <div class="builder-opt" onclick="setN(256,200,this)">256 units<span class="cost">🪙 200</span><span class="sub-text">Maximum capacity. Risk overfit on small data.</span></div>
+        <div class="builder-opt" onclick="setN(32,50,this)">${neuronNames[0]}<span class="cost">🪙 50</span><span class="sub-text">Lean force. May miss subtle distinctions.</span></div>
+        <div class="builder-opt selected" onclick="setN(64,100,this)">${neuronNames[1]}<span class="cost">🪙 100</span><span class="sub-text">Balanced force. Adequate for most campaigns.</span></div>
+        <div class="builder-opt" onclick="setN(128,150,this)">${neuronNames[2]}<span class="cost">🪙 150</span><span class="sub-text">Strong force. Sees finer distinctions.</span></div>
+        <div class="builder-opt" onclick="setN(256,200,this)">${neuronNames[3]}<span class="cost">🪙 200</span><span class="sub-text">Massive force. Risks memorizing instead of learning.</span></div>
       </div>
     </div>
     <div class="builder-section">
       <div class="builder-label">${s.actLabel}</div>
       <div class="builder-sublabel">${s.actSub}</div>
       <div class="builder-options">
-        <div class="builder-opt${G.activation==='relu'?' selected':''}" onclick="setAct('relu',this)">⚡ ReLU — f(x)=max(0,x)<span class="sub-text">Positive signals pass, negatives cut off. Fast, sparse, avoids vanishing gradient.</span></div>
-        <div class="builder-opt${G.activation==='sigmoid'?' selected':''}" onclick="setAct('sigmoid',this)">🎯 Sigmoid — f(x)=1/(1+e⁻ˣ)<span class="sub-text">Squashes all values to 0–1. Good for probabilities. Suffers vanishing gradients in deep nets.</span></div>
-        <div class="builder-opt${G.activation==='tanh'?' selected':''}" onclick="setAct('tanh',this)">🌊 Tanh — f(x)=(eˣ-e⁻ˣ)/(eˣ+e⁻ˣ)<span class="sub-text">Swings -1 to +1. Zero-centered. Stronger gradient than sigmoid.</span></div>
+        <div class="builder-opt${G.activation==='relu'?' selected':''}" onclick="setAct('relu',this)">${actNames[0]}<span class="sub-text">Lets strong signals through, cuts the weak. Fast and decisive.</span></div>
+        <div class="builder-opt${G.activation==='sigmoid'?' selected':''}" onclick="setAct('sigmoid',this)">${actNames[1]}<span class="sub-text">Every signal measured on a scale. Precise but slow to respond deeply.</span></div>
+        <div class="builder-opt${G.activation==='tanh'?' selected':''}" onclick="setAct('tanh',this)">${actNames[2]}<span class="sub-text">Signals swing from opposition to support. Balanced but intense.</span></div>
       </div>
     </div>`;
   renderViz();
@@ -1615,26 +1851,78 @@ function simAcc(){let b=75;if(G.learningRate===0.01)b+=8;else if(G.learningRate=
 // ===================== RESULT =====================
 function showResult(acc,wrong){
   show('result');
+  // Update own live result
+  if(G.mode!=='solo'){
+    _liveResults[G.pid]={name:G.name,accuracy:acc,player_id:G.pid};
+    updateLiveScoreboard();
+  }
   const lcs=LC().siege;
   const v=document.getElementById('resultVerdict'),s=document.getElementById('resultScore'),m=document.getElementById('resultMsg'),btns=document.getElementById('resultBtns');
+  const multiExtra=G.mode!=='solo'?'<button class="btn-secondary" onclick="showLiveResults()">View Live Scoreboard</button>':'';
   if(wrong||acc<65){
     AudioEngine.playDefeat();
+    ParticleSystem.defeat();
     v.textContent=lcs.resultLose;v.className='result-verdict defeat anim-boom';
     s.textContent=Math.round(acc)+'%';
     document.getElementById('resultLabel').textContent='Accuracy Achieved';
     m.textContent=lcs.loseMsg2;
-    btns.innerHTML='<button class="btn-primary" onclick="showOracle()">Consult the Oracle</button><button class="btn-secondary" onclick="showReveal()">See The Revelation</button>';
+    btns.innerHTML=`<button class="btn-primary" onclick="showOracle()">Consult the Oracle</button><button class="btn-secondary" onclick="showReveal()">See The Revelation</button>${multiExtra}`;
   }else{
     AudioEngine.playVictory();
+    ParticleSystem.victory();
     v.textContent=lcs.resultWin;v.className='result-verdict victory anim-boom';
     s.textContent=Math.round(acc)+'%';
     document.getElementById('resultLabel').textContent='Accuracy Achieved';
     m.textContent=lcs.winMsgs(acc);
-    btns.innerHTML='<button class="btn-primary" onclick="showLBorReveal()">Continue →</button>';
+    btns.innerHTML=`<button class="btn-primary" onclick="showLBorReveal()">Continue →</button>${multiExtra}`;
   }
 }
 
-function showLBorReveal(){if(G.mode!=='solo'&&G.result&&G.result.room_results&&G.result.room_results.length>1)showLB();else showReveal();}
+// Show live results - go to room wait screen which has the live scoreboard
+function showLiveResults(){
+  show('roomwait');
+  document.getElementById('rwTitle').textContent='Battle in Progress';
+  document.getElementById('rwSubtext').textContent='Live results as commanders finish';
+  document.getElementById('rwIcon').textContent='⚔️';
+  document.getElementById('hostControls').style.display='none';
+  document.getElementById('guestWait').style.display='none';
+  document.getElementById('liveScoreboard').style.display='block';
+  updateLiveScoreboard();
+  // Add a back/continue button
+  const existingBackBtn=document.getElementById('liveBackBtn');
+  if(!existingBackBtn){
+    const container=document.getElementById('liveScoreboard');
+    const backBtn=document.createElement('div');
+    backBtn.id='liveBackBtn';
+    backBtn.style.cssText='display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;';
+    backBtn.innerHTML='<button class="btn-primary" onclick="fetchAndShowLB()">View Final Rankings</button><button class="btn-secondary" onclick="showReveal()">The Revelation</button>';
+    container.after(backBtn);
+  }
+}
+
+function showLBorReveal(){
+  // Merge room results from battle API, websocket, and live results
+  let allResults=[];
+  if(G.result&&G.result.room_results)allResults=[...G.result.room_results];
+  if(G._roomResults){
+    G._roomResults.forEach(r=>{
+      if(!allResults.find(a=>a.name===r.name))allResults.push(r);
+    });
+  }
+  // Merge live results
+  Object.values(_liveResults).forEach(r=>{
+    const existing=allResults.find(a=>a.name===r.name);
+    if(existing){if(r.accuracy!=null)existing.accuracy=r.accuracy;}
+    else allResults.push({name:r.name,accuracy:r.accuracy});
+  });
+  // Always add self
+  if(!allResults.find(a=>a.name===G.name))allResults.push({name:G.name,accuracy:G.result?G.result.accuracy:0});
+  if(G.mode!=='solo'&&allResults.length>1){
+    if(!G.result)G.result={};
+    G.result.room_results=allResults;showLB();
+  }
+  else showReveal();
+}
 
 // ===================== ORACLE =====================
 function showOracle(){
@@ -1660,11 +1948,58 @@ function showOracle(){
 function retryFromArmy(){G.architecture=null;prevArmyCost=0;G.gold=1000;costs={layers:100,neurons:100};tcosts={bs:80,lr:80,opt:100,ep:100};G.karma=null;goToParadigm();}
 
 // ===================== LEADERBOARD =====================
+async function fetchAndShowLB(){
+  try{
+    const r=await fetch(API+'/room/'+G.roomId);
+    const d=await r.json();
+    if(d.players){
+      const results=d.players.map(p=>({name:p.name,accuracy:p.accuracy}));
+      // Merge with local live results
+      Object.values(_liveResults).forEach(lr=>{
+        if(!results.find(r=>r.name===lr.name))results.push({name:lr.name,accuracy:lr.accuracy});
+      });
+      // Always include self
+      if(!results.find(r=>r.name===G.name)&&G.result)results.push({name:G.name,accuracy:G.result.accuracy});
+      if(results.length>0){
+        if(!G.result)G.result={};
+        G.result.room_results=results;
+        showLB();return;
+      }
+    }
+  }catch(e){}
+  // Fallback: use locally collected results
+  let results=Object.values(_liveResults).map(r=>({name:r.name,accuracy:r.accuracy}));
+  if(!results.find(r=>r.name===G.name)&&G.result)results.push({name:G.name,accuracy:G.result.accuracy});
+  if(results.length>0){
+    if(!G.result)G.result={};
+    G.result.room_results=results;
+    showLB();
+  } else {
+    showLBorReveal();
+  }
+}
 function showLB(){
   show('leaderboard');
-  const lb=document.getElementById('leaderboard'),res=(G.result.room_results||[]).sort((a,b)=>b.accuracy-a.accuracy);
-  lb.innerHTML=res.map((r,i)=>{const m=i===0?'gold':i===1?'silver':i===2?'bronze':'';const ic=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
-    return `<div class="lb-entry ${m}" style="animation-delay:${i*0.12}s"><div class="lb-rank">${ic}</div><div class="lb-name">${r.name}${r.name===G.name?' (You)':''}</div><div class="lb-score">${r.accuracy}%</div></div>`;}).join('');
+  const lb=document.getElementById('leaderboard');
+  const res=(G.result.room_results||[]).filter(r=>r.accuracy!=null).sort((a,b)=>b.accuracy-a.accuracy);
+  const waiting=(G.result.room_results||[]).filter(r=>r.accuracy==null);
+  const totalPlayers=Object.keys(_roomPlayers).length;
+  const subtitle=document.getElementById('lbSubtitle');
+  if(subtitle){
+    if(res.length<totalPlayers)subtitle.textContent=res.length+' of '+totalPlayers+' commanders have reported. Refresh for updates.';
+    else subtitle.textContent='All commanders have reported. Final rankings:';
+  }
+  let html=res.map((r,i)=>{
+    const m=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const ic=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+    const isYou=r.name===G.name?' (You)':'';
+    return `<div class="lb-entry ${m}" style="animation-delay:${i*0.12}s"><div class="lb-rank">${ic}</div><div class="lb-name">${r.name}${isYou}</div><div class="lb-score">${r.accuracy}%</div></div>`;
+  }).join('');
+  // Show players still battling
+  waiting.forEach(r=>{
+    html+=`<div class="lb-entry battling"><div class="lb-rank">⏳</div><div class="lb-name">${r.name}${r.name===G.name?' (You)':''}</div><div class="lb-score">In Battle...</div></div>`;
+  });
+  lb.innerHTML=html;
 }
 
 // ===================== REVEAL (comprehensive, per-life) =====================
@@ -1774,16 +2109,99 @@ Epochs: ${G.epochs}${G.earlyStopping?' with Early Stopping (halts when validatio
     </div>`;
 }
 
+// ===================== VOLUME TOGGLE =====================
+function toggleMute(){
+  const muted=!AudioEngine.getMuted();
+  AudioEngine.setMuted(muted);
+  document.getElementById('volBtn').textContent=muted?'🔇':'🔊';
+}
+
+// ===================== ENSURE AUDIO CONTEXT ON EVERY INTERACTION =====================
+document.addEventListener('click',()=>{AudioEngine.init();},{once:false});
+document.addEventListener('touchstart',()=>{AudioEngine.init();},{once:false,passive:true});
+
+// ===================== HAPTIC FEEDBACK =====================
+function haptic(style='light'){
+  if(!navigator.vibrate)return;
+  if(style==='heavy')navigator.vibrate([30,20,30]);
+  else if(style==='medium')navigator.vibrate(20);
+  else navigator.vibrate(10);
+}
+
+// ===================== PARTICLE SYSTEM =====================
+const ParticleSystem=(function(){
+  const canvas=document.getElementById('particleCanvas');
+  if(!canvas)return{burst:()=>{},victory:()=>{},defeat:()=>{}};
+  const pCtx=canvas.getContext('2d');
+  let particles=[],animId=null;
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  window.addEventListener('resize',resize);resize();
+  function Particle(x,y,color,vx,vy,life,size){
+    this.x=x;this.y=y;this.color=color;this.vx=vx;this.vy=vy;this.life=life;this.maxLife=life;this.size=size||3;
+  }
+  function animate(){
+    pCtx.clearRect(0,0,canvas.width,canvas.height);
+    particles=particles.filter(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.vy+=0.08;p.life--;
+      const alpha=Math.max(0,p.life/p.maxLife);
+      pCtx.globalAlpha=alpha;
+      pCtx.fillStyle=p.color;
+      pCtx.beginPath();pCtx.arc(p.x,p.y,p.size*alpha,0,Math.PI*2);pCtx.fill();
+      return p.life>0;
+    });
+    pCtx.globalAlpha=1;
+    if(particles.length>0)animId=requestAnimationFrame(animate);
+    else animId=null;
+  }
+  function start(){if(!animId)animId=requestAnimationFrame(animate);}
+  function burst(x,y,color,count){
+    for(let i=0;i<(count||30);i++){
+      const angle=Math.random()*Math.PI*2,speed=1+Math.random()*4;
+      particles.push(new Particle(x,y,color,Math.cos(angle)*speed,Math.sin(angle)*speed-2,40+Math.random()*30,2+Math.random()*3));
+    }
+    start();
+  }
+  function victory(){
+    const w=canvas.width,h=canvas.height;
+    const golds=['#c9a84c','#f0c040','#d4a520','#ffd700','#e8b923'];
+    for(let i=0;i<5;i++){
+      setTimeout(()=>{
+        burst(w*0.2+Math.random()*w*0.6,h*0.3+Math.random()*h*0.2,golds[i%golds.length],40);
+      },i*300);
+    }
+    haptic('heavy');
+  }
+  function defeat(){
+    const w=canvas.width,h=canvas.height;
+    for(let i=0;i<20;i++){
+      const x=w*0.3+Math.random()*w*0.4,y=h*0.4+Math.random()*h*0.2;
+      particles.push(new Particle(x,y,'#8b1a1a',Math.random()*2-1,Math.random()*0.5+0.5,60+Math.random()*40,2+Math.random()*2));
+    }
+    start();
+    haptic('medium');
+  }
+  return {burst,victory,defeat};
+})();
+
 function playAgain(){
   G={...G,gold:1000,attempts:0,pastLife:null,karma:null,problem:null,paradigm:null,architecture:null,
     layers:[128,64],activation:'relu',neurons:64,numLayers:2,batchSize:64,learningRate:0.01,
     alpha:0.001,epochs:150,earlyStopping:false,optimizer:'adam',result:null,
     mode:'solo',roomId:'',isHost:false,ws:null};
-  _roomPlayers={};
+  _roomPlayers={};_liveResults={};_firstHostPid=null;G._roomResults=[];
   prevArmyCost=0;costs={layers:100,neurons:100};tcosts={bs:80,lr:80,opt:100,ep:100};
+  // Remove any dynamically added back buttons
+  const backBtn=document.getElementById('liveBackBtn');
+  if(backBtn)backBtn.remove();
   show('landing');
-  AudioEngine.stopAll();
+  AudioEngine.playAmbient();
 }
+
+// Start ambient on first interaction
+document.addEventListener('click',function startAmbientOnce(){
+  AudioEngine.playAmbient();
+  document.removeEventListener('click',startAmbientOnce);
+},{once:true});
 </script>
 </body>
 </html>
